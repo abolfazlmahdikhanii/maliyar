@@ -1,0 +1,36 @@
+import { Button } from "@heroui/react";
+import CashflowChart from "../../components/cashflow-chart/CashflowChart";
+import Expense from "../../components/expense/Expense";
+import GoalBox from "../../components/goal-box/GoalBox";
+import Income from "../../components/income/Income";
+import RecentTransactions from "../../components/recent-transaction/RecentTransactions";
+import AdBanner from "../../components/ui/ad-baner/AdBanner";
+import BalanceCard from "../../components/ui/balance-card/BalanceCard";
+
+const Dashboard = () => {
+  return (
+    <div className="mt-18 relative">
+      <div className="grid grid-cols-3 gap-6">
+        <BalanceCard />
+        <Income />
+        <Expense />
+        <GoalBox />
+        <CashflowChart />
+        <RecentTransactions />
+        <AdBanner />
+      </div>
+      <Button
+        isIconOnly
+        className={
+          "w-14.5 h-14.5 rounded-full fixed bottom-9 z-50 left-[77%] hover:bg-[#6BC945] bg-[#7ED957] [&>svg]:size-6 grid place-items-center"
+        }
+      >
+        <svg width={24} height={24} viewBox="0 0 24 24">
+          <path d="m19 9 1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25z"></path>
+        </svg>
+      </Button>
+    </div>
+  );
+};
+
+export default Dashboard;
