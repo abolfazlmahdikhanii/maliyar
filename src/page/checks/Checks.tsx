@@ -1,7 +1,7 @@
 import { Tabs } from "@heroui/react";
 import { useState } from "react";
-import CreditsBox from "../../components/credits-box/CreditsBox";
-import CreditsForm from "../../components/credits-form/CreditsForm";
+import CheckBox from "../../components/check-box/CheckBox";
+import CheckForm from "../../components/check-form/CheckForm";
 import Expense from "../../components/expense/Expense";
 import Income from "../../components/income/Income";
 import FormModal from "../../components/ui/form-modal/FormModal";
@@ -13,8 +13,8 @@ const Checks = () => {
   return (
     <div>
       <Title
-        text="مدیریت وام"
-        btnText="وام جدید"
+        text="مدیریت چک"
+        btnText="چک جدید"
         onOpen={() => setIsOpenModal(true)}
       />
       <div className="grid grid-cols-3 gap-6 mt-14 mb-8">
@@ -51,31 +51,31 @@ const Checks = () => {
 
         <Tabs.Panel className="pt-6 px-2" id="debt">
           <div className="grid grid-cols-2 gap-7">
-            <CreditsBox />
-            <CreditsBox />
+            <CheckBox />
+            <CheckBox />
           </div>
         </Tabs.Panel>
         <Tabs.Panel className="pt-6 px-2" id="claim">
           <div className="grid grid-cols-2 gap-7">
-            <CreditsBox />
-            <CreditsBox />
+            <CheckBox />
+            <CheckBox />
           </div>
         </Tabs.Panel>
         <Tabs.Panel className="pt-6 px-2" id="done">
           <div className="grid grid-cols-2 gap-7">
-            <CreditsBox />
-            <CreditsBox />
+            <CheckBox />
+            <CheckBox />
           </div>
         </Tabs.Panel>
       </Tabs>
 
       <FormModal
-        title="وام جدید"
+        title="چک جدید"
         isOpen={isOpenModal}
         onOpenChange={() => setIsOpenModal(false)}
-        btnText="ثبت وام"
+        btnText="ثبت چک"
       >
-        <CreditsForm />
+        <CheckForm />
       </FormModal>
     </div>
   );
