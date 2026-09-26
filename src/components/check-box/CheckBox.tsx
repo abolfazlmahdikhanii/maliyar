@@ -1,0 +1,163 @@
+import { Button, Meter } from "@heroui/react";
+import {
+  ArrowLeftDownIcon,
+  CheckCircleIcon,
+  CloseCircleIcon,
+  Pen2Icon,
+  TrashBinMinimalistic2Icon,
+} from "@solar-icons/react/outline";
+import { useState } from "react";
+import CheckForm from "../check-form/CheckForm";
+import DeleteDialog from "../ui/delete-dialog/DeleteDialog";
+import FormModal from "../ui/form-modal/FormModal";
+
+const CheckBox = () => {
+  const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
+  const [isShowDelete, setIsShowDelete] = useState<boolean>(false);
+
+  return (
+    <div className="box rounded-2xl">
+      <section className="pb-5 border-b border-b-secondary">
+        <div className="flex justify-between border-b border-secondary border-dashed pb-6">
+          {/* right */}
+          <div className="flex items-center gap-x-3">
+            <div className="w-10.5 h-10.5 border border-primary bg-[rgba(87,217,119,.09)] text-primary grid place-items-center rounded-[13px]">
+              <ArrowLeftDownIcon size={18} />
+            </div>
+            <div className="flex flex-col gap-y-2">
+              <p className="font-extrabold text-neutral-100">
+                چک <span className="text-primary">دریافتی</span>
+              </p>
+              <span className="h-[1.5px] w-15.5 inline-block  bg-linear-to-l from-[rgba(87,217,119,.55)] to-transparent"></span>
+              <p className="text-xs text-muted">
+                بانک{" "}
+                <span className="text-base text-neutral-300 font-extrabold mr-0.5">
+                  پاسارگاد
+                </span>
+              </p>
+            </div>
+          </div>
+          {/* left */}
+          <div className="flex items-center gap-x-4">
+            <div className="flex flex-col gap-y-1.5 items-center justify-center">
+              <p className="text-[10px] text-muted">سریال</p>
+              <div className="bg-[#0E1411] px-2.75 py-1.25  text-sm rounded-xl border border-dashed">
+                ۶۲۹۱۰۳
+              </div>
+            </div>
+            <div className="flex flex-col gap-y-1.5 items-center justify-center">
+              <p className="text-[10px] text-muted">سررسید</p>
+              <div className="bg-[#0E1411] px-2.75 py-1.25  rounded-xl border border-dashed flex items-center">
+                <p className=" pl-2.75 pr-px text-sm">8</p>
+                <p className="border-r border-r-secondary px-2.75 text-sm">
+                  دی
+                </p>
+                <p className="border-r border-r-secondary pr-2.75 text-sm">
+                  1404
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="pt-4.75 pb-3.5 border-b-2 border-dashed border-b-secondary space-y-1.25 ml-8">
+          <p className="text-muted text-xs">صادرکننده</p>
+          <p className="font-extrabold text-lg text-neutral-200">
+            شرکت بازرگانی نگین شرق
+          </p>
+        </div>
+        <div className="pt-5  flex items-baseline justify-between">
+          <div className="flex flex-col gap-y-3.25">
+            <div className="py-1.5 pr-5 pl-6 rounded-xl w-fit border border-primary bg-[rgba(87,217,119,.09)] text-neutral-100 text-2xl flex items-center gap-x-1 font-extrabold">
+              1,200,000
+              <span className="text-neutral-400">
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fillRule="evenodd"
+                    clipRule="evenodd"
+                    d="M2.05701 0.742L2.82101 0L3.60101 0.75L2.82501 1.491L2.05701 0.742ZM5.28701 3.222C5.28701 3.844 5.12701 4.333 4.80901 4.689C4.60801 4.91 4.34701 5.079 4.02601 5.194C3.67682 5.30919 3.31063 5.3643 2.94301 5.357H2.38801C1.96701 5.357 1.58701 5.283 1.24901 5.134C0.883858 4.98037 0.571193 4.72398 0.349007 4.396C0.112145 4.02352 -0.00927974 3.58931 7.28603e-06 3.148C7.28603e-06 3.089 0.00100723 3.031 0.00400723 2.972C0.0340072 2.422 0.208007 1.814 0.529007 1.145L1.62401 1.629C1.36701 2.161 1.22701 2.629 1.20501 3.032C1.20301 3.072 1.20101 3.112 1.20101 3.152C1.20101 3.404 1.25601 3.61 1.36701 3.77C1.48634 3.94364 1.66359 4.06913 1.86701 4.124C1.95201 4.152 2.04501 4.172 2.14501 4.184C2.22401 4.194 2.30501 4.198 2.38801 4.198H2.94301C3.40101 4.198 3.71201 4.117 3.87601 3.954C4.01601 3.815 4.08601 3.571 4.08601 3.223V1.02H5.28601V3.222H5.28701ZM10.72 6.406L10 5.706L10.709 5L11.444 5.707L10.72 6.406ZM7.86401 6.714C8.40601 6.714 8.83701 6.904 9.15701 7.283C9.45401 7.629 9.60201 8.06 9.60201 8.576V8.94H9.78201V8.936H10.192C10.413 8.936 10.569 8.908 10.659 8.852C10.752 8.797 10.799 8.712 10.799 8.594V8.525C10.803 8.282 10.816 7.481 10.799 7.41L12 7.05V8.624C12.003 8.93559 11.902 9.23929 11.713 9.487C11.407 9.892 10.909 10.094 10.218 10.094H9.59101C9.53001 10.827 9.15701 11.351 8.47401 11.667C8.20701 11.789 7.89401 11.877 7.53701 11.932C7.23456 11.9782 6.92896 12.0006 6.62301 11.999V10.84C7.23501 10.84 7.69501 10.758 8.00301 10.593C8.25301 10.461 8.37901 10.295 8.37901 10.094H7.86401C7.42801 10.094 7.05701 9.981 6.75101 9.755C6.38401 9.482 6.20101 9.088 6.20101 8.575C6.20101 8.087 6.32301 7.674 6.56801 7.335C6.86401 6.92 7.29601 6.713 7.86401 6.713V6.714ZM8.39701 8.94V8.576C8.39701 8.359 8.34901 8.187 8.25401 8.06C8.20907 7.9995 8.15008 7.95086 8.08213 7.91828C8.01418 7.8857 7.93931 7.87016 7.86401 7.873C7.78788 7.87036 7.71222 7.88595 7.64333 7.91848C7.57445 7.95101 7.51434 7.99953 7.46801 8.06C7.37275 8.18975 7.32475 8.3482 7.33201 8.509C7.33185 8.53137 7.33285 8.55373 7.33501 8.576C7.34301 8.701 7.40101 8.796 7.51201 8.859C7.60501 8.913 7.72201 8.939 7.86401 8.939L8.39701 8.94ZM8.50001 5.707L9.22001 6.407L9.94401 5.707L9.20901 5L8.50001 5.707ZM1.80601 10.595H1.83601C2.26901 10.585 2.58101 10.489 2.77301 10.305C2.79701 10.317 2.83801 10.34 2.89301 10.373L2.96701 10.412L3.04801 10.454C3.18301 10.527 3.30901 10.587 3.42701 10.634C3.77201 10.78 4.09701 10.854 4.40401 10.854C4.56427 10.8575 4.72365 10.8292 4.87296 10.7709C5.02226 10.7125 5.15856 10.6252 5.27401 10.514C5.57401 10.229 5.72301 9.8 5.72301 9.228C5.71945 8.82269 5.60348 8.42631 5.38801 8.083C5.08901 7.626 4.65601 7.398 4.08801 7.398C3.58601 7.398 3.17201 7.59 2.84601 7.973C2.73301 8.105 2.63601 8.257 2.55201 8.429C2.52001 8.491 2.49201 8.554 2.46801 8.62C2.45587 8.64512 2.44583 8.67121 2.43801 8.698C2.43029 8.71786 2.42296 8.73786 2.41601 8.758C2.31301 9.067 2.24501 9.243 2.21101 9.288C2.13901 9.378 1.99701 9.428 1.78401 9.435C1.66101 9.43 1.57501 9.405 1.52801 9.359C1.47101 9.305 1.44301 9.206 1.44301 9.062V6L0.242007 5.5V9.062C0.242007 9.323 0.290007 9.558 0.385007 9.765C0.456007 9.923 0.553007 10.061 0.675007 10.178C0.798007 10.296 0.941007 10.389 1.10501 10.458C1.30301 10.542 1.52501 10.588 1.77001 10.594V10.595H1.80601ZM4.55801 9.581C4.59974 9.46831 4.6148 9.34749 4.60201 9.228C4.59411 9.05858 4.53674 8.89518 4.43701 8.758C4.33701 8.624 4.22001 8.557 4.08701 8.557C3.90701 8.557 3.75701 8.66 3.64001 8.867C3.59801 8.938 3.56001 9.025 3.52601 9.129C3.51164 9.16865 3.4983 9.20866 3.48601 9.249L3.47101 9.302L3.45601 9.348C3.59801 9.466 3.77901 9.564 4.00001 9.641C4.18001 9.703 4.32501 9.733 4.43301 9.733C4.47701 9.733 4.51901 9.683 4.55801 9.581Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+            </div>
+            <div className="flex items-center gap-x-1 pr-2">
+              <p className="text-[12px] text-muted font-bold">مبلغ به حروف:</p>
+              <p className="text-[12px] text-muted">صد و بیست میلیون تومان</p>
+            </div>
+          </div>
+          <div className="border border-primary bg-[rgba(87,217,119,.09)] text-primary py-1.5 px-2.75 rounded-full w-fit text-xs">
+            وصول شده
+          </div>
+        </div>
+      </section>
+      <section className="pt-5 pb-7  px-2 flex flex-col gap-y-3.5 ">
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col gap-y-1 items-center justify-center">
+            <p className="text-[10px] text-muted">صدور</p>
+            <p className="text-xs to-neutral-100 font-semibold">10 آذر</p>
+          </div>
+          <div className="">
+            <p className="text-xs text-primary font-semibold">وصول شد</p>
+          </div>
+          <div className="flex flex-col gap-y-1 items-center justify-center">
+            <p className="text-[10px] text-muted">سررسید</p>
+            <p className="text-xs to-neutral-100 font-semibold">10 آذر</p>
+          </div>
+        </div>
+        <div className="w-full">
+          <Meter aria-label="Storage" className="w-full " dir="rtl" value={60}>
+            <Meter.Track className="bg-secondary">
+              <Meter.Fill className="bg-primary left-[unset] right-0" />
+            </Meter.Track>
+          </Meter>
+        </div>
+      </section>
+      <section className="flex items-center justify-between">
+        <div className="flex items-center gap-x-2.5">
+          <Button className="h-10 rounded-xl font-semibold px-4 text-xs bg-primary text-black">
+            <CheckCircleIcon size={20} />
+            ثبت وصول
+          </Button>
+          <Button
+            className="h-10 rounded-xl font-semibold px-4 text-xs  "
+            variant="danger-soft"
+          >
+            <CloseCircleIcon size={20} />
+            ثبت برگشت
+          </Button>
+        </div>
+        <div className="flex items-center gap-x-2.5">
+          <Button isIconOnly className={"rounded-xl bg-secondary"} onClick={()=>setIsOpenEditModal(true)}>
+            <Pen2Icon />
+          </Button>
+          <Button isIconOnly className={"rounded-xl bg-secondary"} onClick={()=>setIsShowDelete(true)}>
+            <TrashBinMinimalistic2Icon />
+          </Button>
+        </div>
+      </section>
+      <FormModal
+        title="ویرایش چک"
+        isOpen={isOpenEditModal}
+        onOpenChange={() => setIsOpenEditModal(false)}
+        btnText="ذخیره تغییرات"
+      >
+        <CheckForm />
+      </FormModal>
+
+      <DeleteDialog
+        isShowDelete={isShowDelete}
+        onChangeShowDelete={() => setIsShowDelete(false)}
+        title="حذف چک"
+        description="ایا از حذف این چک اطمینان دارید؟"
+      />
+    </div>
+  );
+};
+
+export default CheckBox;
