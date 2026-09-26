@@ -2,12 +2,13 @@ import { ScrollShadow } from "@heroui/react";
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/ui/header/Header";
 import Sidebar from "./components/ui/sidebar/Sidebar";
-import Dashboard from "./page/dashboard/Dashboard";
-import Transactions from "./page/transactions/Transactions";
 import Budgets from "./page/budgets/Budgets";
-import Dues from "./page/dues/Dues";
-import Credits from "./page/credits/Credits";
 import Checks from "./page/checks/Checks";
+import Credits from "./page/credits/Credits";
+import Dashboard from "./page/dashboard/Dashboard";
+import Dues from "./page/dues/Dues";
+import Transactions from "./page/transactions/Transactions";
+import Accounts from "./page/accounts/Accounts";
 
 const App = () => {
   return (
@@ -25,9 +26,7 @@ const App = () => {
                 <Route path="/dues" element={<Dues />} />
                 <Route path="/credits" element={<Credits />} />
                 <Route path="/checks" element={<Checks />} />
-
-
-
+                <Route path="/accounts" element={<Accounts />} />
               </Routes>
             </div>
           </ScrollShadow>
