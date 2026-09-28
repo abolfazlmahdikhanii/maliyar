@@ -1,10 +1,10 @@
 import { Tabs } from "@heroui/react";
 import { useState } from "react";
+import AccountsForm from "../../components/accounts-form/AccountsForm";
+import CardBox from "../../components/card-box/CardBox";
 import CheckBox from "../../components/check-box/CheckBox";
-import CheckForm from "../../components/check-form/CheckForm";
 import Expense from "../../components/expense/Expense";
 import Income from "../../components/income/Income";
-import CardHolder from "../../components/ui/CardHolder/CardHolder";
 import FormModal from "../../components/ui/form-modal/FormModal";
 import Title from "../../components/ui/title/Title";
 import TotalCard from "../../components/ui/total-card/TotalCard";
@@ -52,7 +52,7 @@ const Accounts = () => {
 
         <Tabs.Panel className="pt-6 px-2" id="debt">
           <div className="grid grid-cols-3 gap-7">
-            <CardHolder cardNumber="6273532563" />
+            <CardBox cardNumber="6273532563" />
           </div>
         </Tabs.Panel>
         <Tabs.Panel className="pt-6 px-2" id="claim">
@@ -75,7 +75,7 @@ const Accounts = () => {
         onOpenChange={() => setIsOpenModal(false)}
         btnText="ثبت چک"
       >
-        <CheckForm />
+        <AccountsForm />
       </FormModal>
     </div>
   );
