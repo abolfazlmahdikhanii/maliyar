@@ -111,7 +111,7 @@ body {
 .filter-item {
   @apply transition-all duration-200 hover:bg-[rgba(255,255,255,0.05)] px-2;
 }
-.input {
+.input,.input-group[data-focus-within="true"]{
   @apply focus:ring-0 focus:shadow-none focus:border-primary;
 }
 .transaction-type {
