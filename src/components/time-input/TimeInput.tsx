@@ -1,10 +1,18 @@
-import { Label, TimeField } from "@heroui/react";
+import { Label, TimeField, type TimeValue } from "@heroui/react";
 
-const TimeInput = () => {
+type TimeInputProps = {
+  time: TimeValue | null;
+  onTime: (time: TimeValue | null) => void;
+};
+
+const TimeInput = ({ time, onTime }:TimeInputProps) => {
   return (
-    <TimeField className={"flex flex-col gap-2"}>
+    <TimeField className={"flex flex-col gap-2"} value={time} onChange={onTime}>
       <Label className="text-muted text-sm">زمان</Label>
-      <TimeField.Group className="box-date__input input  bg-transparent focus-within:ring-primary h-13" dir="ltr">
+      <TimeField.Group
+        className="box-date__input input  bg-transparent focus-within:ring-primary h-13"
+        dir="ltr"
+      >
         <TimeField.Input
           className={"input bg-transparent focus:border-primary"}
         >

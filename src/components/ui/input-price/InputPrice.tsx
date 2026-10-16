@@ -40,9 +40,9 @@ const InputPrice = ({ price, setPrice }:InputPriceProps) => {
         <InputGroup className="bg-transparent focus-within:ring-0 focus-within:shadow-none">
           <InputGroup.Input
             placeholder="0"
-            value={price}
+            value={formatNumber(price)}
             className=" py-5 text-center font-semibold border-b-3 border-secondary text-3xl focus:border-b-primary origin-center focus:ring-0 focus:outline-none transition-all duration-200"
-            onChange={(e) => setPrice(formatNumber(e.target.value))}
+            onChange={(e) => setPrice(e.target.value)}
           />
           <InputGroup.Prefix>
             <svg

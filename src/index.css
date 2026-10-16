@@ -12,6 +12,56 @@
 @theme {
   --color-secondary: #eceff31a;
   --color-primary: #9fe870;
+  --animate-goo-right: goo-right 1.7s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  --animate-goo-left: goo-left 1.7s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  --animate-goo-mid: goo-mid 1.7s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  --animate-goo-shadow: goo-shadow 1.7s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+  --animate-box-in: box-in 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+
+  @keyframes goo-right {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(-33px);
+    }
+  }
+  @keyframes goo-left {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(33px);
+    }
+  }
+  @keyframes goo-mid {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.28);
+    }
+  }
+  @keyframes goo-shadow {
+    0%,
+    100% {
+      transform: scaleX(1.15);
+      opacity: 0.5;
+    }
+    50% {
+      transform: scaleX(0.7);
+      opacity: 0.8;
+    }
+  }
+  @keyframes box-in {
+    from {
+      transform: scale(0.9) translateY(14px);
+      opacity: 0;
+    }
+  }
 }
 html {
   direction: rtl;
@@ -31,11 +81,12 @@ body {
   aspect-ratio: 1;
 
   border-radius: var(--r);
-  --_m: / calc(2 * var(--r)) calc(2 * var(--r))
+  --_m: /calc(2 * var(--r)) calc(2 * var(--r))
     radial-gradient(#000 70%, #0000 72%);
   --_g: conic-gradient(at var(--r) var(--r), #000 75%, #0000 0);
   --_d: (var(--s) + var(--r));
-  mask: calc(var(--_d) + var(--x)) 0 var(--_m),
+  mask:
+    calc(var(--_d) + var(--x)) 0 var(--_m),
     0 calc(var(--_d) + var(--y)) var(--_m),
     radial-gradient(var(--s) at 0 0, #0000 99%, #000 calc(100% + 1px))
       calc(var(--r) + var(--x)) calc(var(--r) + var(--y)),
@@ -52,11 +103,12 @@ body {
   aspect-ratio: 1;
 
   border-radius: var(--r);
-  --_m: / calc(2 * var(--r)) calc(2 * var(--r))
+  --_m: /calc(2 * var(--r)) calc(2 * var(--r))
     radial-gradient(#000 70%, #0000 72%);
   --_g: conic-gradient(at var(--r) var(--r), #000 75%, #0000 0);
   --_d: (var(--s) + var(--r));
-  mask: calc(var(--_d) + var(--x)) 0 var(--_m),
+  mask:
+    calc(var(--_d) + var(--x)) 0 var(--_m),
     0 calc(var(--_d) + var(--y)) var(--_m),
     radial-gradient(var(--s) at 0 0, #0000 99%, #000 calc(100% + 1px))
       calc(var(--r) + var(--x)) calc(var(--r) + var(--y)),
@@ -73,11 +125,12 @@ body {
   aspect-ratio: 1;
 
   border-radius: var(--r);
-  --_m: / calc(2 * var(--r)) calc(2 * var(--r))
+  --_m: /calc(2 * var(--r)) calc(2 * var(--r))
     radial-gradient(#000 70%, #0000 72%);
   --_g: conic-gradient(at var(--r) var(--r), #000 75%, #0000 0);
   --_d: (var(--s) + var(--r));
-  mask: calc(var(--_d) + var(--x)) 0 var(--_m),
+  mask:
+    calc(var(--_d) + var(--x)) 0 var(--_m),
     0 calc(var(--_d) + var(--y)) var(--_m),
     radial-gradient(var(--s) at 0 0, #0000 99%, #000 calc(100% + 1px))
       calc(var(--r) + var(--x)) calc(var(--r) + var(--y)),
@@ -95,6 +148,15 @@ body {
 .box-input {
   @apply bg-secondary px-3 py-1 border border-secondary;
 }
+.tag-container {
+  @apply bg-secondary px-5 py-2.5 border border-secondary rounded-xl text-sm;
+}
+.tag[data-selected="true"] {
+  @apply bg-primary/15 text-primary;
+}
+.tag[data-hovered="true"] {
+  @apply bg-secondary/70;
+}
 .box-date__input {
   @apply bg-secondary py-4.5 px-1 border border-secondary;
 }
@@ -104,16 +166,64 @@ body {
 .box-date {
   @apply bg-[#202025] p-4.5 border border-secondary;
 }
-
+.box-profile {
+  @apply bg-[#eceff31] px-1.5 py-2.5 border border-secondary;
+}
 .box-modal-2 {
   @apply bg-[#242429] p-1 border border-secondary rounded-2xl;
 }
 .filter-item {
   @apply transition-all duration-200 hover:bg-[rgba(255,255,255,0.05)] px-2;
 }
-.input,.input-group[data-focus-within="true"]{
+.input,
+.input-group[data-focus-within="true"] {
   @apply focus:ring-0 focus:shadow-none focus:border-primary;
 }
 .transaction-type {
   @apply rounded-lg flex items-center justify-center  transition-all duration-300 cursor-pointer px-4 py-3 text-sm font-semibold;
+}
+.profile-item {
+  @apply size-8 rounded-lg bg-white/4 border border-white/5 flex items-center justify-center transition-colors group-hover:bg-primary/10;
+}
+@layer components {
+  .toast {
+    @apply rounded-xl border border-white/10 bg-[#242429] p-5 text-white shadow-lg;
+  }
+  .toast--success {
+    @apply border-primary/40;
+  }
+  .toast--danger {
+    @apply border-red-400/40;
+  }
+  .select__value{
+    @apply leading-none
+  }
+}
+
+@keyframes dot-wave {
+  0%,
+  80%,
+  100% {
+    transform: translateY(0) scale(0.7);
+    opacity: 0.35;
+  }
+  40% {
+    transform: translateY(-8px) scale(1);
+    opacity: 1;
+  }
+}
+.loading-dot {
+  @apply size-3 rounded-full bg-primary;
+  animation: dot-wave 1.2s ease-in-out infinite;
+}
+.loading-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.loading-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .loading-dot {
+    animation: none;
+  }
 }

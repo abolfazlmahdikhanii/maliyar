@@ -1,11 +1,12 @@
-import { AlertDialog, Button } from "@heroui/react";
+import { AlertDialog, Button, Spinner } from "@heroui/react";
 
 type DeleteDialogProps = {
   isShowDelete: boolean;
   onChangeShowDelete: () => void;
   title: string;
   description: string;
-  onRemove?: (id: string) => void;
+  onRemove?: () => void;
+  loading:boolean
 };
 
 const DeleteDialog = ({
@@ -14,6 +15,7 @@ const DeleteDialog = ({
   title,
   description,
   onRemove,
+  loading
 }: DeleteDialogProps) => {
   return (
     <AlertDialog isOpen={isShowDelete} onOpenChange={onChangeShowDelete}>
@@ -32,8 +34,8 @@ const DeleteDialog = ({
               <Button slot="close" variant="tertiary">
                 انصراف
               </Button>
-              <Button variant="danger" >
-                حذف
+              <Button variant="danger"onClick={onRemove} isDisabled={loading} >
+                حذف {loading && <Spinner color="current" size="sm" />}
               </Button>
             </AlertDialog.Footer>
           </AlertDialog.Dialog>

@@ -1,10 +1,6 @@
-import { Avatar, Button, Input } from "@heroui/react";
-import {
-  AltArrowDownIcon,
-  BellIcon,
-  MagnifierIcon,
-  SunIcon,
-} from "@solar-icons/react/outline";
+import { Button, Input } from "@heroui/react";
+import { BellIcon, MagnifierIcon, SunIcon } from "@solar-icons/react/outline";
+import ProfileMenu from "../profile-menu/ProfileMenu";
 
 const Header = () => {
   return (
@@ -35,22 +31,7 @@ const Header = () => {
 
         {/* profile */}
         <div>
-          <div
-            className={
-              "bg-secondary border border-secondary flex items-center w-23.75 h-13.75 rounded-full p-1.5 gap-x-2.75 text-white"
-            }
-          >
-            <div>
-              <Avatar>
-                <Avatar.Image
-                  alt="Blue"
-                  src="https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/blue.jpg"
-                />
-                <Avatar.Fallback>B</Avatar.Fallback>
-              </Avatar>
-            </div>
-            <AltArrowDownIcon size={22} strokeWidth={2.5} />
-          </div>
+          <ProfileMenu />
         </div>
       </div>
     </header>

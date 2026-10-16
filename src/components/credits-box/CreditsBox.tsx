@@ -121,9 +121,9 @@ const CreditsBox = () => {
             <Button
               variant="outline"
               isIconOnly
-              className={" h-13 rounded-xl w-13 border-secondary"}
+              className={" h-13 rounded-xl w-13.5 border-secondary"}
             >
-              <MenuDotsBoldIcon size={20} className="rotate-90" />
+              <MenuDotsBoldIcon size={20}  />
             </Button>
             <Dropdown.Popover className={"box-modal-2"}>
               <Dropdown.Menu

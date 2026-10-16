@@ -6,3 +6,9 @@ export const bankDetectorHandler = (cardNumber: string): Bank | null => {
   }
   return null;
 };
+
+
+export const getBankName = (bank: string) =>
+  bank === "cash"
+    ? "کیف پول نقدی"
+    : (banks.find((b) => b.code === bank || b.nameEn === bank)?.name ?? bank);

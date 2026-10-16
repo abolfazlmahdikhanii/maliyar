@@ -1,5 +1,8 @@
 import { HistoryIcon } from "@solar-icons/react/outline";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import TransactionItem from "../ui/transaction-item/TransactionItem";
+import { getBankName } from "../../utils/bankDetector";
 
 type Transactions = {
   id: string;
@@ -59,6 +62,8 @@ const transactionData: Transactions[] = [
   },
 ];
 const RecentTransactions = () => {
+  const transactions = useQuery(api.transactions.list);
+
   return (
     <div className="box col-span-2 rounded-[25px] max-h-129 ">
       <div className="flex items-center justify-between">
@@ -70,10 +75,18 @@ const RecentTransactions = () => {
         </div>
       </div>
       <div className="mt-6.5 space-y-2.75 ">
-        <TransactionItem />
-        <TransactionItem />
-        <TransactionItem />
-        <TransactionItem />
+        {transactions?.slice(0, 4).map((transaction) => (
+          <TransactionItem
+            key={transaction._id}
+            transaction={transaction}
+            bank={
+              transaction.bank
+                ? getBankName(transaction.bank)
+                : "حساب حذف‌شده"
+            }
+            id={transaction._id}
+          />
+        ))}
       </div>
     </div>
   );

@@ -1,42 +1,66 @@
-import { Button, Dropdown, Label, ProgressBar } from "@heroui/react";
+import { Button, Dropdown, Label, ProgressBar, toast } from "@heroui/react";
 import { MenuDotsBoldIcon } from "@solar-icons/react";
-import { Pen2Icon, TrashBin2Icon } from "@solar-icons/react/outline";
+import {
+  BagSmileIcon,
+  Pen2Icon,
+  TrashBin2Icon,
+} from "@solar-icons/react/outline";
 import { useMemo, useState } from "react";
 import { formatNumber } from "../../utils/formatNumber";
 import BudgetForm from "../budget-form/BudgetForm";
-import type { Category } from "../ui/categories/Categories";
+
+import type { Id } from "../../../convex/_generated/dataModel";
+import { getCategory } from "../../../data/categories";
 import DeleteDialog from "../ui/delete-dialog/DeleteDialog";
 import FormModal from "../ui/form-modal/FormModal";
-import InputPrice from "../ui/input-price/InputPrice";
+import { ConvexError } from "convex/values";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 type BudgetBoxProps = {
-  category: Category,
-  limitPrice: number,
-  usedPrice: number,
+  categoryId: string;
+  limit: number;
+  used: number;
+  _id: Id<"budgets">;
 };
-const BudgetBox = ({ category, limitPrice, usedPrice }: BudgetBoxProps) => {
-  const [isOpenUsedPriceModal, setIsOpenUsedPriceModal] = useState<boolean>(
-    false,
-  );
+const BudgetBox = ({ categoryId, limit, used, _id }: BudgetBoxProps) => {
+  const remove=useMutation(api.budgets.remove)
   const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
 
-  const [usedPriceValue, setUsedPriceValue] = useState<string>(
-    usedPrice.toString() || "0",
-  );
+  const [isShowDelete, setIsShowDelete] = useState<boolean>(false);
+  const [loadingForm, setLoadingForm] = useState<boolean>(false);
+  const [loadingRemove, setLoadingRemove] = useState<boolean>(false);
 
-  const [isShowDelete,setIsShowDelete]=useState<boolean>(false)
+  const category = useMemo(() => getCategory(categoryId), [categoryId]);
 
-
+  const removeBudgetHandler = async () => {
+    if (loadingRemove) return;
+    setLoadingRemove(true);
+    try {
+      await remove({ id: _id });
+      toast.success("بودجه با موفقیت حذف شد");
+      setIsShowDelete(false);
+   
+    } catch (error) {
+      toast.danger(
+        error instanceof ConvexError
+          ? String(error.data)
+          : "خطا در حذف بودجه!",
+      );
+    } finally {
+      setLoadingRemove(false);
+    }
+  };
   const budgetPercent = useMemo(() => {
-    if (!limitPrice) return 0;
-    return Math.min(100, Math.floor((usedPrice / limitPrice) * 100));
-  }, [usedPrice, limitPrice]);
+    if (!limit) return 0;
+    return Math.min(100, Math.floor((used / limit) * 100));
+  }, [used, limit]);
   let budgetBg: { progressBg: string; percentBg: string } | null = null;
 
-  if (budgetPercent < 60)
+  if (budgetPercent <= 60)
     budgetBg = { progressBg: "#9fe870", percentBg: "rgba(159, 232, 112,0.1)" };
   else if (budgetPercent > 60 && budgetPercent <= 85)
-    budgetBg = { progressBg: "#e8c44c", percentBg: "rgba(232, 196, 76,0.1)" };
+    budgetBg = { progressBg: "#dbb848", percentBg: "rgba(232, 196, 76,0.1)" };
   else budgetBg = { progressBg: "#e85050", percentBg: "rgba(232, 80, 80,0.1)" };
 
   return (
@@ -45,11 +69,15 @@ const BudgetBox = ({ category, limitPrice, usedPrice }: BudgetBoxProps) => {
         <div className="flex items-center gap-3">
           <div
             className={`w-12 h-12 min-w-12 min-h-12 grid rounded-full place-content-center `}
-            style={{ background: category.bg, color: category.color }}
+            style={{ background: category?.bg, color: category?.color }}
           >
-            <category.icon size={23} />
+            {category ? (
+              <category.icon size={24} />
+            ) : (
+              <BagSmileIcon size={24} />
+            )}
           </div>
-          <p className={`text-[17px] whitespace-nowrap`}>{category.label}</p>
+          <p className={`text-[17px] whitespace-nowrap`}>{category?.label}</p>
         </div>
         <div className="flex items-center gap-2">
           <div
@@ -69,9 +97,8 @@ const BudgetBox = ({ category, limitPrice, usedPrice }: BudgetBoxProps) => {
               <Dropdown.Popover className={"box-modal-2"}>
                 <Dropdown.Menu
                   onAction={(key) => {
-                    if(key==="edit") setIsOpenEditModal(true)
-                    if(key==="delete") setIsShowDelete(true)
-
+                    if (key === "edit") setIsOpenEditModal(true);
+                    if (key === "delete") setIsShowDelete(true);
                   }}
                 >
                   <Dropdown.Item id="edit" textValue="Edit">
@@ -114,42 +141,34 @@ const BudgetBox = ({ category, limitPrice, usedPrice }: BudgetBoxProps) => {
         <div className="box-date flex flex-col gap-4 rounded-xl">
           <p className="text-xs text-muted">هزینه شده</p>
           <div className="flex items-center justify-between">
-            <Button
-              variant="outline"
-              isIconOnly
-              className={" w-8 h-8"}
-              onClick={() => setIsOpenUsedPriceModal(true)}
-            >
-              <Pen2Icon size={14} />
-            </Button>
             <p className="text-lg font-semibold text-[#e85050] self-end">
-              {formatNumber(usedPriceValue) ||
-                formatNumber(usedPrice.toString())}
+              {formatNumber(used.toString())}
             </p>
           </div>
         </div>
         <div className="box-date flex flex-col gap-4 rounded-xl">
           <p className="text-xs text-muted">سقف بودجه</p>
           <p className="text-lg font-semibold  self-end">
-            {formatNumber(limitPrice.toString())}
+            {formatNumber(limit.toString())}
           </p>
         </div>
       </div>
-      <FormModal
-        title="هزینه استفاده شده"
-        isOpen={isOpenUsedPriceModal}
-        onOpenChange={() => setIsOpenUsedPriceModal(false)}
-        btnText="ثبت هزینه"
-      >
-        <InputPrice price={usedPriceValue} setPrice={setUsedPriceValue} />
-      </FormModal>
+
       <FormModal
         title="ویرایش بودجه"
         isOpen={isOpenEditModal}
         onOpenChange={() => setIsOpenEditModal(false)}
         btnText="ویرایش بودجه"
+        formId="edit-budget-form"
+        loading={loadingForm}
       >
-        <BudgetForm />
+        <BudgetForm
+          formId="edit-budget-form"
+          detail={{ categoryId, limit, budgetId: _id }}
+          loading={loadingForm}
+          onLoadingChange={setLoadingForm}
+          onSuccess={() => setIsOpenEditModal(false)}
+        />
       </FormModal>
 
       <DeleteDialog
@@ -157,6 +176,8 @@ const BudgetBox = ({ category, limitPrice, usedPrice }: BudgetBoxProps) => {
         onChangeShowDelete={() => setIsShowDelete(false)}
         title="حذف بودجه"
         description="ایا از حذف این بودجه اطمینان دارید؟"
+        loading={loadingRemove}
+        onRemove={removeBudgetHandler}
       />
     </div>
   );

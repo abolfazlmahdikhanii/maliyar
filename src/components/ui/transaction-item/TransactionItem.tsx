@@ -1,39 +1,60 @@
 import { Button, IconChevronLeft } from "@heroui/react";
 import { BagSmileIcon } from "@solar-icons/react/outline";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { getCategory } from "../../../../data/categories";
+import { formatDay } from "../../../utils/formatDate";
+import type { TransactionData } from "../../../validators/transactions";
 import TransactionDetailModal from "../transaction-detail/TransactionDetailModal";
+import type { Id } from "../../../../convex/_generated/dataModel";
 
 type TransactionItemProps = {
+  transaction: TransactionData;
   isBorder?: boolean;
+  bank: string;
+  id:Id<"transactions">
 };
-const TransactionItem = ({ isBorder = false }: TransactionItemProps) => {
+const TransactionItem = ({
+  bank,
+  id,
+  transaction: t,
+  isBorder = false,
+}: TransactionItemProps) => {
   const [isOpenDetailModal, setIsOpenDetailModal] = useState<boolean>(false);
+  const category =useMemo(()=>getCategory(t?.categoryId),[t.categoryId]);
   return (
     <div>
       <div
         className={`flex items-center justify-between py-4.5 px-4.5 rounded-2xl bg-secondary  transition-all duration-200 cursor-pointer ${
           isBorder ? "box" : ""
         } `}
-         onClick={()=>setIsOpenDetailModal(true)}
+        onClick={() => setIsOpenDetailModal(true)}
       >
         <div className="flex items-center gap-x-3.5">
           <div className="w-13 h-13 grid rounded-full place-content-center bg-secondary">
-            <BagSmileIcon size={24} />
+            {category ? (
+              <category.icon size={24} />
+            ) : (
+              <BagSmileIcon size={24} />
+            )}
           </div>
           <div className="flex flex-col gap-y-1.75">
-            <p>خرید از فروشگاه</p>
+            <p>{t?.title || category?.label}</p>
             <div className="flex items-center gap-x-2.5">
-              <p className="text-[13px] text-neutral-400">بانک سامان</p>
+              <p className="text-[13px] text-neutral-400">{bank}</p>
               <span className="inline-block w-1 h-1 rounded-full bg-neutral-500"></span>
               <p className="text-[13px] text-neutral-400">
-                سه شنبه 18 آذر 12:45
+                {t?.date ? formatDay(t?.date)||"" : "__"} {t?.time ?? ""}
               </p>
             </div>
           </div>
         </div>
         <div className="flex items-center gap-x-4.5">
-          <div className="flex items-center gap-x-1 text-primary">
-            <p className="text-lg font-semibold">1,400,000</p>
+          <div
+            className={`flex items-center gap-x-1 ${t?.type === "income" ? "text-primary" : "text-[#e85050]"} `}
+          >
+            <p className="text-lg font-semibold">
+              {t?.amount?.toLocaleString()}
+            </p>
             <svg
               width="16"
               height="16"
@@ -54,7 +75,16 @@ const TransactionItem = ({ isBorder = false }: TransactionItemProps) => {
           </Button>
         </div>
       </div>
-      <TransactionDetailModal isOpen={isOpenDetailModal} onOpenChange={()=>setIsOpenDetailModal(false)}/>
+     
+        <TransactionDetailModal
+          transaction={t}
+          isOpen={isOpenDetailModal}
+          onOpenChange={() => setIsOpenDetailModal(false)}
+          bank={bank}
+          transactionId={id}
+          category={category}
+        />
+      
     </div>
   );
 };

@@ -1,15 +1,25 @@
-import { Button, Modal } from "@heroui/react";
+import { Button, Modal, Spinner } from "@heroui/react";
 import type { ReactNode } from "react";
 
 type FormModalProps = {
   isOpen: boolean;
   onOpenChange: () => void;
   title: string;
-  children:ReactNode
-  btnText:string
+  children: ReactNode;
+  btnText: string;
+  formId: string;
+  loading?: boolean;
 };
 
-const FormModal = ({ isOpen, onOpenChange, title,btnText,children }: FormModalProps) => {
+const FormModal = ({
+  isOpen,
+  onOpenChange,
+  title,
+  btnText,
+  children,
+  formId,
+  loading = false,
+}: FormModalProps) => {
   return (
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <Modal.Backdrop>
@@ -36,13 +46,16 @@ const FormModal = ({ isOpen, onOpenChange, title,btnText,children }: FormModalPr
             </Modal.Header>
 
             <Modal.Body>
-             <div className="mt-3">
-                  {children}
-             </div>
+              <div className="mt-3">{children}</div>
             </Modal.Body>
             <Modal.Footer className="pb-1 space-x-2">
-              <Button className="h-13 rounded-xl w-1/2 text-base bg-primary text-black">
-                 {btnText}
+              <Button
+                className="h-13 rounded-xl w-1/2 text-base bg-primary text-black"
+                type="submit"
+                form={formId}
+                isDisabled={loading}
+              >
+                {btnText} {loading && <Spinner color="current" size="sm" />}
               </Button>
               <Button
                 variant="outline"

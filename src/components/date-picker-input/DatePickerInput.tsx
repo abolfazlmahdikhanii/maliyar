@@ -1,8 +1,26 @@
 import { Calendar, DateField, DatePicker, Label } from "@heroui/react";
+import type {
+  CalendarDate,
+  CalendarDateTime,
+  DateValue,
+  ZonedDateTime,
+} from "@internationalized/date";
 
-const DatePickerInput = () => {
+type DatePickerInputProps = {
+  date: DateValue|null;
+  onDate: (
+    date: CalendarDate | CalendarDateTime | ZonedDateTime | null,
+  ) => void;
+};
+
+const DatePickerInput = ({ date, onDate }: DatePickerInputProps) => {
   return (
-    <DatePicker className={"flex flex-col gap-2 w-full"} name="date">
+    <DatePicker
+      className={"flex flex-col gap-2 w-full"}
+      name="date"
+      value={date}
+      onChange={onDate}
+    >
       <Label className="text-muted text-sm">تاریخ</Label>
       <DateField.Group
         fullWidth
