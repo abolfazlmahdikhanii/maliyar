@@ -1,5 +1,6 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v, type Infer } from "convex/values";
+import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { requireUserId } from "./lib/auth";
 import { duesFields } from "./schema";
@@ -43,15 +44,41 @@ const normalize = (input: DuesInput): DuesInput => {
 // همه‌ی موارد کاربر. ایندکس بر اساس (وضعیت، سررسید) مرتب است:
 // اول بازها به ترتیب نزدیک‌ترین سررسید، بعد تسویه‌شده‌ها.
 // وضعیت نمایشی (نزدیک به سررسید، گذشته) را کلاینت از روی dueDate حساب می‌کند.
+//
+// bank: کلید بانکی که با آن پرداخت شده ("mellat"، "cash"، ...). اگر هنوز پرداخت نشده
+// یا حساب پیدا نشد، "unknown". نام فارسی را کلاینت از data/banks می‌گیرد.
 export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    return ctx.db
+    const dues = await ctx.db
       .query("dues")
       .withIndex("by_user_status_due", (q) => q.eq("userId", userId))
       .collect();
+
+    // هر حساب فقط یک بار خوانده می‌شود
+    const accountIds = [
+      ...new Set(
+        dues
+          .map((d) => d.accountId)
+          .filter((id): id is Id<"accounts"> => id !== undefined),
+      ),
+    ];
+    const accounts = await Promise.all(accountIds.map((id) => ctx.db.get(id)));
+
+    const bankById = new Map<string, string>();
+    for (const account of accounts) {
+      if (account) bankById.set(account._id, account.bank);
+    }
+
+    return dues.map((d) => ({
+      ...d,
+      bank:
+        d.status === "paid" && d.accountId
+          ? (bankById.get(d.accountId) ?? "unknown")
+          : "unknown",
+    }));
   },
 });
 
