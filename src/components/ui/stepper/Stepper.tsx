@@ -16,7 +16,7 @@ const Stepper = ({ status }: StepperProps) => {
           ثبت
         </div>
       </li>
-      <li className="flex w-full relative text-muted text-center   after:w-full after:h-0.5  after:bg-secondary after:block after:absolute lg:after:top-5 after:top-3 after:-left-1 text-xs">
+      <li className={`flex w-full relative text-muted text-center   after:w-full after:h-0.5   after:block after:absolute lg:after:top-5 after:top-3 after:-left-1 text-xs ${status !== "paid" ? "after:bg-secondary" : "after:bg-primary text-white font-semibold"}`}>
         <div className="block whitespace-nowrap z-10">
           <span
             className={`w-6 h-6  border  rounded-full flex justify-center items-center mx-auto mb-2.5 text-xs  lg:w-9 lg:h-9 ${status === "open" ? "text-primary border-primary bg-[#202025]" : "bg-primary text-black"}`}
@@ -27,7 +27,7 @@ const Stepper = ({ status }: StepperProps) => {
         </div>
       </li>
 
-      <li className="flex relative text-muted text-xs text-center ">
+      <li className={`flex relative text-muted text-xs text-center ${status==="paid"?"text-white font-semibold":""}`}>
         <div className="block whitespace-nowrap z-10">
           <span
             className={`w-6 h-6  border  rounded-full flex justify-center items-center mx-auto mb-2.5 text-xs  lg:w-9 lg:h-9 ${status !== "paid" ? " bg-[#202025] border-secondary" : "bg-primary border-primary text-black"}`}

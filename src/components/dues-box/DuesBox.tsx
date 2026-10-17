@@ -12,6 +12,7 @@ import TomanIcon from "../ui/toman-icon/TomanIcon";
 
 export type Dues = {
   status: "open" | "paid";
+  bank:string;
   _id: Id<"dues">;
 } & DuesData;
 
@@ -20,7 +21,7 @@ type DuesBoxProps = {
 };
 const DuesBox = ({ dues }: DuesBoxProps) => {
   const [isOpenDetailModal, setIsOpenDetailModal] = useState<boolean>(false);
-  
+
   return (
     <div className="box rounded-2xl flex ">
       <div

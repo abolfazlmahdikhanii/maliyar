@@ -11,6 +11,7 @@ import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { useState } from "react";
 import { api } from "../../../../convex/_generated/api";
+import { getBankName } from "../../../utils/bankDetector";
 import { getDuesStatus } from "../../../utils/duesStatus";
 import { formatDate } from "../../../utils/formatDate";
 import type { Dues } from "../../dues-box/DuesBox";
@@ -86,12 +87,14 @@ const DuesDetailModal = ({
                           {detail?.party ?? ""}
                         </p>
 
-                        <DuesStatus
-                          status={getDuesStatus({
-                            status: detail?.status,
-                            dueDate: detail?.dueDate,
-                          })}
-                        />
+                        <div className="w-fit">
+                          <DuesStatus
+                            status={getDuesStatus({
+                              status: detail?.status,
+                              dueDate: detail?.dueDate,
+                            })}
+                          />
+                        </div>
                       </div>
                       <div>
                         <p
@@ -115,7 +118,9 @@ const DuesDetailModal = ({
                       <div className="flex flex-col gap-y-1.5">
                         <p className="text-sm">حساب</p>
                         <p className="text-[15px] text-neutral-200">
-                          بانک سامان
+                          {detail.bank && detail.bank !== "unknown"
+                            ? getBankName(detail.bank)
+                            : "نامشخص"}
                         </p>
                       </div>
                     </div>
