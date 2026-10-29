@@ -1,4 +1,5 @@
 import { Button, Modal, Spinner } from "@heroui/react";
+import { CloseCircleIcon } from "@solar-icons/react/outline";
 import type { ReactNode } from "react";
 
 type FormModalProps = {
@@ -27,21 +28,8 @@ const FormModal = ({
           <Modal.Dialog className="max-w-xl box-modal">
             <Modal.Header className="flex items-center justify-between  flex-row">
               <Modal.Heading>{title}</Modal.Heading>
-              <Button isIconOnly variant="outline" size="sm" slot={"close"}>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={1.5}
-                  stroke="currentColor"
-                  className="size-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18 18 6M6 6l12 12"
-                  />
-                </svg>
+              <Button isIconOnly variant="ghost" slot={"close"}>
+                <CloseCircleIcon size={"25px"} />
               </Button>
             </Modal.Header>
 
