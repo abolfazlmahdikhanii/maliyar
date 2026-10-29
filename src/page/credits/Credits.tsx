@@ -1,4 +1,6 @@
+import { useQuery } from "convex/react";
 import { useState } from "react";
+import { api } from "../../../convex/_generated/api";
 import CreditsBox from "../../components/credits-box/CreditsBox";
 import CreditsForm from "../../components/credits-form/CreditsForm";
 import Expense from "../../components/expense/Expense";
@@ -8,7 +10,10 @@ import Title from "../../components/ui/title/Title";
 import TotalCard from "../../components/ui/total-card/TotalCard";
 
 const Credits = () => {
+  const credits = useQuery(api.loans.list);
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   return (
     <div>
       <Title
@@ -22,8 +27,9 @@ const Credits = () => {
         <Expense />
       </div>
       <div className="grid grid-cols-2 gap-7">
-        <CreditsBox />
-        <CreditsBox />
+        {credits?.map((credit) => (
+          <CreditsBox key={credit._id} creditInfo={credit} />
+        ))}
       </div>
 
       <FormModal
@@ -31,8 +37,15 @@ const Credits = () => {
         isOpen={isOpenModal}
         onOpenChange={() => setIsOpenModal(false)}
         btnText="ثبت وام"
+        loading={isLoading}
+        formId="credit-form"
       >
-        <CreditsForm />
+        <CreditsForm
+          formId="credit-form"
+          loading={isLoading}
+          onLoadingChange={setIsLoading}
+          onSuccess={() => setIsOpenModal(false)}
+        />
       </FormModal>
     </div>
   );
