@@ -1,59 +1,195 @@
-import { Form, Input, Label } from "@heroui/react";
+import { Form, Input, Label, toast, type DateValue } from "@heroui/react";
+import {
+  getLocalTimeZone,
+  GregorianCalendar,
+  parseDate,
+  PersianCalendar,
+  toCalendar,
+  today,
+} from "@internationalized/date";
+import { useMutation } from "convex/react";
+import { useState, type SyntheticEvent } from "react";
+import { api } from "../../../convex/_generated/api";
+import type { Doc } from "../../../convex/_generated/dataModel";
+import type { FormProps } from "../accounts-form/AccountsForm";
 import DatePickerInput from "../date-picker-input/DatePickerInput";
+import { loanSchema } from "../../validators/loans";
+import { ConvexError } from "convex/values";
+import { formatNumber } from "../../utils/formatNumber";
 
-const CreditsForm = () => {
+type CreditsFormProps = {
+  detail?: Doc<"loans">;
+} & FormProps;
+
+const plusOneJalaliMonth = (d: DateValue) =>
+  toCalendar(
+    toCalendar(d, new PersianCalendar()).add({ months: 1 }),
+    new GregorianCalendar(),
+  );
+
+const CreditsForm = ({
+  formId,
+  loading,
+  onLoadingChange,
+  onSuccess,
+  detail,
+}: CreditsFormProps) => {
+  const add = useMutation(api.loans.add);
+  const update = useMutation(api.loans.update);
+
+  const [title, setTitle] = useState(detail?.title ?? "");
+  const [interestRate, setInterestRate] = useState(
+    detail ? String(detail.interestRate) : "",
+  );
+  const [receivedDate, setReceivedDate] = useState<DateValue | null>(
+    detail ? parseDate(detail.receivedDate) : today(getLocalTimeZone()),
+  );
+  const [firstDueDate, setFirstDueDate] = useState<DateValue | null>(
+    detail
+      ? parseDate(detail.firstDueDate)
+      : plusOneJalaliMonth(today(getLocalTimeZone())),
+  );
+  // تا وقتی کاربر خودش سررسید اول را عوض نکرده، با تاریخ دریافت جابه‌جا می‌شود
+  const [firstDueTouched, setFirstDueTouched] = useState(Boolean(detail));
+  const [installmentAmount, setInstallmentAmount] = useState(
+    detail ? String(detail.installmentAmount) : "",
+  );
+  const [installmentCount, setInstallmentCount] = useState(
+    detail ? String(detail.installmentCount) : "",
+  );
+
+  const changeReceivedDate = (date: DateValue | null) => {
+    setReceivedDate(date);
+    if (date && !firstDueTouched) setFirstDueDate(plusOneJalaliMonth(date));
+  };
+
+  const reset = () => {
+    const now = today(getLocalTimeZone());
+    setTitle("");
+    setInterestRate("");
+    setReceivedDate(now);
+    setFirstDueDate(plusOneJalaliMonth(now));
+    setFirstDueTouched(false);
+    setInstallmentAmount("");
+    setInstallmentCount("");
+  };
+
+  const handleSubmit = async (e: SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (loading) return;
+
+    const parsed = loanSchema.safeParse({
+      title,
+      interestRate,
+      receivedDate,
+      firstDueDate,
+      installmentAmount,
+      installmentCount,
+    });
+    if (!parsed.success) return toast.danger(parsed.error.issues[0].message);
+
+    onLoadingChange(true);
+    try {
+      if (detail) {
+        await update({ ...parsed.data, id: detail._id });
+        toast.success("تغییرات وام ذخیره شد.");
+      } else {
+        await add(parsed.data);
+        reset();
+        toast.success("وام با موفقیت ثبت شد.");
+      }
+      onSuccess?.();
+    } catch (error) {
+      toast.danger(
+        error instanceof ConvexError
+          ? String(error.data)
+          : "خطا در ثبت وام. لطفاً دوباره تلاش کنید.",
+      );
+    } finally {
+      onLoadingChange(false);
+    }
+  };
+
   return (
-    <Form className="px-2">
+    <Form id={formId} className="px-2" onSubmit={handleSubmit}>
       <section>
-        <div className="flex flex-col gap-2 max-w-2xl ">
-          <Label htmlFor="title" className="text-muted text-sm">
+        <div className="flex max-w-2xl flex-col gap-2">
+          <Label htmlFor="loan-title" className="text-sm text-muted">
             عنوان وام
           </Label>
           <Input
-            id="title"
-            placeholder="نام شخص یا شرکت"
+            id="loan-title"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="وام مسکن"
             type="text"
-            className={"box input max-h-12.5"}
+            className="box input max-h-12.5"
           />
         </div>
       </section>
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-7.5">
-        <div className="flex flex-col gap-2 max-w-2xl ">
-          <Label htmlFor="title" className="text-muted text-sm">
-            نرخ بهره
+
+      <section className="mt-7.5 grid max-w-2xl grid-cols-2 gap-5">
+        <div className="flex max-w-2xl flex-col gap-2">
+          <Label htmlFor="loan-rate" className="text-sm text-muted">
+            نرخ بهره (٪ سالانه)
           </Label>
           <Input
-            id="title"
-            placeholder="نام شخص یا شرکت"
+            id="loan-rate"
+            value={interestRate}
+            onChange={(e) => setInterestRate(e.target.value)}
+            placeholder="18"
             type="text"
-            className={"box input max-h-12.5"}
+            inputMode="decimal"
+            className="box input max-h-12.5"
           />
         </div>
-        <DatePickerInput />
+        <DatePickerInput
+          date={receivedDate}
+          onDate={changeReceivedDate}
+          title="تاریخ دریافت وام"
+        />
       </section>
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-7.5 mb-2">
-        <div className="flex flex-col gap-2 max-w-2xl ">
-          <Label htmlFor="title" className="text-muted text-sm">
-            قسط ماهانه (تومان){" "}
+
+      <section className="mt-7.5 grid max-w-2xl grid-cols-2 gap-5">
+        <div className="flex max-w-2xl flex-col gap-2">
+          <Label htmlFor="loan-amount" className="text-sm text-muted">
+            قسط ماهانه (تومان)
           </Label>
           <Input
-            id="title"
-            placeholder="نام شخص یا شرکت"
+            id="loan-amount"
+            value={formatNumber(installmentAmount)}
+            onChange={(e) => setInstallmentAmount(e.target.value)}
+            placeholder="5,000,000"
             type="text"
-            className={"box input max-h-12.5"}
+            inputMode="numeric"
+            className="box input max-h-12.5"
           />
         </div>
-        <div className="flex flex-col gap-2 max-w-2xl ">
-          <Label htmlFor="title" className="text-muted text-sm">
+        <div className="flex max-w-2xl flex-col gap-2">
+          <Label htmlFor="loan-count" className="text-sm text-muted">
             مدت (ماه)
           </Label>
           <Input
-            id="title"
-            placeholder="نام شخص یا شرکت"
+            id="loan-count"
+            value={installmentCount}
+            onChange={(e) => setInstallmentCount(e.target.value)}
+            placeholder="36"
             type="text"
-            className={"box input max-h-12.5"}
+            inputMode="numeric"
+            className="box input max-h-12.5"
           />
         </div>
+      </section>
+
+      <section className="mb-2 mt-7.5 max-w-2xl">
+        <DatePickerInput
+          date={firstDueDate}
+          onDate={(date) => {
+            setFirstDueTouched(true);
+            setFirstDueDate(date);
+          }}
+          title="تاریخ سررسید اولین قسط"
+        />
       </section>
     </Form>
   );
