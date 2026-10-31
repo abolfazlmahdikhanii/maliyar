@@ -11,9 +11,14 @@
 import type * as accounts from "../accounts.js";
 import type * as auth from "../auth.js";
 import type * as budgets from "../budgets.js";
+import type * as checks from "../checks.js";
 import type * as dues from "../dues.js";
 import type * as http from "../http.js";
+import type * as lib_accounts from "../lib/accounts.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as lib_date from "../lib/date.js";
+import type * as lib_loanSchedule from "../lib/loanSchedule.js";
+import type * as loans from "../loans.js";
 import type * as transactions from "../transactions.js";
 import type * as users from "../users.js";
 
@@ -27,9 +32,14 @@ declare const fullApi: ApiFromModules<{
   accounts: typeof accounts;
   auth: typeof auth;
   budgets: typeof budgets;
+  checks: typeof checks;
   dues: typeof dues;
   http: typeof http;
+  "lib/accounts": typeof lib_accounts;
   "lib/auth": typeof lib_auth;
+  "lib/date": typeof lib_date;
+  "lib/loanSchedule": typeof lib_loanSchedule;
+  loans: typeof loans;
   transactions: typeof transactions;
   users: typeof users;
 }>;
