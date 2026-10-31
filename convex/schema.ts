@@ -36,6 +36,15 @@ export const duesFields = {
   reason: v.optional(v.string()), // علت یا شرح
 };
 
+export const loanFields = {
+  title: v.string(),
+  interestRate: v.number(), // درصد سالانه، برای نمایش
+  receivedDate: v.string(), // تاریخ دریافت وام، میلادی YYYY-MM-DD
+  firstDueDate: v.string(), // سررسید اولین قسط (پایه‌ی زمان‌بندی)
+  installmentAmount: v.number(), // قسط ماهانه، تومان
+  installmentCount: v.number(), // مدت (ماه) = تعداد کل اقساط
+};
+
 export const goalFields = {
   title: v.string(),
   targetAmount: v.number(),
@@ -44,23 +53,13 @@ export const goalFields = {
 };
 
 export const checkFields = {
-  amount: v.number(),
+  direction: v.union(v.literal("issued"), v.literal("received")), // issued = پرداختی
+  amount: v.number(), // تومان، عدد صحیح
+  serial: v.string(),
+  bank: v.string(), // key بانک
+  party: v.string(), // صادرکننده (دریافتی) / در وجه (پرداختی)
+  issueDate: v.string(), // YYYY-MM-DD
   dueDate: v.string(), // YYYY-MM-DD
-  party: v.string(),
-  direction: v.union(v.literal("issued"), v.literal("received")),
-  status: v.union(
-    v.literal("pending"),
-    v.literal("cleared"),
-    v.literal("bounced"),
-  ),
-};
-
-export const loanFields = {
-  title: v.string(),
-  installmentAmount: v.number(),
-  installmentCount: v.number(),
-  paidCount: v.number(),
-  nextDueDate: v.string(), // YYYY-MM-DD
 };
 
 export const subscriptionFields = {
@@ -92,7 +91,11 @@ export default defineSchema({
     balance: v.number(),
   }).index("by_user", ["userId"]),
 
-  transactions: defineTable({ ...transactionFields, userId: v.id("users") })
+  transactions: defineTable({
+    ...transactionFields,
+    userId: v.id("users"),
+    source: v.optional(v.union(v.literal("loan"), v.literal("dues"),v.literal("check"))),
+  })
     .index("by_user_date", ["userId", "date"])
     .index("by_account", ["accountId"]),
   budgets: defineTable({ ...budgetFields, userId: v.id("users") }).index(
@@ -110,9 +113,36 @@ export default defineSchema({
 
   goals: defineTable(goalFields),
 
-  checks: defineTable(checkFields).index("by_due", ["dueDate"]),
+  checks: defineTable({
+  ...checkFields,
+  userId: v.id("users"),
+  status: v.union(
+    v.literal("pending"),
+    v.literal("cleared"),
+    v.literal("bounced"),
+  ),
+  clearedAt: v.optional(v.string()),
+  accountId: v.optional(v.id("accounts")),
+  paymentTransactionId: v.optional(v.id("transactions")),
+})
+  .index("by_user_due", ["userId", "dueDate"])
+  .index("by_user_bank_serial", ["userId", "bank", "serial"]),
 
-  loans: defineTable(loanFields).index("by_next_due", ["nextDueDate"]),
+  loans: defineTable({
+    ...loanFields,
+    userId: v.id("users"),
+    paidCount: v.number(), // تعداد اقساط پرداخت‌شده؛ فقط سرور تغییرش می‌دهد
+  }).index("by_user", ["userId"]),
+
+  loanPayments: defineTable({
+    userId: v.id("users"),
+    loanId: v.id("loans"),
+    installmentNumber: v.number(),
+    amount: v.number(),
+    paidAt: v.string(),
+    accountId: v.optional(v.id("accounts")), // نبودنش یعنی شخص دیگری ریخته
+    transactionId: v.optional(v.id("transactions")),
+  }).index("by_loan", ["loanId", "installmentNumber"]),
 
   subscriptions: defineTable(subscriptionFields).index("by_next_billing", [
     "nextBillingDate",
