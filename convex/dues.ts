@@ -1,16 +1,14 @@
 import { getAuthUserId } from "@convex-dev/auth/server";
 import { ConvexError, v, type Infer } from "convex/values";
 import type { Id } from "./_generated/dataModel";
-import { mutation, query } from "./_generated/server";
+import { mutation, query, type MutationCtx } from "./_generated/server";
+import { applyToBalance, reverseTransaction } from "./lib/accounts";
 import { requireUserId } from "./lib/auth";
+import { isValidDate, todayTehran } from "./lib/date";
 import { duesFields } from "./schema";
 
 const duesObject = v.object(duesFields);
 type DuesInput = Infer<typeof duesObject>;
-
-const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
-const isValidDate = (s: string) =>
-  DATE_RE.test(s) && !Number.isNaN(Date.parse(s));
 
 // اعتبارسنجی سمت سرور + حذف فیلد خالی
 const normalize = (input: DuesInput): DuesInput => {
@@ -40,6 +38,16 @@ const normalize = (input: DuesInput): DuesInput => {
     ...(cleanReason ? { reason: cleanReason } : {}),
   };
 };
+
+async function getOwnedDue(
+  ctx: MutationCtx,
+  userId: Id<"users">,
+  id: Id<"dues">,
+) {
+  const due = await ctx.db.get(id);
+  if (!due || due.userId !== userId) throw new ConvexError("مورد پیدا نشد.");
+  return due;
+}
 
 // همه‌ی موارد کاربر. ایندکس بر اساس (وضعیت، سررسید) مرتب است:
 // اول بازها به ترتیب نزدیک‌ترین سررسید، بعد تسویه‌شده‌ها.
@@ -98,10 +106,7 @@ export const update = mutation({
   args: { id: v.id("dues"), ...duesFields },
   handler: async (ctx, { id, ...fields }) => {
     const userId = await requireUserId(ctx);
-    const due = await ctx.db.get(id);
-    if (!due || due.userId !== userId) {
-      throw new ConvexError("مورد پیدا نشد.");
-    }
+    const due = await getOwnedDue(ctx, userId, id);
     if (due.status === "paid") {
       throw new ConvexError("مورد تسویه‌شده قابل ویرایش نیست.");
     }
@@ -115,21 +120,21 @@ export const update = mutation({
 // ثبت پرداخت: حساب را همین‌جا می‌گیریم، نه موقع ثبت بدهی یا طلب، چون تا پول جابه‌جا
 // نشود معلوم نیست از کدام حساب رفته یا به کدام آمده.
 // مورد تسویه می‌شود، تراکنش معادلش ساخته می‌شود و موجودی حساب عوض می‌شود.
-// همه در یک mutation اتمی، پس یا همه انجام می‌شود یا هیچ‌کدام.
+// همه در یک mutation اتمی. تراکنش قفل است (source: "dues").
 export const markPaid = mutation({
   args: {
     id: v.id("dues"),
     accountId: v.id("accounts"),
-    date: v.string(), // تاریخ پرداخت (میلادی، YYYY-MM-DD) از کلاینت
+    date: v.string(), // تاریخ پرداخت، میلادی YYYY-MM-DD
   },
   handler: async (ctx, { id, accountId, date }) => {
     const userId = await requireUserId(ctx);
     if (!isValidDate(date)) throw new ConvexError("تاریخ معتبر نیست.");
-
-    const due = await ctx.db.get(id);
-    if (!due || due.userId !== userId) {
-      throw new ConvexError("مورد پیدا نشد.");
+    if (date > todayTehran()) {
+      throw new ConvexError("تاریخ پرداخت نمی‌تواند در آینده باشد.");
     }
+
+    const due = await getOwnedDue(ctx, userId, id);
     if (due.status === "paid") {
       throw new ConvexError("این مورد قبلا تسویه شده است.");
     }
@@ -141,10 +146,15 @@ export const markPaid = mutation({
 
     // بدهی من = پول از من خارج می‌شود (هزینه). طلب من = پول وارد می‌شود (درآمد)
     const isDebt = due.type === "debt";
+    const type = isDebt ? "outcome" : "income";
 
-    const transactionId = await ctx.db.insert("transactions", {
+    if (isDebt && account.balance < due.amount) {
+      throw new ConvexError("موجودی حساب کافی نیست.");
+    }
+
+    const paymentTransactionId = await ctx.db.insert("transactions", {
       userId,
-      type: isDebt ? "outcome" : "income",
+      type,
       amount: due.amount,
       title: `${isDebt ? "پرداخت بدهی به" : "دریافت طلب از"} ${due.party}`,
       categoryId: isDebt ? "debt" : "claim",
@@ -152,50 +162,32 @@ export const markPaid = mutation({
       paymentMethod: account.type,
       date,
       ...(due.reason ? { note: due.reason } : {}),
+      source: "dues",
     });
 
-    await ctx.db.patch(accountId, {
-      balance: account.balance + (isDebt ? -due.amount : due.amount),
-    });
-
+    await applyToBalance(ctx, accountId, type, due.amount);
     await ctx.db.patch(id, {
       status: "paid",
       paidAt: date,
       accountId,
-      paymentTransactionId: transactionId,
+      paymentTransactionId,
     });
 
-    return transactionId;
+    return paymentTransactionId;
   },
 });
 
 // حذف مورد. اگر تسویه شده بود، تراکنش پرداختش هم حذف می‌شود و اثرش روی موجودی
-// حساب برمی‌گردد. همه در یک mutation اتمی.
+// حساب برمی‌گردد.
 export const remove = mutation({
   args: { id: v.id("dues") },
   handler: async (ctx, { id }) => {
     const userId = await requireUserId(ctx);
-    const due = await ctx.db.get(id);
-    if (!due || due.userId !== userId) {
-      throw new ConvexError("مورد پیدا نشد.");
-    }
+    const due = await getOwnedDue(ctx, userId, id);
 
     if (due.paymentTransactionId) {
-      const transaction = await ctx.db.get(due.paymentTransactionId);
-
-      // اگر کاربر تراکنش را قبلا دستی حذف کرده باشد، چیزی برای برگرداندن نیست
-      if (transaction && transaction.userId === userId) {
-        const account = await ctx.db.get(transaction.accountId);
-        if (account) {
-          // درآمد موجودی را زیاد کرده بود، پس کم می‌شود؛ هزینه برعکس
-          const undo =
-            transaction.type === "income" ? -transaction.amount : transaction.amount;
-          await ctx.db.patch(account._id, { balance: account.balance + undo });
-        }
-        await ctx.db.delete(transaction._id);
-      }
+      await reverseTransaction(ctx, due.paymentTransactionId);
     }
-
     await ctx.db.delete(id);
   },
 });
