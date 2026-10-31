@@ -1,5 +1,7 @@
 import type { Icon } from "@solar-icons/react/lib/types";
 import {
+  BillCheckIcon,
+  BillCrossIcon,
   BillIcon,
   BillListIcon,
   BusIcon,
@@ -8,6 +10,7 @@ import {
   Cart4Icon,
   DonutBittenIcon,
   GamepadMinimalisticIcon,
+  HandMoneyIcon,
   HeartPulseIcon,
   LaptopIcon,
 } from "@solar-icons/react/outline";
@@ -24,7 +27,7 @@ export type Category = {
 export const CATEGORIES = [
   {
     id: "health",
-    label: " سلامت",
+    label: "سلامت",
     value: "health",
     bg: "rgba(79, 221, 209, 0.1)",
     color: "rgb(79, 221, 209)",
@@ -98,14 +101,37 @@ export const CATEGORIES = [
   {
     id: "claim",
     label: "دریافت طلب",
-    value: "freelancer",
+    value: "claim",
     bg: "rgba(94, 232, 126, 0.1)",
     color: "rgb(94, 232, 126)",
     icon: CardReceiveIcon,
+  },
+  {
+    id: "loan",
+    label: "پرداخت وام",
+    value: "loan",
+    bg: "rgba(139, 92, 246, 0.1)",
+    color: "rgb(139, 92, 246)",
+    icon: HandMoneyIcon,
+  },
+  {
+    id: "check-income",
+    label: "وصول چک",
+    value: "check-income",
+    bg: "rgba(94, 232, 126, 0.1)",
+    color: "rgb(94, 232, 126)",
+    icon: BillCheckIcon,
+  },
+  {
+    id: "check-outcome",
+    label: "پرداخت چک",
+    value: "check-outcome",
+    bg: "#f060601a",
+    color: "#f06060",
+    icon: BillCrossIcon,
   },
 ] as const satisfies readonly Category[];
 
 export type CategoryId = (typeof CATEGORIES)[number]["id"];
 export const getCategory = (id: string): Category | undefined =>
   CATEGORIES.find((c) => c.id === id);
-
