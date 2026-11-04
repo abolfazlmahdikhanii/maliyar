@@ -5,6 +5,7 @@ import {
   BillIcon,
   BillListIcon,
   BusIcon,
+  CardholderIcon,
   CardReceiveIcon,
   CardSendIcon,
   Cart4Icon,
@@ -13,6 +14,7 @@ import {
   HandMoneyIcon,
   HeartPulseIcon,
   LaptopIcon,
+  RepeatIcon,
 } from "@solar-icons/react/outline";
 
 export type Category = {
@@ -129,6 +131,22 @@ export const CATEGORIES = [
     bg: "#f060601a",
     color: "#f06060",
     icon: BillCrossIcon,
+  },
+  {
+    id: "subscription",
+    label: "اشتراک",
+    value: "subscription",
+    bg: "rgba(236, 72, 153, 0.1)",
+    color: "rgb(236, 72, 153)",
+    icon: RepeatIcon,
+  },
+  {
+    id: "goal",
+    label: "واریز پس‌انداز",
+    value: "goal",
+    bg: "rgba(94, 232, 126, 0.1)",
+    color: "rgb(94, 232, 126)",
+    icon: CardholderIcon,
   },
 ] as const satisfies readonly Category[];
 
