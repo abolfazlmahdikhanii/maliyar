@@ -12,3 +12,7 @@ export const todayTehran = () => tehranDate(new Date());
 // تاریخ n روز قبل به وقت تهران، YYYY-MM-DD
 export const daysAgoTehran = (n: number) =>
   tehranDate(new Date(Date.now() - n * 86_400_000));
+
+// تاریخ n روز بعد به وقت تهران، YYYY-MM-DD
+export const daysAheadTehran = (n: number) =>
+  tehranDate(new Date(Date.now() + n * 86_400_000));

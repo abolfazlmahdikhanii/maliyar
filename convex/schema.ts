@@ -47,9 +47,11 @@ export const loanFields = {
 
 export const goalFields = {
   title: v.string(),
-  targetAmount: v.number(),
-  savedAmount: v.number(),
-  deadline: v.optional(v.string()), // YYYY-MM-DD
+  categoryId: v.string(), // دسته‌ی هدف (سفر، خودرو، ...)
+  targetAmount: v.number(), // تومان، عدد صحیح
+  savedAmount: v.number(), // پس‌انداز فعلی، تومان
+  deadline: v.optional(v.string()), // YYYY-MM-DD، نبودنش یعنی بدون مهلت
+  accountId: v.optional(v.id("accounts")), // حساب پیش‌فرض کسر پس‌انداز
 };
 
 export const checkFields = {
@@ -64,9 +66,17 @@ export const checkFields = {
 
 export const subscriptionFields = {
   name: v.string(),
-  amount: v.number(),
-  period: v.union(v.literal("monthly"), v.literal("yearly")),
-  nextBillingDate: v.string(), // YYYY-MM-DD
+  categoryId: v.string(), // دسته‌ی هزینه (همان id در data/categories)
+  amount: v.number(), // تومان، عدد صحیح
+  cycle: v.union(
+    v.literal("weekly"),
+    v.literal("monthly"),
+    v.literal("three-month"),
+    v.literal("yearly"),
+  ),
+  nextPaymentDate: v.string(), // میلادی YYYY-MM-DD
+  accountId: v.optional(v.id("accounts")), // کسر از حساب (اختیاری)
+  status: v.union(v.literal("active"), v.literal("inactive")),
 };
 
 export default defineSchema({
@@ -94,7 +104,9 @@ export default defineSchema({
   transactions: defineTable({
     ...transactionFields,
     userId: v.id("users"),
-    source: v.optional(v.union(v.literal("loan"), v.literal("dues"),v.literal("check"))),
+    source: v.optional(
+      v.union(v.literal("loan"), v.literal("dues"), v.literal("check")),
+    ),
   })
     .index("by_user_date", ["userId", "date"])
     .index("by_account", ["accountId"]),
@@ -111,22 +123,25 @@ export default defineSchema({
     paymentTransactionId: v.optional(v.id("transactions")),
   }).index("by_user_status_due", ["userId", "status", "dueDate"]),
 
-  goals: defineTable(goalFields),
+  goals: defineTable({ ...goalFields, userId: v.id("users") }).index(
+    "by_user",
+    ["userId"],
+  ),
 
   checks: defineTable({
-  ...checkFields,
-  userId: v.id("users"),
-  status: v.union(
-    v.literal("pending"),
-    v.literal("cleared"),
-    v.literal("bounced"),
-  ),
-  clearedAt: v.optional(v.string()),
-  accountId: v.optional(v.id("accounts")),
-  paymentTransactionId: v.optional(v.id("transactions")),
-})
-  .index("by_user_due", ["userId", "dueDate"])
-  .index("by_user_bank_serial", ["userId", "bank", "serial"]),
+    ...checkFields,
+    userId: v.id("users"),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("cleared"),
+      v.literal("bounced"),
+    ),
+    clearedAt: v.optional(v.string()),
+    accountId: v.optional(v.id("accounts")),
+    paymentTransactionId: v.optional(v.id("transactions")),
+  })
+    .index("by_user_due", ["userId", "dueDate"])
+    .index("by_user_bank_serial", ["userId", "bank", "serial"]),
 
   loans: defineTable({
     ...loanFields,
@@ -144,7 +159,9 @@ export default defineSchema({
     transactionId: v.optional(v.id("transactions")),
   }).index("by_loan", ["loanId", "installmentNumber"]),
 
-  subscriptions: defineTable(subscriptionFields).index("by_next_billing", [
-    "nextBillingDate",
-  ]),
+  subscriptions: defineTable({
+    ...subscriptionFields,
+    userId: v.id("users"),
+    anchorDay: v.number(), // روز ماه شمسی پرداخت؛ سرور می‌سازد
+  }).index("by_user", ["userId"]),
 });
