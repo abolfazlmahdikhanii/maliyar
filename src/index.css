@@ -166,6 +166,9 @@ body {
 .box-date {
   @apply bg-[#202025] p-4.5 border border-secondary;
 }
+.box-date__picker {
+  @apply bg-[#202025] py-3.5 px-4 border border-secondary;
+}
 .box-profile {
   @apply bg-[#eceff31] px-1.5 py-2.5 border border-secondary;
 }
