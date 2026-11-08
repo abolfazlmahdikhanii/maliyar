@@ -7,13 +7,14 @@ import type {
 } from "@internationalized/date";
 
 type DatePickerInputProps = {
-  date: DateValue|null;
+  date: DateValue | null;
   onDate: (
     date: CalendarDate | CalendarDateTime | ZonedDateTime | null,
   ) => void;
+  title?: string;
 };
 
-const DatePickerInput = ({ date, onDate }: DatePickerInputProps) => {
+const DatePickerInput = ({ date, onDate, title }: DatePickerInputProps) => {
   return (
     <DatePicker
       className={"flex flex-col gap-2 w-full"}
@@ -21,7 +22,7 @@ const DatePickerInput = ({ date, onDate }: DatePickerInputProps) => {
       value={date}
       onChange={onDate}
     >
-      <Label className="text-muted text-sm">تاریخ</Label>
+      <Label className="text-muted text-sm">{title ? title : "تاریخ"}</Label>
       <DateField.Group
         fullWidth
         className="box-date__input px-1 input  bg-transparent focus-within:ring-primary h-12.75"
