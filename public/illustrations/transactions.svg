@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 180" width="240" height="180" fill="none">
+  <circle cx="120" cy="92" r="74" fill="#9fe870" fill-opacity="0.07"/>
+  <circle cx="120" cy="92" r="74" stroke="#9fe870" stroke-opacity="0.25" stroke-dasharray="3 7" stroke-linecap="round"/>
+  <circle cx="36" cy="40" r="3" fill="#9fe870" fill-opacity="0.5"/>
+  <circle cx="208" cy="62" r="4" fill="#f5d06e" fill-opacity="0.6"/>
+  <circle cx="200" cy="152" r="2.5" fill="#499af0" fill-opacity="0.6"/>
+  <path d="M46 130L49 138L57 141L49 144L46 152L43 144L35 141L43 138Z" fill="#9fe870" fill-opacity="0.5"/>
+  <rect x="74" y="40" width="92" height="108" rx="12" fill="#2b2b31" stroke="#fff" stroke-opacity="0.12"/>
+  <circle cx="92" cy="62" r="7" fill="#9fe870" fill-opacity="0.25" stroke="#9fe870"/>
+  <rect x="106" y="56" width="34" height="5" rx="2.5" fill="#fff" fill-opacity="0.2"/>
+  <rect x="106" y="64" width="22" height="4" rx="2" fill="#fff" fill-opacity="0.1"/>
+  <rect x="146" y="59" width="12" height="6" rx="3" fill="#9fe870"/>
+  <circle cx="92" cy="84" r="7" fill="#f06060" fill-opacity="0.25" stroke="#f06060"/>
+  <rect x="106" y="78" width="34" height="5" rx="2.5" fill="#fff" fill-opacity="0.2"/>
+  <rect x="106" y="86" width="22" height="4" rx="2" fill="#fff" fill-opacity="0.1"/>
+  <rect x="146" y="81" width="12" height="6" rx="3" fill="#f06060"/>
+  <circle cx="92" cy="106" r="7" fill="#f5d06e" fill-opacity="0.25" stroke="#f5d06e"/>
+  <rect x="106" y="100" width="34" height="5" rx="2.5" fill="#fff" fill-opacity="0.2"/>
+  <rect x="106" y="108" width="22" height="4" rx="2" fill="#fff" fill-opacity="0.1"/>
+  <rect x="146" y="103" width="12" height="6" rx="3" fill="#f5d06e"/>
+  <path d="M86 122H154" stroke="#fff" stroke-opacity="0.2" stroke-dasharray="4 4"/>
+  <rect x="86" y="130" width="30" height="6" rx="3" fill="#fff" fill-opacity="0.3"/>
+  <rect x="130" y="130" width="24" height="6" rx="3" fill="#9fe870"/>
+  <circle cx="176" cy="52" r="14" fill="#9fe870"/>
+  <path d="M176 46v12M170 52h12" stroke="#1c1c1f" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
