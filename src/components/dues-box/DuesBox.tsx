@@ -12,7 +12,7 @@ import TomanIcon from "../ui/toman-icon/TomanIcon";
 
 export type Dues = {
   status: "open" | "paid";
-  bank:string;
+  bank: string;
   _id: Id<"dues">;
 } & DuesData;
 
@@ -65,6 +65,7 @@ const DuesBox = ({ dues }: DuesBoxProps) => {
                 key={dues._id}
                 dueId={dues._id}
                 style="bg-primary text-black h-10.5 px-5"
+                minBalance={dues.type === "debt" ? dues.amount : 0}
               />
             )}
             <Button
