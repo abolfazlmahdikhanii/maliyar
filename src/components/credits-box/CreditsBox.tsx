@@ -27,7 +27,7 @@ type CreditsBoxProps = {
 
 const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
   const payInstallment = useMutation(api.loans.payInstallment);
-  const remove=useMutation(api.loans.remove)
+  const remove = useMutation(api.loans.remove);
   const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
   const [isShowDelete, setIsShowDelete] = useState<boolean>(false);
   const [isShowConfirm, setIsShowConfirm] = useState<boolean>(false);
@@ -73,6 +73,7 @@ const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
       setIsLoadingDelete(false);
     }
   };
+  
   return (
     <div className="box rounded-2xl">
       <section className="pb-7 border-b border-b-secondary">
@@ -89,9 +90,9 @@ const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
           </div>
           <div className="text-xs text-muted mt-6 flex items-center gap-x-9">
             <span className="">
-              مانده بدهی:{" "}
+               کل وام:{" "}
               <span className="font-extrabold text-[#ff6b6b] inline-flex items-center gap-x-1">
-                {creditInfo.remainingDebt?.toLocaleString()}{" "}
+                {creditInfo.totalAmount?.toLocaleString()}{" "}
                 <TomanIcon width="13" height="13" />
               </span>
             </span>
@@ -116,7 +117,8 @@ const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
         <div className="flex flex-col items-center justify-center gap-y-1.5">
           <p className="text-xs text-muted"> پرداخت شده </p>
           <p className="font-extrabold text-primary inline-flex items-center gap-x-1.25">
-            {creditInfo?.paidAmount ?? 0} <TomanIcon width="15" height="15" />
+            {creditInfo.paidAmount ? creditInfo.paidAmount.toLocaleString() : 0}{" "}
+            <TomanIcon width="15" height="15" />
           </p>
         </div>
         <div className="flex flex-col items-center justify-center gap-y-2">
@@ -132,6 +134,7 @@ const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
         <Button
           className="h-13 rounded-xl w-full text-base bg-primary text-black"
           onClick={() => setIsShowConfirm(true)}
+          isDisabled={!creditInfo.nextDueDate}
         >
           <CardIcon size={20} className="rotate-35" />
           ثبت پرداخت این قسط
