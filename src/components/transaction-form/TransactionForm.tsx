@@ -82,7 +82,7 @@ const TransactionForm = ({
   const [transactionType, setTransactionType] = useState<transactionTypeState>(
     detail?.type || "outcome",
   );
-  
+
   const [categoryTransactionId, setCategoryTransactionId] = useState<
     string | null
   >(detail?.category ? detail.category?.id : null);
@@ -118,7 +118,7 @@ const TransactionForm = ({
     const transactionData = transactionSchema.safeParse({
       type: transactionType,
       amount: transactionPrice,
-      title: title.trim() ,
+      title: title.trim(),
       categoryId: categoryTransactionId,
       accountId: accountID,
       paymentMethod: paymentMethod,
