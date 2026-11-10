@@ -1,34 +1,66 @@
 import { Button, ScrollShadow } from "@heroui/react";
 import { MentionCircleIcon } from "@solar-icons/react/outline";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 import GoalItem from "../goal-item/GoalItem";
+import EmptyState from "../ui/empty-state/EmptyState";
+import { Loader } from "../ui/loading-box/LoadingBox";
 
-const GoalBox = () => {
+const LIMIT = 5;
+
+type GoalBoxProps = {
+  onOpenGoals?: () => void;
+};
+
+const GoalBox = ({ onOpenGoals }: GoalBoxProps) => {
+  const goals = useQuery(api.goals.list);
+
+  const recent = [...(goals ?? [])]
+    .sort((a, b) => b._creationTime - a._creationTime)
+    .slice(0, LIMIT);
+
   return (
-    <div className="relative">
-      <div className="box inverted-radius  w-full">
+    <div className="relative h-full">
+      <div className="box inverted-radius w-full h-full">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11.5 h-11.5 grid place-content-center bg-secondary rounded-full  text-white">
+            <div className="w-11.5 h-11.5 grid place-content-center bg-secondary rounded-full text-white">
               <MentionCircleIcon size={24} />
             </div>
-            <p className="text-white text-[21px]  ">اهداف من</p>
+            <p className="text-white text-[21px]">اهداف من</p>
           </div>
         </div>
-        <ScrollShadow hideScrollBar className="mt-8 pb-2 space-y-2.5 max-h-98.5 overflow-x-hidden">
-          <GoalItem />
-          <GoalItem />
-          <GoalItem />
-          <GoalItem />
-          <GoalItem />
-          <GoalItem />
-          <GoalItem />
-        </ScrollShadow>
+
+        {goals === undefined ? (
+          <div className="flex items-center justify-center h-[90%]">
+            <Loader />
+          </div>
+        ) : goals.length === 0 ? (
+          <div className="flex items-center justify-center h-[90%]">
+            <EmptyState
+              compact
+              kind="goals"
+              title="هنوز هدفی نداری"
+              action={{ label: "هدف جدید", onPress: () => onOpenGoals?.() }}
+            />
+          </div>
+        ) : (
+          <ScrollShadow
+            hideScrollBar
+            className="mt-8 pb-2 space-y-2.5 max-h-98.5 overflow-x-hidden"
+          >
+            {recent.map((goal) => (
+              <GoalItem key={goal._id} goal={goal} onOpen={onOpenGoals} />
+            ))}
+          </ScrollShadow>
+        )}
       </div>
+
       <Button
         isIconOnly
-        className={
-          " absolute top-1 left-3.5 bg-secondary w-13.75 h-13.75 rounded-full text-white border border-secondary"
-        }
+        aria-label="هدف جدید"
+        className="absolute top-1 left-3.5 bg-secondary w-13.75 h-13.75 rounded-full text-white border border-secondary"
+        onPress={onOpenGoals}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
