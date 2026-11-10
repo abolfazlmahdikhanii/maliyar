@@ -2,8 +2,14 @@ import { Button, ProgressBar } from "@heroui/react";
 import { AltArrowDownIcon, AltArrowUpIcon } from "@solar-icons/react/outline";
 import { useState } from "react";
 import CircleProgress from "../ui/circle-progress/CircleProgress";
+import type { Goal } from "../../page/finance-goal/FinanceGoal";
 
-const GoalItem = () => {
+
+type GoalItemProps = {
+  goal: Goal;
+  
+};
+const GoalItem = ({goal}:GoalItemProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   return (
     <div
@@ -11,20 +17,20 @@ const GoalItem = () => {
       onClick={() => setIsOpen((prev) => !prev)}
     >
       <div className="flex items-center justify-between ">
-        <p className="text-lg  text-white truncate">تعطیلات</p>
+        <p className="text-lg  text-white truncate">{goal.title}</p>
         {!isOpen ? (
           <div className="flex items-center gap-x-2.25">
             <ProgressBar
               aria-label="Loading progress"
               className="w-24.5"
-              value={45}
+              value={goal.percent}
               color="danger"
             >
               <ProgressBar.Track className="bg-red-400/15">
                 <ProgressBar.Fill />
               </ProgressBar.Track>
             </ProgressBar>
-            <p className="text-neutral-300 text-[13px] mt-1">16%</p>
+            <p className="text-neutral-300 text-[13px] mt-1">{goal.percent}%</p>
           </div>
         ) : null}
 
@@ -45,11 +51,13 @@ const GoalItem = () => {
       {isOpen && (
         <div className="my-1">
           <CircleProgress
-            progress={75}
+            progress={goal.percent}
             size={400}
             strokeWidth={15}
             trackColor="text-secondary"
             progressColor="text-[#005EFB]"
+            savedAmount={goal.savedAmount}
+            targetAmount={goal.targetAmount}
           />
         </div>
       )}
