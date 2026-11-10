@@ -17,6 +17,7 @@ import Dues from "./page/dues/Dues";
 import FinanceGoal from "./page/finance-goal/FinanceGoal";
 import Subscriptions from "./page/subscriptions/Subscriptions";
 import Transactions from "./page/transactions/Transactions";
+import Setting from "./page/setting/Setting";
 
 const App = () => {
   const { signOut } = useAuthActions();
@@ -37,7 +38,7 @@ const App = () => {
             <Header />
 
             <main className="h-[82vh]">
-              <ScrollShadow className="h-full pb-6">
+              <ScrollShadow className="h-full pb-6" id="main-scroll-container">
                 <div className="w-[93%] mx-auto">
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
@@ -49,6 +50,8 @@ const App = () => {
                     <Route path="/accounts" element={<Accounts />} />
                     <Route path="/subscriptions" element={<Subscriptions />} />
                     <Route path="/finance-goal" element={<FinanceGoal />} />
+                    <Route path="/setting" element={<Setting />} />
+
                   </Routes>
                 </div>
               </ScrollShadow>
