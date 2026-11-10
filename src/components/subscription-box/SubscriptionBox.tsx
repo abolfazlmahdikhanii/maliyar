@@ -1,141 +1,109 @@
-import { Button, Dropdown, Label, ProgressBar } from "@heroui/react";
-import { MenuDotsBoldIcon } from "@solar-icons/react";
-import {
-  CheckReadIcon,
-  PauseIcon,
-  Pen2Icon,
-  TrashBin2Icon,
-} from "@solar-icons/react/outline";
-import { useState } from "react";
-import FormModal from "../ui/form-modal/FormModal";
-import SubscriptionForm from "../subscription-form/SubscriptionForm";
-import DeleteDialog from "../ui/delete-dialog/DeleteDialog";
+import { ProgressBar } from "@heroui/react";
+import { PauseIcon } from "@solar-icons/react/outline";
+import type { FunctionReturnType } from "convex/server";
+import { api } from "../../../convex/_generated/api";
+import { getSubscriptionCategory } from "../../../data/subscriptionCategories";
+import { getBankName } from "../../utils/bankDetector";
+import { daysLabel, daysUntil, elapsedPercent } from "../../utils/dateMath";
+import { formatDate } from "../../utils/formatDate";
+import { type subscriptionTimeCycleState } from "../subscription-form/SubscriptionForm";
+import SubscriptionFooter from "./elements/SubscriptionFooter";
 
-type SubscriptionBoxProps = {
-  title?: string;
-  amount?: number;
-  periodLabel?: string;
-  nextPayment?: string;
-  progress?: number;
-  isPaid?: boolean;
+type Subscription = FunctionReturnType<typeof api.subscriptions.list>[number];
+const CYCLE_LABEL: Record<subscriptionTimeCycleState, string> = {
+  weekly: "هفتگی",
+  monthly: "ماهانه",
+  "three-month": "سه ماهه",
+  yearly: "سالانه",
 };
 
-const SubscriptionBox = ({
-  title = "Netflix",
-  amount = 2490000,
-  periodLabel = "ماهانه",
-  nextPayment = "۱۴۰۲/۰۹/۱۲",
-  progress = 60,
-  isPaid = true,
-}: SubscriptionBoxProps) => {
-  const [isOpenEditModal, setIsOpenEditModal] = useState<boolean>(false);
-    const [isShowDelete, setIsShowDelete] = useState<boolean>(false);
+type SubscriptionBoxProps = {
+  subscription: Subscription;
+};
+
+const SubscriptionBox = ({ subscription }: SubscriptionBoxProps) => {
+  const category = getSubscriptionCategory(subscription.categoryId);
+  const bankName = subscription.bank ? getBankName(subscription.bank) : null;
+  const isActive = subscription.status === "active";
+  const cycleLabel = CYCLE_LABEL[subscription.cycle];
+  const days = daysUntil(subscription.nextPaymentDate);
+  const progress = elapsedPercent(
+    subscription.previousPaymentDate,
+    subscription.nextPaymentDate,
+  );
+  const overdue = days < 0;
+
   return (
     <div className="w-full box rounded-2xl">
       <div className="flex items-center justify-between">
         {/* right */}
         <div className="flex gap-x-3">
-          <div className="w-12 h-12 rounded-xl bg-red-500 grid place-items-center">
-            <span className="text-xl font-semibold ">{title.charAt(0)}</span>
+          <div
+            className="w-12 h-12 rounded-xl grid place-items-center border"
+            style={{
+              background: category.bg,
+              color: category.color,
+              borderColor: category.color,
+            }}
+          >
+            <span className="text-xl font-semibold ">
+              {subscription?.name?.charAt(0)}
+            </span>
           </div>
           <div className="space-y-0.75">
-            <p className="font-semibold text-lg ">نماوا</p>
-            <p className="text-xs text-muted">موسیقی . ماهانه . بانک ملت</p>
+            <p className="font-semibold text-lg ">{subscription?.name}</p>
+            <p className="text-xs text-muted">
+              {category?.label} . {cycleLabel} . {bankName && bankName}
+            </p>
           </div>
         </div>
         {/* left */}
         <div className="space-y-0.75">
-          <p className="text-xl font-semibold">{amount.toLocaleString()}</p>
-          <p className="text-muted text-xs text-left">تومان / ماهانه</p>
+          <p className="text-xl font-semibold">
+            {subscription?.amount.toLocaleString() ?? 0}
+          </p>
+          <p className="text-muted text-xs text-left">تومان / {cycleLabel}</p>
         </div>
       </div>
       <div className="box-date rounded-2xl mt-4">
         <div className="flex items-center justify-between">
           <p className="text-muted text-sm">
             پرداخت بعدی:{" "}
-            <span className="mr-0.5 text-white font-semibold">1 مهر 1405</span>
+            <span className="mr-0.5 text-white font-semibold">
+              {subscription.nextPaymentDate
+                ? formatDate(subscription.nextPaymentDate)
+                : "نامشخص"}
+            </span>
           </p>
           <div
-            className={`py-1.5 px-2.5 border text-xs rounded-xl bg-[rgba(255,184,108,.12)] text-[#ffb86c] border-[#ffb86c]`}
+            className={` px-2.5 border text-xs rounded-xl ${isActive ? "py-1.5 bg-[rgba(255,184,108,0.12)] text-[#ffb86c] border-[#ffb86c]" : "bg-surface border-secondary text-neutral-300 py-1.5"} `}
           >
-            4 روز مانده
+            {isActive ? (
+              daysLabel(days)
+            ) : (
+              <p className="flex items-center gap-x-1.25">
+                <PauseIcon size={12} />
+                متوقف شده
+              </p>
+            )}
           </div>
         </div>
         <div className="mt-4 ">
           <ProgressBar
-            aria-label="Loading progress"
+            aria-label="پیشرفت تا پرداخت بعدی"
             className="w-full"
             value={progress}
           >
             <ProgressBar.Track className="bg-secondary">
               <ProgressBar.Fill
-                className="right-0 "
-                style={{ background: progress > 100 ? "#e85050" : "#dbb848" }}
+                className="right-0"
+                style={{ background: overdue ? "#e85050" : "#dbb848" }}
               />
             </ProgressBar.Track>
           </ProgressBar>
         </div>
       </div>
-      <section className="flex items-center gap-x-4 mt-4.5">
-        <Button className="h-13 rounded-xl w-full text-base bg-primary text-black">
-          <CheckReadIcon size={20} />
-          ثبت پرداخت
-        </Button>
-        <div className="relative">
-          <Dropdown>
-            <Button
-              variant="outline"
-              isIconOnly
-              className={" h-13 rounded-xl w-13.5 border-secondary"}
-            >
-              <MenuDotsBoldIcon size={20} />
-            </Button>
-            <Dropdown.Popover className={"box-modal-2"}>
-              <Dropdown.Menu
-              onAction={(key) => {
-                if (key === "edit") setIsOpenEditModal(true);
-                if (key === "delete") setIsShowDelete(true);
-                // if (key === "factor") setIsOpenFactorModal(true);
-              }}
-              >
-                <Dropdown.Item id="stop" textValue="stop">
-                  <Label className="flex items-center gap-x-2.5">
-                    <PauseIcon size={16} />
-                    توقف
-                  </Label>
-                </Dropdown.Item>
-                <Dropdown.Item id="edit" textValue="Edit">
-                  <Label className="flex items-center gap-x-2.5">
-                    <Pen2Icon size={18} />
-                    ویرایش
-                  </Label>
-                </Dropdown.Item>
-                <Dropdown.Item id="delete" textValue="Delete" variant="danger">
-                  <Label className="flex items-center gap-x-2.5">
-                    <TrashBin2Icon size={18} />
-                    حذف
-                  </Label>
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown.Popover>
-          </Dropdown>
-        </div>
-      </section>
-      <FormModal
-        title="ویرایش اشتراک"
-        isOpen={isOpenEditModal}
-        onOpenChange={() => setIsOpenEditModal(false)}
-        btnText="ذخیره تغییرات"
-      >
-        <SubscriptionForm />
-      </FormModal>
-
-      <DeleteDialog
-        isShowDelete={isShowDelete}
-        onChangeShowDelete={() => setIsShowDelete(false)}
-        title="حذف اشتراک"
-        description="ایا از حذف این اشتراک اطمینان دارید؟"
-      />
+      <SubscriptionFooter subscription={subscription} />
     </div>
   );
 };
