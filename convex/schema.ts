@@ -64,6 +64,14 @@ export const checkFields = {
   dueDate: v.string(), // YYYY-MM-DD
 };
 
+export const settingsFields = {
+  notifyChecks: v.boolean(),
+  notifySubscriptions: v.boolean(),
+  notifyInstallments: v.boolean(),
+  notifyBudget: v.boolean(),
+  defaultAccountId: v.optional(v.id("accounts")),
+};
+
 export const subscriptionFields = {
   name: v.string(),
   categoryId: v.string(), // دسته‌ی هزینه (همان id در data/categories)
@@ -164,4 +172,9 @@ export default defineSchema({
     userId: v.id("users"),
     anchorDay: v.number(), // روز ماه شمسی پرداخت؛ سرور می‌سازد
   }).index("by_user", ["userId"]),
+  
+  settings: defineTable({ ...settingsFields, userId: v.id("users") }).index(
+    "by_user",
+    ["userId"],
+  ),
 });
