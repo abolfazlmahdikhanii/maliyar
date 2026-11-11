@@ -1,5 +1,5 @@
 import { Button, IconChevronLeft } from "@heroui/react";
-import { BellIcon, CalendarIcon } from "@solar-icons/react/outline";
+import { CalendarIcon } from "@solar-icons/react/outline";
 import { useState } from "react";
 import type { Id } from "../../../convex/_generated/dataModel";
 import { getDuesStatus } from "../../utils/duesStatus";
@@ -68,12 +68,7 @@ const DuesBox = ({ dues }: DuesBoxProps) => {
                 minBalance={dues.type === "debt" ? dues.amount : 0}
               />
             )}
-            <Button
-              isIconOnly
-              className="w-10.5 h-10.5 rounded-full bg-secondary "
-            >
-              <BellIcon size={18} />
-            </Button>
+
             <Button
               isIconOnly
               className="w-10.5 h-10.5 rounded-full bg-secondary "
