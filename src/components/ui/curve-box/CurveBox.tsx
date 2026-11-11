@@ -11,7 +11,7 @@ type CurveBoxProps={
 const CurveBox = ({children,path}:CurveBoxProps) => {
   return (
    <div className="relative">
-     <div className="box inverted-radius h-70 w-full">
+     <div className="box inverted-radius h-70 w-full" >
         {children}
   
     </div>
