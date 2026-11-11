@@ -1,5 +1,6 @@
 import { Button, Input } from "@heroui/react";
-import { BellIcon, MagnifierIcon, SunIcon } from "@solar-icons/react/outline";
+import { MagnifierIcon, SunIcon } from "@solar-icons/react/outline";
+import NotificationBell from "../../notification-bell/NotificationBell";
 import ProfileMenu from "../profile-menu/ProfileMenu";
 
 const Header = () => {
@@ -25,9 +26,7 @@ const Header = () => {
         <Button isIconOnly className={"btn"}>
           <SunIcon size={24} />
         </Button>
-        <Button isIconOnly className={"btn"}>
-          <BellIcon size={21} />
-        </Button>
+        <NotificationBell />
 
         {/* profile */}
         <div>

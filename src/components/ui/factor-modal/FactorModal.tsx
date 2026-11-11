@@ -1,17 +1,25 @@
-import { Button, Modal } from "@heroui/react";
+import { Button, Modal, Table } from "@heroui/react";
+import { CloseCircleIcon } from "@solar-icons/react/outline";
+import { useQuery } from "convex/react";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
 import SimpleTable from "../simple-table/SimpleTable";
 
 type DuesDetailModalProps = {
   title: string;
   isOpen: boolean;
   onOpenChange: () => void;
+  id: Id<"loans">;
 };
 
 const FactorModal = ({
   title,
   isOpen = false,
   onOpenChange,
+  id,
 }: DuesDetailModalProps) => {
+  const factors = useQuery(api.loans.get, { id });
+  
   return (
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
@@ -19,37 +27,51 @@ const FactorModal = ({
           <Modal.Container>
             <Modal.Dialog className="sm:max-w-135 box-modal">
               <Modal.Header className="flex items-center justify-between  flex-row ">
-                <Modal.Heading className="font-semibold"> {title}</Modal.Heading>
-                <Button isIconOnly variant="outline" size="sm" slot={"close"}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="size-4"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M6 18 18 6M6 6l12 12"
-                    />
-                  </svg>
+                <Modal.Heading className="font-semibold">
+                  {" "}
+                  {title}
+                </Modal.Heading>
+                <Button isIconOnly variant="ghost" slot={"close"}>
+                  <CloseCircleIcon size={"25px"} />
                 </Button>
               </Modal.Header>
 
               <Modal.Body>
                 <p className="text-xs text-muted mb-6 mt-1.25">
-                  وام خودرو — بانک سامان · قسط ۵٬۲۰۰٬۰۰۰ تومان
+                  {factors?.title} · قسط{" "}
+                  {factors?.remainingDebt
+                    ? factors.remainingDebt?.toLocaleString()
+                    : 0}{" "}
+                  تومان
                 </p>
 
-               <div className="max-h-[46vh]">
-                   <SimpleTable
-                  headers={{ number: "شماره", price: "مبلغ (تومان)" }}
-                >
-                  x
-                </SimpleTable>
-               </div>
+                <div className="max-h-[46vh]">
+                  <SimpleTable
+                    headers={{
+                      number: "شماره",
+                      price: "مبلغ (تومان)",
+                      status: "وضعیت پرداخت",
+                    }}
+                  >
+                    {factors?.installments ? (
+                      factors?.installments.map((item) => (
+                        <Table.Row>
+                          <Table.Cell>{item.number}</Table.Cell>
+                          <Table.Cell>
+                            {item.amount ? item.amount.toLocaleString() : 0}
+                          </Table.Cell>
+                          <Table.Cell className={`${item.status === "unpaid"?"text-red-500":"text-primary"}`}>
+                            {item.status === "unpaid"
+                              ? "پرداخت نشده"
+                              : "پرداخت شده"}
+                          </Table.Cell>
+                        </Table.Row>
+                      ))
+                    ) : (
+                      <p>هیچ اقساطی وجود ندارد</p>
+                    )}
+                  </SimpleTable>
+                </div>
               </Modal.Body>
             </Modal.Dialog>
           </Modal.Container>
