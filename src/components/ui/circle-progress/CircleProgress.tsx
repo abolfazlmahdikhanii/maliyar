@@ -6,6 +6,8 @@ type CircleProgressProps = {
   strokeWidth: number;
   trackColor: string;
   progressColor: string;
+  savedAmount: number;
+  targetAmount: number;
 };
 const CircleProgress = ({
   progress,
@@ -13,6 +15,8 @@ const CircleProgress = ({
   strokeWidth,
   trackColor,
   progressColor,
+  savedAmount,
+  targetAmount,
 }: CircleProgressProps) => {
   const validProgress = Math.min(100, Math.max(0, progress));
 
@@ -59,13 +63,15 @@ const CircleProgress = ({
         <div className="absolute inset-0 flex items-end justify-center pb-5">
           <div className="flex flex-col items-center justify-center ">
             <p className="font-bold text-neutral-400 mb-0.5">هدف</p>
-            <p className="text-[32px] text-white font-semibold">1,200,000</p>
+            <p className="text-[32px] text-white font-semibold">
+              {savedAmount.toLocaleString() ?? 0}
+            </p>
             <div className="flex items-center gap-x-1.5">
               <p className="text-green-500">
                 <CheckCircleIcon size={15} />
               </p>
               <p className="font-bold text-neutral-400 text-sm mt-0.5">
-                2,000,000 /
+                {targetAmount.toLocaleString() ?? 0} /
               </p>
             </div>
           </div>
