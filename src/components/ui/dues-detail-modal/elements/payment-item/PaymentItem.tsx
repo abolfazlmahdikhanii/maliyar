@@ -8,6 +8,7 @@ type PaymentItemProps = {
   cardNumber?: string;
   balance: number;
   isDisabled?: boolean;
+  defaultAccount?: boolean;
 };
 
 const PaymentItem = ({
@@ -16,13 +17,14 @@ const PaymentItem = ({
   cardNumber,
   balance,
   isDisabled,
+  defaultAccount=false,
 }: PaymentItemProps) => {
   const subtitle = cardNumber
     ? `کارت ${cardNumber.slice(-4)}`
     : bank === "cash"
       ? "کیف پول نقدی"
       : "حساب بانکی";
-
+console.log(accountId)
   return (
     <Radio value={accountId} isDisabled={isDisabled}>
       <Radio.Content className="group relative flex w-full flex-row items-start justify-start gap-4 rounded-xl border border-transparent bg-surface px-5 py-4 transition-all data-[selected=true]:border-accent data-[selected=true]:bg-accent/10 data-[disabled=true]:opacity-50">
@@ -30,7 +32,9 @@ const PaymentItem = ({
           <Radio.Indicator />
         </Radio.Control>
         <div className="flex flex-col gap-1.25">
-          <span>{getBankName(bank)}</span>
+          <span>
+            {getBankName(bank)}  <span className="text-xs text-muted mr-0.5">{defaultAccount?"(پیش فرض)":null}</span>
+          </span>
           <Description>
             {subtitle} ·{" "}
             {isDisabled
