@@ -76,8 +76,8 @@ const TransactionDetailModal = ({
             <Modal.Dialog className="sm:max-w-135 box-modal">
               <Modal.Header className="flex items-center justify-between  flex-row ">
                 <Modal.Heading>جزییات تراکنش</Modal.Heading>
-                <Button isIconOnly variant="ghost"  slot={"close"}>
-                 <CloseCircleIcon size={"25px"}  />
+                <Button isIconOnly variant="ghost" slot={"close"}>
+                  <CloseCircleIcon size={"25px"} />
                 </Button>
               </Modal.Header>
 
@@ -140,6 +140,14 @@ const TransactionDetailModal = ({
                     icon={ClockCircleIcon}
                   />
                 </div>
+                {transaction.note && (
+                  <div className=" mx-2 rounded-xl border-2 border-secondary bg-secondary/30 mt-2 px-4 py-4 mb-2">
+                    <p className="text-xs text-muted mb-1.5">توضیحات</p>
+                    <p className="text-sm text-neutral-200 leading-[1.9] whitespace-pre-wrap wrap-break-word max-h-28 overflow-y-auto">
+                      {transaction.note}
+                    </p>
+                  </div>
+                )}
               </Modal.Body>
               <Modal.Footer className="pb-1 space-x-2">
                 <Button
