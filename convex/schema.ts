@@ -172,9 +172,13 @@ export default defineSchema({
     userId: v.id("users"),
     anchorDay: v.number(), // روز ماه شمسی پرداخت؛ سرور می‌سازد
   }).index("by_user", ["userId"]),
-  
+
   settings: defineTable({ ...settingsFields, userId: v.id("users") }).index(
     "by_user",
     ["userId"],
   ),
+  aiRequests: defineTable({
+    userId: v.id("users"),
+    at: v.number(),
+  }).index("by_user_at", ["userId", "at"]),
 });
