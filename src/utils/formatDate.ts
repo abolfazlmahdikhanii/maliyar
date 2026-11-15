@@ -9,15 +9,20 @@ export const formatDay = (iso: string) => {
   return dayFormatter.format(new Date(`${iso}T00:00:00`));
 };
 const dateFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-persian", {
- 
   day: "numeric",
   month: "long",
-  year:"numeric"
+  year: "numeric",
 });
 
 export const formatDate = (iso: string) => {
   if (!iso) return;
   return dateFormatter.format(new Date(`${iso}T00:00:00`));
+};
+export const formatDueDate = (iso: string) => {
+  if (!iso) return;
+  const date = dateFormatter.format(new Date(`${iso}T00:00:00`));
+  const [day, months, year] = date.split(" ");
+  return { day, months, year };
 };
 export const getMonthNumber = (date: string): number | boolean => {
   if (!date) return false;
