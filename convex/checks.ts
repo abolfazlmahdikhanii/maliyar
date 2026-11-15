@@ -8,9 +8,7 @@ import { requireUserId } from "./lib/auth";
 import { isValidDate, todayTehran } from "./lib/date";
 import { checkFields } from "./schema";
 
-// ⚠️ این key باید در data file دسته‌بندی‌ها وجود داشته باشه
-const CHECK_CATEGORY_ID = "check";
-const CHECK_PAYMENT_METHOD = "check";
+
 
 async function getOwnedCheck(
   ctx: MutationCtx,

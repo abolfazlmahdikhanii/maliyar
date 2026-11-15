@@ -8,6 +8,7 @@ import type { Goal } from "../../page/finance-goal/FinanceGoal";
 type GoalItemProps = {
   goal: Goal;
   
+  
 };
 const GoalItem = ({goal}:GoalItemProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);

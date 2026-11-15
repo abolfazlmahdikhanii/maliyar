@@ -50,7 +50,7 @@ const GoalBox = ({ onOpenGoals }: GoalBoxProps) => {
             className="mt-8 pb-2 space-y-2.5 max-h-98.5 overflow-x-hidden"
           >
             {recent.map((goal) => (
-              <GoalItem key={goal._id} goal={goal} onOpen={onOpenGoals} />
+              <GoalItem key={goal._id} goal={goal} />
             ))}
           </ScrollShadow>
         )}

@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 
 import Auth from "./page/auth/Auth";
 
-import { useAuthActions } from "@convex-dev/auth/react";
 import { ScrollShadow, Toast } from "@heroui/react";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
 import Header from "./components/ui/header/Header";
@@ -20,8 +19,6 @@ import Subscriptions from "./page/subscriptions/Subscriptions";
 import Transactions from "./page/transactions/Transactions";
 
 const App = () => {
-  const { signOut } = useAuthActions();
-
   return (
     <>
       <AuthLoading>
