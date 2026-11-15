@@ -34,7 +34,7 @@ const ConfirmDialog = ({
             </AlertDialog.Body>
             <AlertDialog.Footer>
              
-              <Button variant={isSignout?"danger-soft":"primary"} onClick={onSubmit} isDisabled={loading} >
+              <Button variant={isSignout?"danger-soft":"primary"} onPress={onSubmit} isDisabled={loading} >
                 {isSignout?"خارج شوید":"تایید"} {loading && <Spinner color="current" size="sm" />}
               </Button>
                <Button slot="close" variant="tertiary">

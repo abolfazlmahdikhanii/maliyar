@@ -15,9 +15,9 @@ import Credits from "./page/credits/Credits";
 import Dashboard from "./page/dashboard/Dashboard";
 import Dues from "./page/dues/Dues";
 import FinanceGoal from "./page/finance-goal/FinanceGoal";
+import Setting from "./page/setting/Setting";
 import Subscriptions from "./page/subscriptions/Subscriptions";
 import Transactions from "./page/transactions/Transactions";
-import Setting from "./page/setting/Setting";
 
 const App = () => {
   const { signOut } = useAuthActions();
@@ -51,7 +51,6 @@ const App = () => {
                     <Route path="/subscriptions" element={<Subscriptions />} />
                     <Route path="/finance-goal" element={<FinanceGoal />} />
                     <Route path="/setting" element={<Setting />} />
-
                   </Routes>
                 </div>
               </ScrollShadow>

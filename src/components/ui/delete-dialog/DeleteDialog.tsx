@@ -34,7 +34,7 @@ const DeleteDialog = ({
               <Button slot="close" variant="tertiary">
                 انصراف
               </Button>
-              <Button variant="danger"onClick={onRemove} isDisabled={loading} >
+              <Button variant="danger" onPress={onRemove} isDisabled={loading} >
                 حذف {loading && <Spinner color="current" size="sm" />}
               </Button>
             </AlertDialog.Footer>

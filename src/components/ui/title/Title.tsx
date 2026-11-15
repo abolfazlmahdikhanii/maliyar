@@ -11,7 +11,7 @@ const Title = ({ text, btnText, onOpen }:TitleProps) => {
     <div className="mt-4 flex items-center justify-between">
       <h3 className="text-[26px] font-semibold">{text}</h3>
       <div className="flex items-center gap-x-3.5">
-        <Button className={"bg-primary text-black h-12 px-5"} onClick={onOpen}>
+        <Button className={"bg-primary text-black h-12 px-5"} onPress={onOpen}>
           {btnText}
           <svg
             xmlns="http://www.w3.org/2000/svg"
