@@ -15,6 +15,8 @@ import {
 
 import type { Icon } from "@solar-icons/react/lib/types";
 import SidebarItem from "./SidebarItem";
+import { useState } from "react";
+import Logout from "../logout/Logout";
 
   export type SidebarLink = {
     iconEl?: Icon;
@@ -89,6 +91,7 @@ import SidebarItem from "./SidebarItem";
   ]
 
 const Sidebar = () => {
+  const [isSignout,setIsSignout]=useState(false)
   return (
     <div className="bg h-svh">
       {/* logo */}
@@ -111,12 +114,14 @@ const Sidebar = () => {
             className={
               "min-h-13 text-right rounded-2xl justify-start text-neutral-400 bg-transparent px-3 hover:bg-danger-soft hover:text-danger-hover transition-all duration-200"
             }
+            onPress={()=>setIsSignout(true)}
           >
             <Logout3Icon size={22} />
             <p className="text-[15px]">خروج از حساب</p>
           </Button>
         </div>
       </div>
+      <Logout isShowConfirm={isSignout} onChangeShowConfirm={()=>setIsSignout(false)}/>
     </div>
   );
 };
