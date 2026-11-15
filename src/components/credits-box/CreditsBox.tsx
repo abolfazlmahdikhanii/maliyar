@@ -133,7 +133,7 @@ const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
       <section className="flex items-center gap-x-4">
         <Button
           className="h-13 rounded-xl w-full text-base bg-primary text-black"
-          onClick={() => setIsShowConfirm(true)}
+          onPress={() => setIsShowConfirm(true)}
           isDisabled={!creditInfo.nextDueDate}
         >
           <CardIcon size={20} className="rotate-35" />

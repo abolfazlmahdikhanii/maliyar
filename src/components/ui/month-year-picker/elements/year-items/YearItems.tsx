@@ -61,7 +61,7 @@ const YearItems = ({
             key={item}
             type="button"
             aria-pressed={draftYear === item}
-            onClick={() => setDraftYear(item)}
+            onPress={() => setDraftYear(item)}
             className={optionClass(draftYear === item)}
           >
             {item}

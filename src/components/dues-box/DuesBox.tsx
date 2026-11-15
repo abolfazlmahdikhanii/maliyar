@@ -72,7 +72,7 @@ const DuesBox = ({ dues }: DuesBoxProps) => {
             <Button
               isIconOnly
               className="w-10.5 h-10.5 rounded-full bg-secondary "
-              onClick={() => setIsOpenDetailModal(true)}
+              onPress={() => setIsOpenDetailModal(true)}
             >
               <IconChevronLeft width={18} height={18} />
             </Button>

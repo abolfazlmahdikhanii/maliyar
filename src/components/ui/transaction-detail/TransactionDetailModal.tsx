@@ -153,7 +153,7 @@ const TransactionDetailModal = ({
                 <Button
                   variant="outline"
                   className="h-13 rounded-xl w-1/2 text-base"
-                  onClick={() => setIsOpenModalTransaction(true)}
+                  onPress={() => setIsOpenModalTransaction(true)}
                 >
                   ویرایش <Pen2Icon />
                 </Button>
@@ -161,7 +161,7 @@ const TransactionDetailModal = ({
                   variant="danger-soft"
                   className="h-13 rounded-xl w-1/2 text-base"
 
-                  onClick={() => {
+                  onPress={() => {
                     setIsShowDelete(true);
                   }}
                 >

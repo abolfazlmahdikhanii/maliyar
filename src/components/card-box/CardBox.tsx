@@ -104,7 +104,7 @@ const CardBox = ({
         </div>
         <div className="flex items-center mt-4 gap-x-2.5 justify-between">
           <Button
-            onClick={() => setIsShowDetailModal(true)}
+            onPress={() => setIsShowDetailModal(true)}
             className="h-10 rounded-xl font-semibold px-4 text-xs bg-transparent border border-secondary text-muted hover:bg-secondary hover:text-primary"
           >
             <BillIcon size={20} />

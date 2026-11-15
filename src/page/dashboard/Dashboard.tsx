@@ -1,6 +1,7 @@
 import { Button } from "@heroui/react";
 import { useQuery } from "convex/react";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../../convex/_generated/api";
 import CashflowChart from "../../components/cashflow-chart/CashflowChart";
 import ChatModal from "../../components/chat-modal/ChatModal";
@@ -13,11 +14,10 @@ import BalanceCard from "../../components/ui/balance-card/BalanceCard";
 import { useMonthStats } from "../../hooks/useMonthStats";
 import { getCurrentYearMonth, getMonthRange } from "../../utils/jalaliMonth";
 import { sumBy } from "../../utils/state";
-import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [isOpenChat, setIsOpenChat] = useState<boolean>(false);
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const accounts = useQuery(api.accounts.list);
   const range = useMemo(() => getMonthRange(getCurrentYearMonth()), []);
   const monthTransactions = useQuery(api.transactions.list, range);
@@ -49,7 +49,7 @@ const Dashboard = () => {
           groups={stats.outcomeGroups}
           loading={stats.loading}
         />
-        <GoalBox onOpenGoals={()=>navigate("/finance-goal")}/>
+        <GoalBox onOpenGoals={() => navigate("/finance-goal")} />
         <CashflowChart />
         <RecentTransactions />
         <AdBanner />
@@ -69,7 +69,7 @@ const Dashboard = () => {
       <ChatModal
         isOpen={isOpenChat}
         onOpenChange={() => setIsOpenChat(false)}
-        onSend={async () => ""}
+      
       />
     </div>
   );

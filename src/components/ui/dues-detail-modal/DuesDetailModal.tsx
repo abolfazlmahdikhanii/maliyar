@@ -175,7 +175,7 @@ const DuesDetailModal = ({
                   variant="danger-soft"
                   className="h-13 rounded-xl w-1/2 text-base"
                   slot="close"
-                  onClick={() => setIsShowDelete(true)}
+                  onPress={() => setIsShowDelete(true)}
                 >
                   حذف <TrashBin2Icon />
                 </Button>

@@ -22,7 +22,7 @@ const MonthItems = ({ draftMonth, setDraftMonth }: MonthItemsProps) => {
           key={name}
           type="button"
           aria-pressed={draftMonth === index}
-          onClick={() => setDraftMonth(index)}
+          onPress={() => setDraftMonth(index)}
           className={optionClass(draftMonth === index)}
         >
           {name}

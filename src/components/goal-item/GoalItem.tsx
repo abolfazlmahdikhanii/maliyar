@@ -39,7 +39,7 @@ const GoalItem = ({goal}:GoalItemProps) => {
           className={`w-6 h-6 rounded-full ${
             !isOpen ? "bg-secondary" : "bg-neutral-200 text-black"
           }`}
-          onClick={() => setIsOpen((prev) => !prev)}
+          onPress={() => setIsOpen((prev) => !prev)}
         >
           {isOpen ? (
             <AltArrowUpIcon size={14} />
