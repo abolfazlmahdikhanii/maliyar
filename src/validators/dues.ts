@@ -1,7 +1,7 @@
 import z from "zod";
 import { faToEn } from "../utils/formatNumber";
 
-// DateValue.toString() همیشه تاریخ میلادی YYYY-MM-DD می‌دهد
+
 const toIsoDate = (v: unknown) => (v ? String(v) : "");
 
 export const duesSchema = z.object({

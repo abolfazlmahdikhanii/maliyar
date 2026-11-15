@@ -6,7 +6,7 @@ import { required } from "../utils/shared";
 
 const toIsoDate = (v: unknown) => (v ? String(v) : "");
 
-// TimeValue → "HH:mm"
+
 const toTime = (v: unknown) => {
   if (!v || typeof v !== "object" || !("hour" in v) || !("minute" in v)) {
     return undefined;
