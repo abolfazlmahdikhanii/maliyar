@@ -6,6 +6,7 @@ import { formatDay } from "../../../utils/formatDate";
 import type { TransactionData } from "../../../validators/transactions";
 import TransactionDetailModal from "../transaction-detail/TransactionDetailModal";
 import type { Id } from "../../../../convex/_generated/dataModel";
+import { getBankName } from "../../../utils/bankDetector";
 
 type TransactionItemProps = {
   transaction: TransactionData;
@@ -40,7 +41,7 @@ const TransactionItem = ({
           <div className="flex flex-col gap-y-1.75">
             <p>{t?.title || category?.label}</p>
             <div className="flex items-center gap-x-2.5">
-              <p className="text-[13px] text-neutral-400">{bank}</p>
+              <p className="text-[13px] text-neutral-400">{getBankName(bank)}</p>
               <span className="inline-block w-1 h-1 rounded-full bg-neutral-500"></span>
               <p className="text-[13px] text-neutral-400">
                 {t?.date ? formatDay(t?.date)||"" : "__"} {t?.time ?? ""}
