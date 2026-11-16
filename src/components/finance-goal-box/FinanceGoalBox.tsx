@@ -69,89 +69,91 @@ const FinanceGoalBox = ({ goal }: FinanceGoalBoxProps) => {
           {goal.percent}%
         </div>
       </div>
-      <div className="mt-2.5">
-        <CircleProgress
-          progress={goal.percent}
-          size={430}
-          strokeWidth={15}
-          trackColor="text-secondary"
-          progressColor="text-primary"
-          savedAmount={goal.savedAmount}
-          targetAmount={goal.targetAmount}
-        />
-      </div>
-      {goal.deadline ? (
-        <div className="mt-2 py-2 text-sm px-3.75 mx-auto rounded-xl bg-secondary border-secondary border flex items-center gap-x-1.5 w-fit">
-          <CalendarIcon size={17} />
-          <p>{daysLabel(Number(days))}</p>
+      <div className="flex flex-col ">
+        <div className="mt-2.5">
+          <CircleProgress
+            progress={goal.percent}
+            size={430}
+            strokeWidth={15}
+            trackColor="text-secondary"
+            progressColor="text-primary"
+            savedAmount={goal.savedAmount}
+            targetAmount={goal.targetAmount}
+          />
         </div>
-      ) : (
-        <div className="mt-2.75 py-2 text-sm px-3.75 mx-auto rounded-xl bg-secondary border border-secondary text-muted flex items-center gap-x-1.5 w-fit">
-          <InfiniteIcon size={16} />
-          <p> بدون مهلت</p>
-        </div>
-      )}
+        {goal.deadline ? (
+          <div className="mt-2 py-2 text-sm px-3.75 mx-auto rounded-xl bg-secondary border-secondary border flex items-center gap-x-1.5 w-fit">
+            <CalendarIcon size={17} />
+            <p>{daysLabel(Number(days))}</p>
+          </div>
+        ) : (
+          <div className="mt-2.75 py-2 text-sm px-3.75 mx-auto rounded-xl bg-secondary border border-secondary text-muted flex items-center gap-x-1.5 w-fit">
+            <InfiniteIcon size={16} />
+            <p> بدون مهلت</p>
+          </div>
+        )}
 
-      {!goal.completed ? (
-        <section className="flex items-center gap-x-4 mt-6.5">
-          <Button
-            className="h-13 rounded-xl w-full text-base bg-primary text-black"
-            isDisabled={goal.completed}
-            onPress={() => setModal("save")}
-          >
-            <CardholderIcon size={20} />
-            افزودن پس انداز
-          </Button>
-          <div className="relative">
-            <Dropdown>
-              <Button
-                variant="outline"
-                isIconOnly
-                className={" h-13 rounded-xl w-13.5 border-secondary"}
-              >
-                <MenuDotsBoldIcon size={20} />
-              </Button>
-              <Dropdown.Popover className={"box-modal-2"}>
-                <Dropdown.Menu
-                  onAction={(key) => {
-                    if (key === "edit") setModal("edit");
-                    if (key === "delete") setModal("delete");
-                    // if (key === "factor") setIsOpenFactorModal(true);
-                  }}
+        {!goal.completed ? (
+          <section className="flex items-center gap-x-4 mt-6.5 self-end">
+            <Button
+              className="h-13 rounded-xl w-full text-base bg-primary text-black"
+              isDisabled={goal.completed}
+              onPress={() => setModal("save")}
+            >
+              <CardholderIcon size={20} />
+              افزودن پس انداز
+            </Button>
+            <div className="relative">
+              <Dropdown>
+                <Button
+                  variant="outline"
+                  isIconOnly
+                  className={" h-13 rounded-xl w-13.5 border-secondary"}
                 >
-                  <Dropdown.Item id="edit" textValue="Edit">
-                    <Label className="flex items-center gap-x-2.5">
-                      <Pen2Icon size={18} />
-                      ویرایش
-                    </Label>
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    id="delete"
-                    textValue="Delete"
-                    variant="danger"
+                  <MenuDotsBoldIcon size={20} />
+                </Button>
+                <Dropdown.Popover className={"box-modal-2"}>
+                  <Dropdown.Menu
+                    onAction={(key) => {
+                      if (key === "edit") setModal("edit");
+                      if (key === "delete") setModal("delete");
+                      // if (key === "factor") setIsOpenFactorModal(true);
+                    }}
                   >
-                    <Label className="flex items-center gap-x-2.5">
-                      <TrashBin2Icon size={18} />
-                      حذف
-                    </Label>
-                  </Dropdown.Item>
-                </Dropdown.Menu>
-              </Dropdown.Popover>
-            </Dropdown>
-          </div>
-        </section>
-      ) : (
-        <section className="flex items-center gap-x-3.5 mt-6.5 py-3.75 px-3.5 bg-primary/15 border border-primary text-primary rounded-xl">
-          <ConfettiIcon size={29} />
-          <div className="flex flex-col gap-y-1.5">
-            <p className="font-semibold">هدف تکمیل شد - تبریک !</p>
-            <p className="text-xs text-muted">
-              {goal.targetAmount?.toLocaleString() ?? 0} تومان پس‌انداز شد ·{" "}
-              {bankName}
-            </p>
-          </div>
-        </section>
-      )}
+                    <Dropdown.Item id="edit" textValue="Edit">
+                      <Label className="flex items-center gap-x-2.5">
+                        <Pen2Icon size={18} />
+                        ویرایش
+                      </Label>
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      id="delete"
+                      textValue="Delete"
+                      variant="danger"
+                    >
+                      <Label className="flex items-center gap-x-2.5">
+                        <TrashBin2Icon size={18} />
+                        حذف
+                      </Label>
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown.Popover>
+              </Dropdown>
+            </div>
+          </section>
+        ) : (
+          <section className="flex items-center gap-x-3.5 mt-6.5 py-3.75 px-3.5 bg-primary/15 border border-primary text-primary rounded-xl">
+            <ConfettiIcon size={29} />
+            <div className="flex flex-col gap-y-1.5">
+              <p className="font-semibold">هدف تکمیل شد - تبریک !</p>
+              <p className="text-xs text-muted">
+                {goal.targetAmount?.toLocaleString() ?? 0} تومان پس‌انداز شد ·{" "}
+                {bankName}
+              </p>
+            </div>
+          </section>
+        )}
+      </div>
       <FormModal
         title="افزودن پس انداز"
         isOpen={modal === "save"}
@@ -165,7 +167,7 @@ const FinanceGoalBox = ({ goal }: FinanceGoalBoxProps) => {
           formId={`save-goal-${goal._id}`}
           loading={isLoadingSave}
           onLoadingChange={setIsLoadingSave}
-          onSuccess={()=>setModal(null)}
+          onSuccess={() => setModal(null)}
         />
       </FormModal>
       <FormModal
