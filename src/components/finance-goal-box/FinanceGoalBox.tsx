@@ -69,29 +69,31 @@ const FinanceGoalBox = ({ goal }: FinanceGoalBoxProps) => {
           {goal.percent}%
         </div>
       </div>
-      <div className="flex flex-col h-[93%]">
-        <div className="mt-2.5">
-          <CircleProgress
-            progress={goal.percent}
-            size={430}
-            strokeWidth={15}
-            trackColor="text-secondary"
-            progressColor="text-primary"
-            savedAmount={goal.savedAmount}
-            targetAmount={goal.targetAmount}
-          />
+      <div className="flex flex-col h-[93%] justify-between">
+        <div>
+          <div className="mt-2.5">
+            <CircleProgress
+              progress={goal.percent}
+              size={430}
+              strokeWidth={15}
+              trackColor="text-secondary"
+              progressColor="text-primary"
+              savedAmount={goal.savedAmount}
+              targetAmount={goal.targetAmount}
+            />
+          </div>
+          {goal.deadline ? (
+            <div className="mt-2 py-2 text-sm px-3.75 mx-auto rounded-xl bg-secondary border-secondary border flex items-center gap-x-1.5 w-fit">
+              <CalendarIcon size={17} />
+              <p>{daysLabel(Number(days))}</p>
+            </div>
+          ) : (
+            <div className="mt-2.75 py-2 text-sm px-3.75 mx-auto rounded-xl bg-secondary border border-secondary text-muted flex items-center gap-x-1.5 w-fit">
+              <InfiniteIcon size={16} />
+              <p> بدون مهلت</p>
+            </div>
+          )}
         </div>
-        {goal.deadline ? (
-          <div className="mt-2 py-2 text-sm px-3.75 mx-auto rounded-xl bg-secondary border-secondary border flex items-center gap-x-1.5 w-fit">
-            <CalendarIcon size={17} />
-            <p>{daysLabel(Number(days))}</p>
-          </div>
-        ) : (
-          <div className="mt-2.75 py-2 text-sm px-3.75 mx-auto rounded-xl bg-secondary border border-secondary text-muted flex items-center gap-x-1.5 w-fit">
-            <InfiniteIcon size={16} />
-            <p> بدون مهلت</p>
-          </div>
-        )}
 
         {!goal.completed ? (
           <section className="flex items-center gap-x-4 mt-6.5 justify-self-end">
@@ -117,7 +119,6 @@ const FinanceGoalBox = ({ goal }: FinanceGoalBoxProps) => {
                     onAction={(key) => {
                       if (key === "edit") setModal("edit");
                       if (key === "delete") setModal("delete");
-                      // if (key === "factor") setIsOpenFactorModal(true);
                     }}
                   >
                     <Dropdown.Item id="edit" textValue="Edit">
