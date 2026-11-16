@@ -37,7 +37,7 @@ const Expense = ({ total, change, groups = [], loading }: ExpenseProps) => {
                   change > 0 ? "bg-[#f06060] text-white" : "bg-primary text-neutral-700"
                 }`}
               >
-                {change > 0 ? "+" : change < 0 ? "-" : ""}
+                {change > 0 && "+" }{change < 0 && "-" }
                 {Math.abs(change)}%
               </div>
             )}

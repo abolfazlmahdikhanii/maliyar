@@ -6,7 +6,7 @@ import TomanIcon from "../ui/toman-icon/TomanIcon";
 type IncomeProps = {
   total?: number;
   change?: number | null;
-  groups?: StatGroup[]; 
+  groups?: StatGroup[];
   loading?: boolean;
 };
 
@@ -22,7 +22,9 @@ const Income = ({ total, change, groups = [], loading }: IncomeProps) => (
         </div>
         <div className="flex items-center gap-x-3.5 mt-6 mr-2">
           <p className="text-white font-semibold text-[40px] flex items-center gap-x-1">
-            {loading || total === undefined ? "—" : total.toLocaleString("en-US")}
+            {loading || total === undefined
+              ? "—"
+              : total.toLocaleString("en-US")}
             <span className="text-neutral-400">
               <TomanIcon width="22" height="22" />
             </span>
@@ -30,10 +32,13 @@ const Income = ({ total, change, groups = [], loading }: IncomeProps) => (
           {!loading && change != null && (
             <div
               className={`flex items-center justify-center px-2.5 py-1.25 text-xs rounded-full ${
-                change < 0 ? "bg-[#f06060] text-white" : "bg-primary text-neutral-700"
+                change < 0
+                  ? "bg-[#f06060] text-white"
+                  : "bg-primary text-neutral-700"
               }`}
             >
-              {change > 0 ? "+" : change < 0 ? "-" : ""}
+              {change > 0 && "+"}
+              {change < 0 && "-"}
               {Math.abs(change)}%
             </div>
           )}
