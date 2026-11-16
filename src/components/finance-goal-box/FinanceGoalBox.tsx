@@ -69,7 +69,7 @@ const FinanceGoalBox = ({ goal }: FinanceGoalBoxProps) => {
           {goal.percent}%
         </div>
       </div>
-      <div className="flex flex-col ">
+      <div className="flex flex-col h-[93%]">
         <div className="mt-2.5">
           <CircleProgress
             progress={goal.percent}
@@ -94,7 +94,7 @@ const FinanceGoalBox = ({ goal }: FinanceGoalBoxProps) => {
         )}
 
         {!goal.completed ? (
-          <section className="flex items-center gap-x-4 mt-6.5 self-end">
+          <section className="flex items-center gap-x-4 mt-6.5 justify-self-end">
             <Button
               className="h-13 rounded-xl w-full text-base bg-primary text-black"
               isDisabled={goal.completed}
