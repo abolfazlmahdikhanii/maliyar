@@ -15,6 +15,7 @@ import { loadSettings } from "./settings";
 
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
+// ⚠️ اسم دقیق مدل رو با لیست مدل‌های API چک کن؛ اگه اشتباه باشه همه‌ی درخواست‌ها به Z.ai می‌رن
 const GEMINI_MODEL = "gemini-3.8-flash";
 
 const ZAI_URL = "https://api.z.ai/api/paas/v4/chat/completions";
@@ -93,6 +94,10 @@ const toEn = (s: string) =>
     .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
     .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)));
 
+// درصد با محافظ تقسیم بر صفر
+const percentOf = (part: number, whole: number) =>
+  whole > 0 ? Math.round((part / whole) * 100) : 0;
+
 // ---------- ۱. سقف درخواست ----------
 
 export const checkLimit = internalMutation({
@@ -163,6 +168,8 @@ export const summary = internalQuery({
 
     const income = sum(current, "income");
     const outcome = sum(current, "outcome");
+    const previousIncome = sum(previous, "income");
+    const previousOutcome = sum(previous, "outcome");
     const spentNow = byCategory(current);
     const spentBefore = byCategory(previous);
 
@@ -266,6 +273,13 @@ export const summary = internalQuery({
       .filter((u) => !u.out)
       .reduce((s, u) => s + u.amount, 0);
 
+    // پایه‌ی محاسبه‌ی صندوق اضطراری و نسبت بدهی: ماه قبل (کامل‌تره)، اگه نبود ماه جاری
+    const monthlyBase = previousOutcome > 0 ? previousOutcome : outcome;
+    const incomeBase = previousIncome > 0 ? previousIncome : income;
+    const monthlyInstallments = loans
+      .filter((l) => l.paidCount < l.installmentCount)
+      .reduce((s, l) => s + l.installmentAmount, 0);
+
     return {
       today: fa(today),
       accounts: accounts.map((a) => ({
@@ -283,12 +297,20 @@ export const summary = internalQuery({
         net: income - outcome,
         savingsRatePercent:
           income > 0 ? Math.round(((income - outcome) / income) * 100) : null,
-        incomeChangePercent: change(income, sum(previous, "income")),
-        outcomeChangePercent: change(outcome, sum(previous, "outcome")),
+        incomeChangePercent: change(income, previousIncome),
+        outcomeChangePercent: change(outcome, previousOutcome),
         // پیش‌بینی هزینه‌ی کل ماه، با همین روند
         projectedMonthOutcome: Math.round(
           (outcome / jd) * jalaaliMonthLength(jy, jm),
         ),
+        // موجودی کل به چند ماه هزینه می‌رسه
+        emergencyFundMonths:
+          monthlyBase > 0 ? Math.round((balance / monthlyBase) * 10) / 10 : null,
+        // مجموع اقساط ماهانه نسبت به درآمد
+        debtToIncomePercent:
+          incomeBase > 0
+            ? Math.round((monthlyInstallments / incomeBase) * 100)
+            : null,
         topOutcome: [...spentNow]
           .sort((a, b) => b[1] - a[1])
           .slice(0, 5)
@@ -304,7 +326,7 @@ export const summary = internalQuery({
             category: CATEGORY_LABELS[b.categoryId] ?? b.categoryId,
             limit: b.limit,
             used,
-            usedPercent: Math.round((used / b.limit) * 100),
+            usedPercent: percentOf(used, b.limit),
           };
         }),
         upcoming14Days: upcoming.slice(0, 10),
@@ -314,7 +336,7 @@ export const summary = internalQuery({
           title: g.title,
           saved: g.savedAmount,
           target: g.targetAmount,
-          percent: Math.round((g.savedAmount / g.targetAmount) * 100),
+          percent: percentOf(g.savedAmount, g.targetAmount),
         })),
       },
     };
@@ -789,13 +811,13 @@ const SYSTEM = `تو «دستیار مالی مالیار» هستی. کارها
 - سه مورد مشخص و قابل اجرا، با مبلغ یا دسته‌ی دقیق. کلی‌گویی نکن.
 
 قیمت بازار:
-- قیمت طلا، سکه و ارز فقط از market.prices خونده می‌شه و زمان آخرین به‌روزرسانی updatedAt ـه؛ همیشه اشاره کن. اگه market خالیه، بگو «قیمت لحظه‌ای الان در دسترس نیست».
-- هیچ‌وقت قیمتی از خودت نگو و آینده‌ی قیمت‌ها رو پیش‌بینی نکن. روند فقط از dayChangePercent.
-- اگه پرسید پس‌اندازش چقدر طلا یا دلاره، از yourBalanceEquals بخون.
+- قیمت طلا، سکه و ارز فقط از market.items خونده می‌شه و زمان آخرین به‌روزرسانی market.updatedAt ـه؛ همیشه اشاره کن. اگه market خالیه، بگو «قیمت لحظه‌ای الان در دسترس نیست».
+- هیچ‌وقت قیمتی از خودت نگو و آینده‌ی قیمت‌ها رو پیش‌بینی نکن. روند فقط از changePercent هر مورد.
+- اگه پرسید پس‌اندازش چقدر طلا یا دلاره، از market.yourBalanceEquals بخون.
 
 سرمایه‌گذاری:
 - راهنمایی آموزشی و متناسب با وضعیت خود کاربر بده، نه «بخر» یا «نفروش».
-- ترتیب: ۱) emergencyFundMonths رو بگو؛ اگه کمتر از ۳ ماهه، اول صندوق اضطراری. ۲) اگه debtToIncomePercent بالای ۳۵ درصده یا وامی با بهره‌ی بالا داره، اول بدهی. ۳) بعد انواع دارایی (طلا و سکه، ارز، سپرده و صندوق درآمد ثابت، صندوق سهامی) رو کوتاه با مزیت و ریسک مقایسه کن؛ اگه افق زمانی یا ریسک‌پذیریش معلوم نیست، یک سوال کوتاه بپرس.
+- ترتیب: ۱) analysis.emergencyFundMonths رو بگو؛ اگه کمتر از ۳ ماهه، اول صندوق اضطراری. ۲) اگه analysis.debtToIncomePercent بالای ۳۵ درصده یا وامی با بهره‌ی بالا داره، اول بدهی. ۳) بعد انواع دارایی (طلا و سکه، ارز، سپرده و صندوق درآمد ثابت، صندوق سهامی) رو کوتاه با مزیت و ریسک مقایسه کن؛ اگه افق زمانی یا ریسک‌پذیریش معلوم نیست، یک سوال کوتاه بپرس.
 - اصول کلی: تنوع، خرید پله‌ای، و فقط پولی که تا یک سال لازم نداره.
 - انتهای هر جواب سرمایه‌گذاری یک جمله: «این توصیه‌ی تخصصی نیست؛ برای تصمیم‌های بزرگ با مشاور مالی مجاز مشورت کن.»
 
@@ -812,7 +834,7 @@ const SYSTEM = `تو «دستیار مالی مالیار» هستی. کارها
 
 type ApiRequestMessage = {
   role: string;
-  content: string;
+  content: string | null;
   tool_calls?: unknown;
   tool_call_id?: string;
 };
@@ -849,6 +871,15 @@ type Provider = {
   key: string;
   model: string;
 };
+
+// خطای سرویس‌دهنده؛ retryable مشخص می‌کنه دوباره تلاش بشه یا نه
+class ProviderError extends Error {
+  retryable: boolean;
+  constructor(message: string, retryable: boolean) {
+    super(message);
+    this.retryable = retryable;
+  }
+}
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -887,13 +918,10 @@ const callProvider = async (
   provider: Provider,
   body: Record<string, unknown>,
 ): Promise<AIResponse> => {
-  let lastStatus = 0;
   let lastError = "";
 
   for (let attempt = 0; attempt < RETRY_DELAYS.length; attempt++) {
-    if (RETRY_DELAYS[attempt] > 0) {
-      await sleep(RETRY_DELAYS[attempt]);
-    }
+    if (RETRY_DELAYS[attempt] > 0) await sleep(RETRY_DELAYS[attempt]);
 
     try {
       const res = await fetch(provider.url, {
@@ -902,68 +930,36 @@ const callProvider = async (
           "Content-Type": "application/json",
           Authorization: `Bearer ${provider.key}`,
         },
-        body: JSON.stringify({
-          ...body,
-          model: provider.model,
-        }),
+        body: JSON.stringify({ ...body, model: provider.model }),
         signal: AbortSignal.timeout(90_000),
       });
 
       if (res.ok) {
-        try {
-          const json = (await res.json()) as AIResponse;
-
-          if (!json?.choices?.[0]?.message) {
-            throw new Error("ساختار پاسخ مدل معتبر نیست");
-          }
-
-          return json;
-        } catch (error) {
-          lastError = error instanceof Error ? error.message : "پاسخ نامعتبر";
-
-          console.error(`${provider.name} invalid response`, lastError);
-          break;
+        const json = (await res.json().catch(() => null)) as AIResponse | null;
+        if (!json?.choices?.[0]?.message) {
+          throw new ProviderError("ساختار پاسخ مدل معتبر نیست", false);
         }
+        return json;
       }
 
-      lastStatus = res.status;
-      lastError = (await res.text().catch(() => "")).slice(0, 500);
-
-      // خطاهای موقت: تلاش مجدد
-      if (res.status === 429 || res.status >= 500) {
-        console.error(
-          `${provider.name} temporary error ${res.status}`,
-          lastError,
-        );
-        continue;
-      }
-
-      // خطاهای دیگر: انتقال به سرویس بعدی
-      console.error(
-        `${provider.name} rejected request ${res.status}`,
-        lastError,
-      );
-
-      throw new Error(`${provider.name} error ${res.status}: ${lastError}`);
+      const text = (await res.text().catch(() => "")).slice(0, 500);
+      // فقط 429 و خطاهای سرور موقتی‌ان؛ بقیه (مثل 400/401/404) تکرار فایده ندارن
+      const retryable = res.status === 429 || res.status >= 500;
+      throw new ProviderError(`${res.status}: ${text}`, retryable);
     } catch (error) {
       lastError = error instanceof Error ? error.message : "network error";
-
-      // خطاهای HTTP که همین‌جا ساخته شده‌اند نیاز به retry ندارند.
-      if (lastStatus !== 0 && lastStatus !== 429 && lastStatus < 500) {
-        break;
-      }
-
       console.error(
-        `${provider.name} request failed (attempt ${attempt + 1})`,
+        `${provider.name} failed (attempt ${attempt + 1})`,
         lastError,
       );
+
+      // خطای صریحاً غیرقابل‌تکرار: برو سراغ سرویس بعدی. خطای شبکه و timeout دوباره امتحان می‌شن
+      if (error instanceof ProviderError && !error.retryable) break;
     }
   }
 
   throw new Error(
-    `${provider.name} unavailable (${lastStatus || "network"}): ${
-      lastError || "unknown error"
-    }`,
+    `${provider.name} unavailable: ${lastError || "unknown error"}`,
   );
 };
 
@@ -1029,7 +1025,19 @@ export const chat = action({
 
     // قیمت زنده‌ی بازار (کش ۱۰ دقیقه‌ای) کنار تحلیل‌ها به مدل داده می‌شه
     const market = await fetchMarket();
-    const data = { ...summaryData, market };
+    const totalBalance = summaryData.analysis.totalBalance;
+    const data = {
+      ...summaryData,
+      market: market && {
+        ...market,
+        // موجودی کاربر به واحد هر دارایی؛ مدل خودش تقسیم نمی‌کنه
+        yourBalanceEquals: market.items.map((i) => ({
+          title: i.title,
+          unit: i.unit,
+          quantity: Math.round((totalBalance / i.price) * 100) / 100,
+        })),
+      },
+    };
 
     const baseMessages: ApiRequestMessage[] = [
       {
@@ -1123,7 +1131,7 @@ export const chat = action({
             ...baseMessages,
             {
               role: "assistant",
-              content: message?.content ?? "",
+              content: message?.content ?? null,
               tool_calls: calls,
             },
             ...toolResults,
