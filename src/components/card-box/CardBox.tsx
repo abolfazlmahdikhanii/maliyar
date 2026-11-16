@@ -73,7 +73,7 @@ const CardBox = ({
     txt: string | undefined,
     type: "card" | "sheba",
   ) => {
-    if (!txt) return;
+    if (!txt) return toast.warning("متنی برای کپی کردن وجود ندارد");
     navigator.clipboard
       .writeText(txt)
       .then(() => {
