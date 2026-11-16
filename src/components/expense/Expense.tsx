@@ -1,4 +1,8 @@
-import { CardSendIcon } from "@solar-icons/react/outline";
+import {
+  ArrowLeftDownIcon,
+  ArrowLeftUpIcon,
+  CardSendIcon,
+} from "@solar-icons/react/outline";
 import type { StatGroup } from "../../hooks/useMonthStats";
 import CurveBox from "../ui/curve-box/CurveBox";
 import TomanIcon from "../ui/toman-icon/TomanIcon";
@@ -6,13 +10,14 @@ import TomanIcon from "../ui/toman-icon/TomanIcon";
 type ExpenseProps = {
   total?: number;
   change?: number | null;
-  groups?: StatGroup[]; 
+  groups?: StatGroup[];
   loading?: boolean;
 };
 
 const Expense = ({ total, change, groups = [], loading }: ExpenseProps) => {
   const sum = groups.reduce((s, g) => s + g.value, 0);
-
+  const up = change != null && change > 0;
+  const down = change != null && change < 0;
   return (
     <CurveBox>
       <div className="flex flex-col justify-between h-full">
@@ -25,20 +30,27 @@ const Expense = ({ total, change, groups = [], loading }: ExpenseProps) => {
           </div>
           <div className="flex items-center gap-x-3.5 mt-6 mr-2">
             <p className="text-white font-semibold text-[40px] flex items-center gap-x-1">
-              {loading || total === undefined ? "—" : total.toLocaleString("en-US")}
+              {loading || total === undefined
+                ? "—"
+                : total.toLocaleString("en-US")}
               <span className="text-neutral-400">
                 <TomanIcon width="22" height="22" />
               </span>
             </p>
-      
+
             {!loading && change != null && (
               <div
-                className={`flex items-center justify-center px-2.5 py-1.25 text-xs rounded-full ${
-                  change > 0 ? "bg-[#f06060] text-white" : "bg-primary text-neutral-700"
+                dir="ltr"
+                title={`${Math.abs(change)}٪ ${up ? "بیشتر" : "کمتر"} از ماه قبل`}
+                aria-label={`هزینه ${Math.abs(change)} درصد ${up ? "بیشتر" : "کمتر"} از ماه قبل`}
+                className={`flex items-center gap-x-1 px-2.5 py-1.25 text-xs rounded-full ${
+                  up ? "bg-[#f06060] text-white" : "bg-primary text-neutral-700"
                 }`}
               >
-                {change > 0 && "+" }{change < 0 && "-" }
+                {up ? "+" : down ? "-" : ""}
                 {Math.abs(change)}%
+                {up && <ArrowLeftUpIcon size={12} strokeWidth={2} />}
+                {down && <ArrowLeftDownIcon size={12} strokeWidth={2} />}
               </div>
             )}
           </div>
