@@ -51,7 +51,7 @@ const Expense = ({ total, change, groups = [], loading }: ExpenseProps) => {
               >
                 {up && <ArrowLeftUpIcon size={12} strokeWidth={2} />}
                 {down && <ArrowLeftDownIcon size={12} strokeWidth={2} />}
-                {Math.abs(change)}%{up ? "+" : down ? "-" : ""}
+                {up ? "+" : down ? "-" : ""} {Math.abs(change)}%
               </div>
             )}
           </div>

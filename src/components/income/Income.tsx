@@ -1,4 +1,8 @@
-import { ArrowLeftDownIcon, ArrowLeftUpIcon, CardReceiveIcon } from "@solar-icons/react/outline";
+import {
+  ArrowLeftDownIcon,
+  ArrowLeftUpIcon,
+  CardReceiveIcon,
+} from "@solar-icons/react/outline";
 import type { StatGroup } from "../../hooks/useMonthStats";
 import CurveBox from "../ui/curve-box/CurveBox";
 import TomanIcon from "../ui/toman-icon/TomanIcon";
@@ -38,13 +42,14 @@ const Income = ({ total, change, groups = [], loading }: IncomeProps) => {
                 title={`${Math.abs(change)}٪ ${up ? "بیشتر" : "کمتر"} از ماه قبل`}
                 aria-label={`هزینه ${Math.abs(change)} درصد ${up ? "بیشتر" : "کمتر"} از ماه قبل`}
                 className={`flex items-center gap-x-1 px-2.5 py-1.25 text-xs rounded-full ${
-                  down ? "bg-[#f06060] text-white" : "bg-primary text-neutral-700"
+                  down
+                    ? "bg-[#f06060] text-white"
+                    : "bg-primary text-neutral-700"
                 }`}
-                >
+              >
                 {up && <ArrowLeftUpIcon size={12} strokeWidth={2} />}
                 {down && <ArrowLeftDownIcon size={12} strokeWidth={2} />}
-                {Math.abs(change)}%
-                {up ? "+" : down ? "-" : ""}
+                {up ? "+" : down ? "-" : ""} {Math.abs(change)}%
               </div>
             )}
           </div>
