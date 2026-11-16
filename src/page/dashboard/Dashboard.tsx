@@ -36,6 +36,7 @@ const Dashboard = () => {
           balance={balance}
           change={balanceChange}
           loading={accounts === undefined}
+          onOpen={()=>navigate("accounts")}
         />
         <Income
           total={stats.income}
