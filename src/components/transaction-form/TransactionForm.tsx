@@ -101,9 +101,7 @@ const TransactionForm = ({
     detail?.date ?? today(getLocalTimeZone()),
   );
   const [time, setTime] = useState<TimeValue | null>(detail?.time ?? null);
-  const [categoryName, setCategoryName] = useState<string>(
-    detail?.category ? detail.category?.label : "",
-  );
+ 
 
   const accountOptions = (accounts ?? [])
     .filter((a) => a.type === paymentMethod)
@@ -184,7 +182,7 @@ const TransactionForm = ({
       <Categories
         categoryId={categoryTransactionId}
         setCategoryId={setCategoryTransactionId}
-        onCategoryName={setCategoryName}
+  
       />
       <section className="grid grid-cols-2 gap-5 max-w-2xl mt-5.5">
         <FormSelect

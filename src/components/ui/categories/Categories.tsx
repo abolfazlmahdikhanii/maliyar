@@ -7,12 +7,16 @@ type CategoriesProps = {
   onCategoryName?: (data: string) => void;
 };
 
-const Categories = ({
-  categoryId,
-  setCategoryId,
-  onCategoryName,
-}: CategoriesProps) => {
-  const inVisibleCategory = ["claim", "check-income", "check-outcome", "loan","debt","subscription","goal"];
+const Categories = ({ categoryId, setCategoryId }: CategoriesProps) => {
+  const inVisibleCategory = [
+    "claim",
+    "check-income",
+    "check-outcome",
+    "loan",
+    "debt",
+    "subscription",
+    "goal",
+  ];
   return (
     <section className="flex flex-col gap-2  max-w-2xl mt-5.5">
       <Label htmlFor="title" className="text-muted text-sm">
@@ -31,7 +35,6 @@ const Categories = ({
               }`}
               onClick={() => {
                 setCategoryId(category.id);
-                onCategoryName?.(category.label);
               }}
               style={
                 categoryId === category.id

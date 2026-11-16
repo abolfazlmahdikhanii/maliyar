@@ -30,14 +30,13 @@ const ltrInputClass = `${inputClass} text-left`;
 const Auth = () => {
   const [mode, setMode] = useState<Mode>("login");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
   const { signIn } = useAuthActions();
   const convex = useConvex();
   const isRegister = mode === "register";
 
   const switchMode = () => {
     setMode(isRegister ? "login" : "register");
-    setError("");
   };
 
   const register = async (values: RegisterData) => {
