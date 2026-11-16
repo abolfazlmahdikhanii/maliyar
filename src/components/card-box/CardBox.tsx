@@ -69,6 +69,24 @@ const CardBox = ({
       setLoadingRemove(false);
     }
   };
+  const copyNumberHandler = (
+    txt: string | undefined,
+    type: "card" | "sheba",
+  ) => {
+    if (!txt) return;
+    navigator.clipboard
+      .writeText(txt)
+      .then(() => {
+        toast.success(
+          `کپی ${type === "card" ? "شماره کارت" : "شماره شبا"} با موفقیت انجام شد`,
+        );
+      })
+      .catch(() => {
+        toast.danger(
+          `کپی ${type === "card" ? "شماره کارت" : "شماره شبا"} با خطاا مواجه شد`,
+        );
+      });
+  };
   return (
     <div>
       <CardHolder
@@ -124,6 +142,9 @@ const CardBox = ({
                   onAction={(key) => {
                     if (key === "edit") setIsOpenEditModal(true);
                     if (key === "delete") setIsShowDelete(true);
+                    if (key === "copy-card")
+                      copyNumberHandler(cardNumber, "card");
+                    if (key === "copy-sheba") copyNumberHandler(iban, "sheba");
                   }}
                 >
                   <Dropdown.Item id="edit" textValue="Edit">
