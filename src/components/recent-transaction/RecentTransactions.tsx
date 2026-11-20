@@ -21,7 +21,7 @@ const RecentTransactions = () => {
         </div>
       </div>
 
-      <div className="mt-6 space-y-2.75 lg:h-full">
+      <div className="mt-6 space-y-2.75 min-h-72 lg:h-full">
         {loading ? (
           <div className="flex h-40 items-center justify-center lg:h-full">
             <Loader />

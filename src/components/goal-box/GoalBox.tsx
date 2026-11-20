@@ -47,7 +47,7 @@ const GoalBox = ({ onOpenGoals }: GoalBoxProps) => {
         ) : (
           <ScrollShadow
             hideScrollBar
-            className="mt-8 pb-2 space-y-2.5 max-h-98.5 overflow-x-hidden"
+            className="mt-8 pb-2 space-y-2.5 min-h-72  lg:max-h-98.5 overflow-x-hidden"
           >
             {recent.map((goal) => (
               <GoalItem key={goal._id} goal={goal} />
