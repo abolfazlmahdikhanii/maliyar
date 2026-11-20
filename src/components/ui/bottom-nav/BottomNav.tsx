@@ -77,7 +77,7 @@ const BottomNav = () => {
       <Drawer>
         <Drawer.Backdrop isOpen={state.isOpen} onOpenChange={state.setOpen}>
           <Drawer.Content placement="bottom">
-            <Drawer.Dialog className="rounded-t-[32px] border-t border-secondary bg-secondary">
+            <Drawer.Dialog className="rounded-t-[32px] border-t border-secondary bg-[#eceff31]">
               <Drawer.Handle />
               <Drawer.Header>
                 <Drawer.Heading className="text-base font-bold text-white mb-3">
