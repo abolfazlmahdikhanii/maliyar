@@ -158,7 +158,7 @@ const ChatModal = ({ isOpen, onOpenChange }: ChatModalProps) => {
     <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
       <Modal.Backdrop>
         <Modal.Container className="p-0! sm:p-4!">
-            <Modal.Dialog className="box-modal w-full! max-w-none! rounded-b-none sm:max-w-135! sm:rounded-b-2xl max-h-[85vh]">
+          <Modal.Dialog className="box-modal w-full! max-w-none! rounded-b-none sm:max-w-135! sm:rounded-b-2xl max-h-[85vh]">
             <Modal.Header className="flex flex-row items-center justify-between">
               <Modal.Heading>دستیار مالیار</Modal.Heading>
               <Button isIconOnly variant="outline" size="sm" slot="close">

@@ -20,23 +20,23 @@ const GoalBox = ({ onOpenGoals }: GoalBoxProps) => {
     .slice(0, LIMIT);
 
   return (
-    <div className="relative h-full w-full col-span-2 lg:col-span-1">
-      <div className="box inverted-radius w-full h-full ">
+    <div className="relative w-full min-w-0 lg:col-span-1 lg:h-full">
+      <div className="box inverted-radius h-auto! min-h-0! w-full lg:h-full!">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-11.5 h-11.5 grid place-content-center bg-secondary rounded-full text-white">
+            <div className="grid size-11.5 shrink-0 place-content-center rounded-full bg-secondary text-white">
               <MentionCircleIcon size={24} />
             </div>
-            <p className="text-white text-[21px]">اهداف من</p>
+            <p className="text-lg text-white sm:text-[21px]">اهداف من</p>
           </div>
         </div>
 
         {goals === undefined ? (
-          <div className="flex items-center justify-center h-[90%]">
+          <div className="flex min-h-48 items-center justify-center lg:h-[90%]">
             <Loader />
           </div>
         ) : goals.length === 0 ? (
-          <div className="flex items-center justify-center h-[90%]">
+          <div className="flex min-h-48 items-center justify-center lg:h-[90%]">
             <EmptyState
               compact
               kind="goals"
@@ -47,7 +47,7 @@ const GoalBox = ({ onOpenGoals }: GoalBoxProps) => {
         ) : (
           <ScrollShadow
             hideScrollBar
-            className="mt-8 pb-2 space-y-2.5 min-h-72 h-auto  lg:max-h-98.5 overflow-x-hidden"
+            className="mt-6 max-h-[80%]  h-full space-y-2.5 overflow-y-auto overflow-x-hidden pb-2 lg:mt-8 lg:max-h-98.5"
           >
             {recent.map((goal) => (
               <GoalItem key={goal._id} goal={goal} />
@@ -59,7 +59,7 @@ const GoalBox = ({ onOpenGoals }: GoalBoxProps) => {
       <Button
         isIconOnly
         aria-label="هدف جدید"
-        className="absolute top-1 left-3.5 bg-secondary w-13.75 h-13.75 rounded-full text-white border border-secondary"
+        className="absolute left-3.5 top-1 size-13.75 rounded-full border border-secondary bg-secondary text-white"
         onPress={onOpenGoals}
       >
         <svg
