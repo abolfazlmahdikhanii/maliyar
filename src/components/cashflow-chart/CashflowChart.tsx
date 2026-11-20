@@ -36,7 +36,10 @@ const CashflowChart = () => {
             <p className="ml-6 text-sm">
               {FILTERS.find((f) => f.id === filter)?.label}
             </p>
-            <AltArrowDownIcon size={16} className="mr-0.5 absolute left-4 sm:left-5" />
+            <AltArrowDownIcon
+              size={16}
+              className="mr-0.5 absolute left-4 sm:left-5"
+            />
           </Button>
           <Dropdown.Popover
             className="min-w-42.5 text-neutral-200 bg-[#333436] border border-secondary"
@@ -58,13 +61,13 @@ const CashflowChart = () => {
         </Dropdown>
       </div>
 
-      <div className="mt-6 mb-4 h-72 sm:mt-8 lg:h-full">
+      <div className="mb-4 mt-6 sm:mt-8 lg:h-full">
         {loading ? (
-          <div className="flex h-full items-center justify-center lg:h-[80%]">
+          <div className="flex h-64 items-center justify-center lg:h-[80%]">
             <Loader />
           </div>
         ) : isEmpty ? (
-          <div className="flex h-full items-center justify-center lg:h-[70%]">
+          <div className="flex min-h-64 items-center justify-center lg:h-[70%]">
             <EmptyState
               compact
               kind="transactions"

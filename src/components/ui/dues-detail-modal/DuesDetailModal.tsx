@@ -61,8 +61,8 @@ const DuesDetailModal = ({
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="sm:max-w-135 box-modal">
+          <Modal.Container className="p-0! sm:p-4!">
+            <Modal.Dialog className="box-modal w-full! max-w-none! rounded-b-none sm:max-w-135! sm:rounded-b-2xl">
               <Modal.Header className="flex flex-row items-center justify-between">
                 <Modal.Heading>
                   جزییات {detail?.type === "claim" ? "طلب" : "بدهی"}
@@ -73,7 +73,6 @@ const DuesDetailModal = ({
               </Modal.Header>
 
               <Modal.Body>
-          
                 <div className="box-date mt-3 rounded-xl">
                   <div className="flex items-center gap-3">
                     <div
@@ -132,7 +131,6 @@ const DuesDetailModal = ({
                   </div>
                 </div>
 
-             
                 <div className="mt-4 divide-y divide-secondary overflow-hidden rounded-xl border border-secondary bg-[#202025]/60">
                   <div className="flex items-center justify-between gap-3 px-3.5 py-3">
                     <div className="flex shrink-0 items-center gap-2.5 text-neutral-400">
@@ -173,7 +171,6 @@ const DuesDetailModal = ({
                   </div>
                 </div>
 
-            
                 <div className="mx-1 mt-6">
                   <Stepper status={detail?.status ?? "open"} />
                   <div className="flex gap-x-1.25 pb-2 pt-6 text-neutral-500">

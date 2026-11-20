@@ -1,29 +1,31 @@
 import { Button, ProgressBar } from "@heroui/react";
 import { AltArrowDownIcon, AltArrowUpIcon } from "@solar-icons/react/outline";
 import { useState } from "react";
-import CircleProgress from "../ui/circle-progress/CircleProgress";
 import type { Goal } from "../../page/finance-goal/FinanceGoal";
-
+import CircleProgress from "../ui/circle-progress/CircleProgress";
 
 type GoalItemProps = {
   goal: Goal;
-  
-  
 };
-const GoalItem = ({goal}:GoalItemProps) => {
+
+const GoalItem = ({ goal }: GoalItemProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
   return (
     <div
-      className="py-4.5 pr-6 pl-4.5 rounded-2xl bg-secondary transition-all duration-200 cursor-pointer"
+      className="min-w-0 cursor-pointer rounded-2xl bg-secondary py-3.5 pl-3.5 pr-4 transition-all duration-200 sm:py-4.5 sm:pl-4.5 sm:pr-6"
       onClick={() => setIsOpen((prev) => !prev)}
     >
-      <div className="flex items-center justify-between ">
-        <p className="text-lg  text-white truncate">{goal.title}</p>
+      <div className="flex items-center justify-between gap-3">
+        <p className="min-w-0 flex-1 truncate text-sm sm:text-base text-white md:text-lg">
+          {goal.title}
+        </p>
+
         {!isOpen ? (
-          <div className="flex items-center gap-x-2.25">
+          <div className="flex shrink-0 items-center gap-x-2.25">
             <ProgressBar
               aria-label="Loading progress"
-              className="w-24.5"
+              className="w-16 sm:w-24.5"
               value={goal.percent}
               color="danger"
             >
@@ -31,13 +33,15 @@ const GoalItem = ({goal}:GoalItemProps) => {
                 <ProgressBar.Fill />
               </ProgressBar.Track>
             </ProgressBar>
-            <p className="text-neutral-300 text-[13px] mt-1">{goal.percent}%</p>
+            <p className="mt-1 text-xs text-neutral-300 sm:text-[13px]">
+              {goal.percent}%
+            </p>
           </div>
         ) : null}
 
         <Button
           isIconOnly
-          className={`w-6 h-6 rounded-full ${
+          className={`size-6 shrink-0 rounded-full ${
             !isOpen ? "bg-secondary" : "bg-neutral-200 text-black"
           }`}
           onPress={() => setIsOpen((prev) => !prev)}
@@ -49,6 +53,7 @@ const GoalItem = ({goal}:GoalItemProps) => {
           )}
         </Button>
       </div>
+
       {isOpen && (
         <div className="my-1">
           <CircleProgress

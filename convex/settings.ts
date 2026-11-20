@@ -75,15 +75,18 @@ export const exportTransactions = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    const transactions = await ctx.db
-      .query("transactions")
-      .withIndex("by_user_date", (q) => q.eq("userId", userId))
-      .order("desc")
-      .collect();
-    const accounts = await ctx.db
-      .query("accounts")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+    const [transactions, accounts] = await Promise.all([
+      ctx.db
+        .query("transactions")
+        .withIndex("by_user_date", (q) => q.eq("userId", userId))
+        .order("desc")
+        .collect(),
+
+      ctx.db
+        .query("accounts")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .collect(),
+    ]);
     const bankById = new Map(accounts.map((a) => [a._id, a.bank]));
 
     return transactions.map((t) => ({

@@ -41,8 +41,8 @@ const AccountsDetail = ({
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="sm:max-w-135 box-modal">
+          <Modal.Container className="p-0! sm:p-4!">
+            <Modal.Dialog className="box-modal w-full! max-w-none! rounded-b-none sm:max-w-135! sm:rounded-b-2xl">
               <Modal.Header className="flex flex-row items-center justify-between border-b border-b-secondary px-1 pb-4 pt-2">
                 <div className="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-2">
                   <div className="flex min-w-0 flex-col gap-y-1.5">

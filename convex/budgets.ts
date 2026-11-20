@@ -42,17 +42,19 @@ export const list = query({
       throw new ConvexError("بازه‌ی تاریخ معتبر نیست.");
     }
 
-    const budgets = await ctx.db
-      .query("budgets")
-      .withIndex("by_user_category", (q) => q.eq("userId", userId))
-      .collect();
+    const [budgets, transactions] = await Promise.all([
+      ctx.db
+        .query("budgets")
+        .withIndex("by_user_category", (q) => q.eq("userId", userId))
+        .collect(),
 
-    const transactions = await ctx.db
-      .query("transactions")
-      .withIndex("by_user_date", (q) =>
-        q.eq("userId", userId).gte("date", from).lte("date", to),
-      )
-      .collect();
+      ctx.db
+        .query("transactions")
+        .withIndex("by_user_date", (q) =>
+          q.eq("userId", userId).gte("date", from).lte("date", to),
+        )
+        .collect(),
+    ]);
 
     const usedByCategory = new Map<string, number>();
     for (const t of transactions) {

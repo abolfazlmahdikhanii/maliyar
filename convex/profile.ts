@@ -34,6 +34,7 @@ export const update = mutation({
   handler: async (ctx, args) => {
     const userId = await requireUserId(ctx);
     const user = await ctx.db.get(userId);
+
     if (!user) throw new ConvexError("کاربر پیدا نشد.");
 
     const firstName = args.firstName.trim();
@@ -41,27 +42,41 @@ export const update = mutation({
     const username = args.username.trim().toLowerCase();
     const email = args.email.trim().toLowerCase();
 
-    if (!firstName || firstName.length > 50) throw new ConvexError("نام معتبر نیست.");
-    if (!lastName || lastName.length > 50) throw new ConvexError("نام خانوادگی معتبر نیست.");
-    if (!USERNAME_RE.test(username)) {
-      throw new ConvexError("نام کاربری باید ۳ تا ۲۰ حرف انگلیسی، عدد یا _ باشد.");
+    if (!firstName || firstName.length > 50) {
+      throw new ConvexError("نام معتبر نیست.");
     }
-    if (!EMAIL_RE.test(email)) throw new ConvexError("ایمیل معتبر نیست.");
+
+    if (!lastName || lastName.length > 50) {
+      throw new ConvexError("نام خانوادگی معتبر نیست.");
+    }
+
+    if (!USERNAME_RE.test(username)) {
+      throw new ConvexError(
+        "نام کاربری باید ۳ تا ۲۰ حرف انگلیسی، عدد یا _ باشد.",
+      );
+    }
+
+    if (!EMAIL_RE.test(email)) {
+      throw new ConvexError("ایمیل معتبر نیست.");
+    }
 
     if (username !== user.username) {
       const taken = await ctx.db
         .query("users")
         .withIndex("username", (q) => q.eq("username", username))
         .first();
+
       if (taken && taken._id !== userId) {
         throw new ConvexError("این نام کاربری قبلاً گرفته شده.");
       }
     }
+
     if (email !== user.email) {
       const taken = await ctx.db
         .query("users")
         .withIndex("email", (q) => q.eq("email", email))
         .first();
+
       if (taken && taken._id !== userId) {
         throw new ConvexError("این ایمیل قبلاً ثبت شده.");
       }
@@ -72,27 +87,39 @@ export const update = mutation({
       .withIndex("userIdAndProvider", (q) => q.eq("userId", userId))
       .collect();
 
-    for (const account of authAccounts) {
-      const next =
-        account.providerAccountId === user.email
-          ? email
-          : account.providerAccountId === user.username
-            ? username
-            : null;
-      if (!next || next === account.providerAccountId) continue;
+    await Promise.all(
+      authAccounts.map(async (account) => {
+        const next =
+          account.providerAccountId === user.email
+            ? email
+            : account.providerAccountId === user.username
+              ? username
+              : null;
 
-      const clash = await ctx.db
-        .query("authAccounts")
-        .withIndex("providerAndAccountId", (q) =>
-          q.eq("provider", account.provider).eq("providerAccountId", next),
-        )
-        .first();
-      if (clash && clash.userId !== userId) {
-        throw new ConvexError("این مقدار قبلاً برای ورود استفاده شده.");
-      }
-      await ctx.db.patch(account._id, { providerAccountId: next });
-    }
+        if (!next || next === account.providerAccountId) return;
 
-    await ctx.db.patch(userId, { firstName, lastName, username, email });
+        const clash = await ctx.db
+          .query("authAccounts")
+          .withIndex("providerAndAccountId", (q) =>
+            q.eq("provider", account.provider).eq("providerAccountId", next),
+          )
+          .first();
+
+        if (clash && clash.userId !== userId) {
+          throw new ConvexError("این مقدار قبلاً برای ورود استفاده شده.");
+        }
+
+        await ctx.db.patch(account._id, {
+          providerAccountId: next,
+        });
+      }),
+    );
+
+    await ctx.db.patch(userId, {
+      firstName,
+      lastName,
+      username,
+      email,
+    });
   },
 });

@@ -23,7 +23,6 @@ const ZAI_MODEL = "glm-4.7-flash";
 
 const LIMIT_PER_HOUR = 20;
 
-
 const BANK_KEYS = [
   "mellat",
   "melli",
@@ -80,7 +79,6 @@ const pad = (n: number | string) => String(n).padStart(2, "0");
 const toIso = (g: { gy: number; gm: number; gd: number }) =>
   `${g.gy}-${pad(g.gm)}-${pad(g.gd)}`;
 
-
 const fa = (iso: string) => {
   const [gy, gm, gd] = iso.split("-").map(Number);
   const j = toJalaali(gy, gm, gd);
@@ -94,7 +92,6 @@ const toEn = (s: string) =>
 
 const percentOf = (part: number, whole: number) =>
   whole > 0 ? Math.round((part / whole) * 100) : 0;
-
 
 export const checkLimit = internalMutation({
   args: { userId: v.id("users") },
@@ -112,7 +109,6 @@ export const checkLimit = internalMutation({
     await ctx.db.insert("aiRequests", { userId, at: Date.now() });
   },
 });
-
 
 export const summary = internalQuery({
   args: { userId: v.id("users") },
@@ -292,7 +288,9 @@ export const summary = internalQuery({
           (outcome / jd) * jalaaliMonthLength(jy, jm),
         ),
         emergencyFundMonths:
-          monthlyBase > 0 ? Math.round((balance / monthlyBase) * 10) / 10 : null,
+          monthlyBase > 0
+            ? Math.round((balance / monthlyBase) * 10) / 10
+            : null,
         debtToIncomePercent:
           incomeBase > 0
             ? Math.round((monthlyInstallments / incomeBase) * 100)
@@ -329,7 +327,6 @@ export const summary = internalQuery({
   },
 });
 
-
 const TGJU_URL = "https://call.tgju.org/ajax.json";
 const MARKET_TTL_MS = 10 * 60_000;
 
@@ -339,13 +336,13 @@ type MarketItem = {
   symbol: string;
   title: string;
   unit: string;
-  price: number; 
+  price: number;
   changePercent: number | null;
 };
 
 type MarketData = {
   source: string;
-  updatedAt: string; 
+  updatedAt: string;
   items: MarketItem[];
 };
 
@@ -429,7 +426,6 @@ const fetchMarket = async (): Promise<MarketData | null> => {
   marketCache = { at: Date.now(), data };
   return data;
 };
-
 
 type Kind = "transaction" | "check" | "loan" | "goal" | "subscription";
 export type Draft = {
@@ -711,7 +707,6 @@ function makeDraft(
   return { id: `${Date.now()}-${index}`, kind, payload };
 }
 
-
 const computeComparison = (
   amount: number,
   months: number,
@@ -723,7 +718,7 @@ const computeComparison = (
   const scenarios = [-10, 0, 10];
 
   const assets = market.items.map((item) => {
-    const quantity = amount / item.price; 
+    const quantity = amount / item.price;
     return {
       title: item.title,
       unit: item.unit,
@@ -752,7 +747,6 @@ const computeComparison = (
     note: "سناریوهای +۱۰٪، بدون تغییر و -۱۰٪ فقط فرض هستن، نه پیش‌بینی.",
   };
 };
-
 
 const SYSTEM = `تو «دستیار مالی مالیار» هستی. کارهات: تحلیل و گزارش مالی، پیشنهاد مالی، توضیح قیمت بازار و راهنمایی آموزشی برای سرمایه‌گذاری، و آماده کردن پیش‌نویس ثبت (تراکنش، چک، وام، هدف، اشتراک).
 
@@ -788,7 +782,6 @@ const SYSTEM = `تو «دستیار مالی مالیار» هستی. کارها
 - حساب: اگه کاربر مشخص نکرد، از defaultAccountId استفاده کن؛ اگه نبود و بیشتر از یک حساب هست، بپرس کدوم.
 - تاریخ تراکنش اگه گفته نشد امروزه. برای سررسید چک، وام و اشتراک تاریخ لازمه.
 - توی یک پاسخ بیشتر از ۵ ابزار صدا نزن.`;
-
 
 type ApiRequestMessage = {
   role: string;
@@ -889,19 +882,23 @@ const callProvider = async (
         signal: AbortSignal.timeout(90_000),
       });
 
-      if (res.ok) {
-        const json = (await res.json().catch(() => null)) as AIResponse | null;
-        if (!json?.choices?.[0]?.message) {
-          throw new ProviderError("ساختار پاسخ مدل معتبر نیست", false);
-        }
-        return json;
+      if (!res.ok) {
+        const text = (await res.text().catch(() => "")).slice(0, 500);
+        const retryable = res.status === 429 || res.status >= 500;
+
+        throw new ProviderError(`${res.status}: ${text}`, retryable);
       }
 
-      const text = (await res.text().catch(() => "")).slice(0, 500);
-      const retryable = res.status === 429 || res.status >= 500;
-      throw new ProviderError(`${res.status}: ${text}`, retryable);
+      const json = (await res.json().catch(() => null)) as AIResponse | null;
+
+      if (!json?.choices?.[0]?.message) {
+        throw new ProviderError("ساختار پاسخ مدل معتبر نیست", false);
+      }
+
+      return json;
     } catch (error) {
       lastError = error instanceof Error ? error.message : "network error";
+
       console.error(
         `${provider.name} failed (attempt ${attempt + 1})`,
         lastError,
@@ -947,7 +944,6 @@ const callAI = async (body: Record<string, unknown>): Promise<AIResponse> => {
   );
 };
 
-
 export const chat = action({
   args: {
     messages: v.array(
@@ -972,9 +968,12 @@ export const chat = action({
     }
 
     await ctx.runMutation(internal.ai.checkLimit, { userId });
-    const summaryData = await ctx.runQuery(internal.ai.summary, { userId });
+    await ctx.runMutation(internal.ai.checkLimit, { userId });
 
-    const market = await fetchMarket();
+    const [summaryData, market] = await Promise.all([
+      ctx.runQuery(internal.ai.summary, { userId }),
+      fetchMarket(),
+    ]);
     const totalBalance = summaryData.analysis.totalBalance;
     const data = {
       ...summaryData,
@@ -1016,7 +1015,7 @@ export const chat = action({
     const errors: string[] = [];
     calls.slice(0, 5).forEach((call, i) => {
       const name = call?.function?.name ?? "";
-      if (name === "compare_investment") return; 
+      if (name === "compare_investment") return;
       try {
         drafts.push(
           makeDraft(name, call?.function?.arguments ?? "", accounts, i),

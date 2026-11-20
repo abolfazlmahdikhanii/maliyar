@@ -9,7 +9,7 @@ import {
 } from "@internationalized/date";
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
-import { useState, type SyntheticEvent } from "react";
+import { useRef, useState, type SyntheticEvent } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
 import { formatNumber } from "../../utils/formatNumber";
@@ -49,7 +49,7 @@ const CreditsForm = ({
       ? parseDate(detail.firstDueDate)
       : plusOneJalaliMonth(today(getLocalTimeZone())),
   );
-  const [firstDueTouched, setFirstDueTouched] = useState(Boolean(detail));
+  const firstDueTouched = useRef(Boolean(detail));
   const [installmentAmount, setInstallmentAmount] = useState(
     detail ? String(detail.installmentAmount) : "",
   );
@@ -59,7 +59,10 @@ const CreditsForm = ({
 
   const changeReceivedDate = (date: DateValue | null) => {
     setReceivedDate(date);
-    if (date && !firstDueTouched) setFirstDueDate(plusOneJalaliMonth(date));
+
+    if (date && !firstDueTouched.current) {
+      setFirstDueDate(plusOneJalaliMonth(date));
+    }
   };
 
   const reset = () => {
@@ -68,7 +71,7 @@ const CreditsForm = ({
     setInterestRate("");
     setReceivedDate(now);
     setFirstDueDate(plusOneJalaliMonth(now));
-    setFirstDueTouched(false);
+    firstDueTouched.current = false;
     setInstallmentAmount("");
     setInstallmentCount("");
   };
@@ -187,7 +190,7 @@ const CreditsForm = ({
         <DatePickerInput
           date={firstDueDate}
           onDate={(date) => {
-            setFirstDueTouched(true);
+            firstDueTouched.current = true;
             setFirstDueDate(date);
           }}
           title="تاریخ سررسید اولین قسط"

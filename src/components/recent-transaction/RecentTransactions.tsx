@@ -14,14 +14,14 @@ const RecentTransactions = () => {
     <div className="box min-w-0 rounded-[25px] col-span-2 lg:max-h-130">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-11.5 h-11.5 shrink-0 grid place-content-center bg-secondary rounded-full text-white">
+          <div className="grid size-11.5 shrink-0 place-content-center rounded-full bg-secondary text-white">
             <HistoryIcon size={23} />
           </div>
-          <p className="text-white text-lg sm:text-[21px]">تراکنش های اخیر</p>
+          <p className="text-lg text-white sm:text-[21px]">تراکنش های اخیر</p>
         </div>
       </div>
 
-      <div className="mt-6 space-y-2.75 h-72 lg:h-full">
+      <div className="mt-6 space-y-2.75 lg:h-full">
         {loading ? (
           <div className="flex h-40 items-center justify-center lg:h-full">
             <Loader />

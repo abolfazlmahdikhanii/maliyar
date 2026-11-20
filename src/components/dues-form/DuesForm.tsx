@@ -48,7 +48,7 @@ const DuesForm = ({
   const [duesPrice, setDuesPrice] = useState<string>("0");
   const [duesParty, setDuesParty] = useState<string>("");
   const [duesReason, setDuesReason] = useState<string>("");
-  const [date, setDate] = useState<DateValue | null>(today(getLocalTimeZone()));
+  const [date, setDate] = useState<DateValue | null>(()=>today(getLocalTimeZone()));
 
   const submitDuesHandler = async (e: SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();

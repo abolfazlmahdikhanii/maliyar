@@ -64,23 +64,21 @@ export const list = query({
     const userId = await getAuthUserId(ctx);
     if (!userId) return [];
 
-    const subs = await ctx.db
-      .query("subscriptions")
-      .withIndex("by_user", (q) => q.eq("userId", userId))
-      .collect();
+    const [subs, accounts] = await Promise.all([
+      ctx.db
+        .query("subscriptions")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .collect(),
 
-    const accountIds = [
-      ...new Set(
-        subs
-          .map((s) => s.accountId)
-          .filter((id): id is Id<"accounts"> => id !== undefined),
-      ),
-    ];
-    const accounts = await Promise.all(accountIds.map((id) => ctx.db.get(id)));
-    const bankById = new Map<string, string>();
-    for (const account of accounts) {
-      if (account) bankById.set(account._id, account.bank);
-    }
+      ctx.db
+        .query("accounts")
+        .withIndex("by_user", (q) => q.eq("userId", userId))
+        .collect(),
+    ]);
+
+    const bankById = new Map(
+      accounts.map((account) => [account._id, account.bank]),
+    );
 
     return subs
       .sort((a, b) => {
@@ -117,8 +115,11 @@ export const update = mutation({
   args: { id: v.id("subscriptions"), ...subscriptionFields },
   handler: async (ctx, { id, ...fields }) => {
     const userId = await requireUserId(ctx);
-    const sub = await getOwned(ctx, userId, id);
-    const data = await normalize(ctx, userId, fields);
+
+    const [sub, data] = await Promise.all([
+      getOwned(ctx, userId, id),
+      normalize(ctx, userId, fields),
+    ]);
 
     await ctx.db.patch(id, {
       ...data,
@@ -147,7 +148,7 @@ export const markPaid = mutation({
   args: {
     id: v.id("subscriptions"),
     accountId: v.optional(v.id("accounts")),
-    date: v.string(), 
+    date: v.string(),
   },
   handler: async (ctx, { id, accountId, date }) => {
     const userId = await requireUserId(ctx);

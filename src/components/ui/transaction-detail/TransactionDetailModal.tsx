@@ -72,8 +72,8 @@ const TransactionDetailModal = ({
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <Modal.Backdrop>
-          <Modal.Container>
-            <Modal.Dialog className="sm:max-w-135 box-modal">
+          <Modal.Container className="p-0! sm:p-4!">
+            <Modal.Dialog className="box-modal w-full! max-w-none! rounded-b-none sm:max-w-135! sm:rounded-b-2xl">
               <Modal.Header className="flex flex-row items-center justify-between">
                 <Modal.Heading>جزییات تراکنش</Modal.Heading>
                 <Button isIconOnly variant="ghost" slot="close">
