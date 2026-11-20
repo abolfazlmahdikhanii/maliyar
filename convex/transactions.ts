@@ -12,12 +12,9 @@ type TransactionInput = Infer<typeof transactionObject>;
 
 const TIME_RE = /^([01]\d|2[0-3]):[0-5]\d$/;
 
-// درآمد: مثبت، هزینه: منفی
 const signedAmount = (t: { type: "income" | "outcome"; amount: number }) =>
   t.type === "income" ? t.amount : -t.amount;
 
-// تراکنش‌هایی که از وام، بدهی و طلب یا چک ساخته شده‌اند (source دارند) از اینجا
-// قابل ویرایش و حذف نیستند؛ فقط از صفحه‌ی خودشان برمی‌گردند
 const LOCKED_MESSAGES = {
   loan: "این تراکنش مربوط به قسط وام است؛ از صفحه‌ی وام قابل برگشت است.",
   dues: "این تراکنش مربوط به بدهی یا طلب است؛ از صفحه‌ی بدهی و طلب قابل حذف است.",
@@ -37,7 +34,6 @@ function assertSufficientBalance(
   }
 }
 
-// اعتبارسنجی سمت سرور + حذف فیلدهای خالی + چک مالکیت حساب
 async function normalize(
   ctx: MutationCtx,
   userId: Id<"users">,
@@ -77,7 +73,6 @@ async function normalize(
 }
 
 export const list = query({
-  // from و to: میلادی YYYY-MM-DD، شامل هر دو سر. کلاینت ماه شمسی را به این بازه تبدیل می‌کند
   args: { from: v.string(), to: v.string() },
   handler: async (ctx, { from, to }) => {
     const userId = await getAuthUserId(ctx);
@@ -86,7 +81,6 @@ export const list = query({
       throw new ConvexError("بازه‌ی تاریخ معتبر نیست.");
     }
 
-    // فقط تراکنش‌های همین بازه خوانده می‌شود، نه همه‌ی تراکنش‌ها
     const transactions = await ctx.db
       .query("transactions")
       .withIndex("by_user_date", (q) =>
@@ -95,7 +89,6 @@ export const list = query({
       .order("desc")
       .collect();
 
-    // هر حساب فقط یک بار خوانده می‌شود
     const accountIds = [...new Set(transactions.map((t) => t.accountId))];
     const accounts = await Promise.all(accountIds.map((id) => ctx.db.get(id)));
 
@@ -104,8 +97,6 @@ export const list = query({
       if (account) bankById.set(account._id, account.bank);
     }
 
-    // bank: کلید بانک (مثل "mellat" یا "cash")؛ اگر حساب حذف شده باشد null.
-    // source: "loan" | "dues" | "check" یعنی تراکنش قفل است
     return transactions.map((t) => ({
       ...t,
       bank: bankById.get(t.accountId) ?? null,
@@ -139,17 +130,14 @@ export const update = mutation({
 
     const { data, account } = await normalize(ctx, userId, fields);
 
-    // اگر حساب عوض نشده، اثر تراکنش قبلی هم باید در موجودی در دسترس حساب شود
     const available =
       existing.accountId === data.accountId
         ? account.balance - signedAmount(existing)
         : account.balance;
     assertSufficientBalance(available, data);
 
-    // replace: اگر عنوان، یادداشت یا ساعت پاک شد، از دیتابیس هم پاک شود
     await ctx.db.replace(id, { ...data, userId });
 
-    // اثر تراکنش قبلی را برگردان، اثر جدید را اعمال کن (حساب ممکن است عوض شده باشد)
     await applyToBalance(ctx, existing.accountId, existing.type, existing.amount, true);
     await applyToBalance(ctx, data.accountId, data.type, data.amount);
   },

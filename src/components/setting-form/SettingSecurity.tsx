@@ -53,8 +53,8 @@ const SettingSecurity = () => {
       description="رمز عبور رو هر چند وقت یک‌بار عوض کن"
       onSubmit={updatePasswordHandler}
     >
-      <div className="grid grid-cols-1 gap-5 mt-0.5">
-        <div className="flex flex-col gap-2 mt-5.5">
+      <div className="mt-0.5 grid grid-cols-1 gap-5">
+        <div className="mt-4 flex flex-col gap-2 sm:mt-5.5">
           <Label htmlFor="currentPassword" className="text-muted text-sm">
             رمز عبور فعلی
           </Label>
@@ -70,8 +70,9 @@ const SettingSecurity = () => {
           />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-5 mt-2">
-        <div className="flex flex-col gap-2 max-w-2xl mt-5.5">
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:mt-2 sm:grid-cols-2 sm:gap-5">
+        <div className="flex max-w-2xl flex-col gap-2 sm:mt-5.5">
           <Label htmlFor="newPassword" className="text-muted text-sm">
             رمز عبور جدید
           </Label>
@@ -86,7 +87,7 @@ const SettingSecurity = () => {
             onChange={(e) => setNewPassword(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-2 max-w-2xl mt-5.5">
+        <div className="flex max-w-2xl flex-col gap-2 sm:mt-5.5">
           <Label htmlFor="repeatNewPassword" className="text-muted text-sm">
             تکرار رمز جدید
           </Label>
@@ -102,9 +103,10 @@ const SettingSecurity = () => {
           />
         </div>
       </div>
-      <div className="flex items-center gap-x-3.5 mt-8 mb-1">
+
+      <div className="mb-1 mt-6 flex items-center gap-x-3 sm:mt-8 sm:gap-x-3.5">
         <Button
-          className="h-12 rounded-xl w-32.5 text-sm bg-primary text-black"
+          className="h-12 flex-1 rounded-xl bg-primary text-sm text-black sm:w-32.5 sm:flex-none"
           type="submit"
           isDisabled={loading}
         >
@@ -115,12 +117,13 @@ const SettingSecurity = () => {
         <Button
           type="button"
           variant="outline"
-          className="h-12 rounded-xl w-34 text-sm border-secondary"
+          className="h-12 flex-1 rounded-xl border-secondary text-sm sm:w-34 sm:flex-none"
           onPress={() => setIsSignout(true)}
         >
           خروج از حساب
         </Button>
       </div>
+
       <Logout
         isShowConfirm={isSignout}
         onChangeShowConfirm={() => setIsSignout(false)}

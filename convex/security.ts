@@ -9,7 +9,6 @@ import { ConvexError, v } from "convex/values";
 import { internal } from "./_generated/api";
 import { action, internalQuery } from "./_generated/server";
 
-// شناسه‌ی ورود کاربر (ایمیل یا نام کاربری) برای provider رمز عبور
 export const passwordAccountId = internalQuery({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
@@ -55,7 +54,6 @@ export const changePassword = action({
       account: { id: accountId, secret: newPassword },
     });
 
-    // بقیه‌ی دستگاه‌ها خارج می‌شن، نشست فعلی می‌مونه
     const sessionId = await getAuthSessionId(ctx);
     await invalidateSessions(ctx, {
       userId,

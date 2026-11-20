@@ -17,24 +17,26 @@ const CashflowChart = () => {
   const { points, loading, isEmpty } = useCashflow(filter);
 
   return (
-    <div className="box col-span-2 rounded-[25px]">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-11.5 h-11.5 grid place-content-center bg-secondary rounded-full text-white">
+    <div className="box min-w-0 rounded-[25px] col-span-2">
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-3">
+          <div className="w-11.5 h-11.5 shrink-0 grid place-content-center bg-secondary rounded-full text-white">
             <ChartIcon size={21} />
           </div>
-          <p className="text-white text-[21px]">جریان نقدی</p>
+          <p className="truncate text-white text-lg sm:text-[21px]">
+            جریان نقدی
+          </p>
         </div>
 
         <Dropdown>
           <Button
             aria-label="بازه‌ی زمانی"
-            className="bg-primary hover:bg-primary/80 text-black w-30.5 h-12.5 relative"
+            className="relative h-11 w-28 shrink-0 bg-primary text-black hover:bg-primary/80 sm:h-12.5 sm:w-30.5"
           >
-            <p className="ml-6">
+            <p className="ml-6 text-sm">
               {FILTERS.find((f) => f.id === filter)?.label}
             </p>
-            <AltArrowDownIcon size={16} className="mr-0.5 absolute left-5" />
+            <AltArrowDownIcon size={16} className="mr-0.5 absolute left-4 sm:left-5" />
           </Button>
           <Dropdown.Popover
             className="min-w-42.5 text-neutral-200 bg-[#333436] border border-secondary"
@@ -56,13 +58,13 @@ const CashflowChart = () => {
         </Dropdown>
       </div>
 
-      <div className="mt-8 mb-4 h-full">
+      <div className="mt-6 mb-4 h-72 sm:mt-8 lg:h-full">
         {loading ? (
-          <div className="flex items-center justify-center h-[80%]">
+          <div className="flex h-full items-center justify-center lg:h-[80%]">
             <Loader />
           </div>
         ) : isEmpty ? (
-          <div className="flex items-center justify-center h-[70%]">
+          <div className="flex h-full items-center justify-center lg:h-[70%]">
             <EmptyState
               compact
               kind="transactions"

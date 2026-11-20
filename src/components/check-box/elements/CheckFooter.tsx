@@ -1,4 +1,4 @@
-import { Button, toast, type Key } from "@heroui/react";
+import { Button, Dropdown, Label, toast, type Key } from "@heroui/react";
 import {
   CheckCircleIcon,
   CloseCircleIcon,
@@ -15,6 +15,7 @@ import CheckForm from "../../check-form/CheckForm";
 import DeleteDialog from "../../ui/delete-dialog/DeleteDialog";
 import FormModal from "../../ui/form-modal/FormModal";
 import PayConfirm from "../../ui/pay-confirm/PayConfirm";
+import { MenuDotsBoldIcon } from "@solar-icons/react";
 
 type Modal = "edit" | "delete" | "pay" | null;
 type CheckFooterProps = {
@@ -115,57 +116,126 @@ const CheckFooter = ({ check }: CheckFooterProps) => {
 
   return (
     <>
-      <section className="flex items-center justify-between">
-        <div className="flex items-center gap-x-2.5">
+      <>
+        <section className="hidden items-center justify-between sm:flex">
+          <div className="flex items-center gap-x-2.5">
+            {isPending ? (
+              <>
+                <Button
+                  className="h-10 rounded-xl bg-primary px-4 text-xs font-semibold text-black"
+                  isDisabled={isLoadingConfirm}
+                  onPress={() => setModal("pay")}
+                >
+                  <CheckCircleIcon size={20} />
+                  {isReceived ? "ثبت وصول" : "ثبت پرداخت"}
+                </Button>
+                <Button
+                  className="h-10 rounded-xl px-4 text-xs font-semibold"
+                  variant="danger-soft"
+                  isDisabled={isLoadingBounce}
+                  onPress={bounceHandler}
+                >
+                  <CloseCircleIcon size={20} />
+                  ثبت برگشت
+                </Button>
+              </>
+            ) : (
+              <Button
+                className="h-10 rounded-xl bg-secondary px-4 text-xs font-semibold"
+                isDisabled={isLoadingRevert}
+                onPress={revertHandler}
+              >
+                برگرداندن به در انتظار
+              </Button>
+            )}
+          </div>
+          <div className="flex items-center gap-x-2.5">
+            {isPending && (
+              <Button
+                isIconOnly
+                className="rounded-xl bg-secondary"
+                onPress={() => setModal("edit")}
+              >
+                <Pen2Icon />
+              </Button>
+            )}
+            <Button
+              isIconOnly
+              className="rounded-xl bg-secondary"
+              onPress={() => setModal("delete")}
+            >
+              <TrashBinMinimalistic2Icon />
+            </Button>
+          </div>
+        </section>
+
+        <section className="flex items-center gap-2 sm:hidden">
           {isPending ? (
-            <>
-              <Button
-                className="h-10 rounded-xl font-semibold px-4 text-xs bg-primary text-black"
-                isDisabled={isLoadingConfirm}
-                onPress={() => setModal("pay")}
-              >
-                <CheckCircleIcon size={20} />
-                {isReceived ? "ثبت وصول" : "ثبت پرداخت"}
-              </Button>
-              <Button
-                className="h-10 rounded-xl font-semibold px-4 text-xs"
-                variant="danger-soft"
-                isDisabled={isLoadingBounce}
-                onPress={bounceHandler}
-              >
-                <CloseCircleIcon size={20} />
-                ثبت برگشت
-              </Button>
-            </>
+            <Button
+              className="h-11 flex-1 rounded-xl bg-primary text-sm font-semibold text-black"
+              isDisabled={isLoadingConfirm}
+              onPress={() => setModal("pay")}
+            >
+              <CheckCircleIcon size={20} />
+              {isReceived ? "ثبت وصول" : "ثبت پرداخت"}
+            </Button>
           ) : (
             <Button
-              className="h-10 rounded-xl font-semibold px-4 text-xs bg-secondary"
+              className="h-11 flex-1 rounded-xl bg-secondary text-sm font-semibold"
               isDisabled={isLoadingRevert}
               onPress={revertHandler}
             >
               برگرداندن به در انتظار
             </Button>
           )}
-        </div>
-        <div className="flex items-center gap-x-2.5">
-          {isPending && (
+
+          <Dropdown>
             <Button
+              variant="outline"
               isIconOnly
-              className="rounded-xl bg-secondary"
-              onPress={() => setModal("edit")}
+              className="size-11 shrink-0 rounded-xl border-secondary"
             >
-              <Pen2Icon />
+              <MenuDotsBoldIcon size={20} />
             </Button>
-          )}
-          <Button
-            isIconOnly
-            className="rounded-xl bg-secondary"
-            onPress={() => setModal("delete")}
-          >
-            <TrashBinMinimalistic2Icon />
-          </Button>
-        </div>
-      </section>
+            <Dropdown.Popover className="box-modal-2 w-60 md:w-auto ml-3 md:ml-0">
+              <Dropdown.Menu
+                onAction={(key) => {
+                  if (key === "bounce") bounceHandler();
+                  if (key === "edit") setModal("edit");
+                  if (key === "delete") setModal("delete");
+                }}
+              >
+                {isPending ? (
+                  <Dropdown.Item
+                    id="bounce"
+                    textValue="bounce"
+                    variant="danger"
+                  >
+                    <Label className="flex items-center gap-x-2.5">
+                      <CloseCircleIcon size={18} />
+                      ثبت برگشت
+                    </Label>
+                  </Dropdown.Item>
+                ) : null}
+                {isPending ? (
+                  <Dropdown.Item id="edit" textValue="edit">
+                    <Label className="flex items-center gap-x-2.5">
+                      <Pen2Icon size={18} />
+                      ویرایش
+                    </Label>
+                  </Dropdown.Item>
+                ) : null}
+                <Dropdown.Item id="delete" textValue="delete" variant="danger">
+                  <Label className="flex items-center gap-x-2.5">
+                    <TrashBinMinimalistic2Icon size={18} />
+                    حذف
+                  </Label>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown.Popover>
+          </Dropdown>
+        </section>
+      </>
 
       <FormModal
         title="ویرایش چک"

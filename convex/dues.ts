@@ -10,7 +10,6 @@ import { duesFields } from "./schema";
 const duesObject = v.object(duesFields);
 type DuesInput = Infer<typeof duesObject>;
 
-// اعتبارسنجی سمت سرور + حذف فیلد خالی
 const normalize = (input: DuesInput): DuesInput => {
   const { party, reason, ...rest } = input;
 
@@ -49,12 +48,7 @@ async function getOwnedDue(
   return due;
 }
 
-// همه‌ی موارد کاربر. ایندکس بر اساس (وضعیت، سررسید) مرتب است:
-// اول بازها به ترتیب نزدیک‌ترین سررسید، بعد تسویه‌شده‌ها.
-// وضعیت نمایشی (نزدیک به سررسید، گذشته) را کلاینت از روی dueDate حساب می‌کند.
 //
-// bank: کلید بانکی که با آن پرداخت شده ("mellat"، "cash"، ...). اگر هنوز پرداخت نشده
-// یا حساب پیدا نشد، "unknown". نام فارسی را کلاینت از data/banks می‌گیرد.
 export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
@@ -65,7 +59,6 @@ export const list = query({
       .withIndex("by_user_status_due", (q) => q.eq("userId", userId))
       .collect();
 
-    // هر حساب فقط یک بار خوانده می‌شود
     const accountIds = [
       ...new Set(
         dues
@@ -112,20 +105,15 @@ export const update = mutation({
     }
 
     const data = normalize(fields);
-    // reason: undefined یعنی فیلد از دیتابیس حذف شود
     await ctx.db.patch(id, { ...data, reason: data.reason });
   },
 });
 
-// ثبت پرداخت: حساب را همین‌جا می‌گیریم، نه موقع ثبت بدهی یا طلب، چون تا پول جابه‌جا
-// نشود معلوم نیست از کدام حساب رفته یا به کدام آمده.
-// مورد تسویه می‌شود، تراکنش معادلش ساخته می‌شود و موجودی حساب عوض می‌شود.
-// همه در یک mutation اتمی. تراکنش قفل است (source: "dues").
 export const markPaid = mutation({
   args: {
     id: v.id("dues"),
     accountId: v.id("accounts"),
-    date: v.string(), // تاریخ پرداخت، میلادی YYYY-MM-DD
+    date: v.string(), 
   },
   handler: async (ctx, { id, accountId, date }) => {
     const userId = await requireUserId(ctx);
@@ -144,7 +132,6 @@ export const markPaid = mutation({
       throw new ConvexError("حساب پیدا نشد.");
     }
 
-    // بدهی من = پول از من خارج می‌شود (هزینه). طلب من = پول وارد می‌شود (درآمد)
     const isDebt = due.type === "debt";
     const type = isDebt ? "outcome" : "income";
 
@@ -177,8 +164,6 @@ export const markPaid = mutation({
   },
 });
 
-// حذف مورد. اگر تسویه شده بود، تراکنش پرداختش هم حذف می‌شود و اثرش روی موجودی
-// حساب برمی‌گردد.
 export const remove = mutation({
   args: { id: v.id("dues") },
   handler: async (ctx, { id }) => {

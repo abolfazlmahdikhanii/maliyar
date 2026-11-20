@@ -50,7 +50,7 @@ const StatCard = ({
         : null;
 
   return (
-    <div className="box inverted-radius h-55 relative w-full overflow-hidden flex flex-col gap-y-8">
+    <div className="box inverted-radius relative flex h-46 w-full min-w-0 flex-col justify-between gap-y-3 overflow-hidden lg:h-55 lg:justify-start lg:gap-y-8">
       <div
         aria-hidden
         className="absolute inset-0 pointer-events-none"
@@ -59,60 +59,61 @@ const StatCard = ({
         }}
       />
 
-      <div className="relative flex items-center gap-x-3.5">
+      <div className="relative flex items-center gap-x-3 sm:gap-x-3.5">
         <div
-          className="w-11.5 h-11.5 shrink-0 grid place-content-center rounded-full border"
+          className="grid size-9 shrink-0 place-content-center rounded-full border sm:size-11.5"
           style={{ background: `${color}1f`, color, borderColor: `${color}40` }}
         >
-          <CardIcon size={24} />
+          <CardIcon size={20} />
         </div>
-        <p className="text-white text-[21px] truncate">{title}</p>
+        <p className="truncate text-base text-white sm:text-[21px]">{title}</p>
       </div>
 
-      <div className="relative mr-2 space-y-4">
+      <div className="relative mr-1 min-w-0 sm:mr-2 pb-1">
         {loading ? (
-          <>
-            <div className="h-10 w-52 rounded-lg bg-secondary animate-pulse" />
-            <div className="h-7 w-40 rounded-full bg-secondary animate-pulse" />
-          </>
+          <div className="h-8 w-44 animate-pulse rounded-lg bg-secondary sm:h-10 sm:w-52" />
         ) : (
-          <>
-            <p className="text-white font-semibold text-[40px] leading-none flex items-center gap-x-1">
+          <div className="flex min-w-0 flex-col items-start gap-y-3 sm:gap-y-4">
+            <p className="flex items-center gap-x-1 text-2xl font-semibold leading-none text-white sm:text-[40px]">
               {value === undefined ? "—" : fmt(value)}
               {unit === "toman" ? (
                 <span className="text-neutral-400">
-                  <TomanIcon width="22" height="22" />
+                  <TomanIcon width="20" height="20" />
                 </span>
               ) : unit ? (
-                <span className="text-base font-normal text-neutral-400 mr-1">
+                <span className="mr-1 text-base font-normal text-neutral-400">
                   {unit}
                 </span>
               ) : null}
             </p>
 
             {delta && (
-              <div className="flex items-center gap-x-3">
+              <div className="flex min-w-0 max-w-full items-center gap-x-3">
                 <span
-                  className="flex items-center gap-x-1 px-3 py-1.25 text-sm rounded-full border"
+                  className="flex min-w-0 max-w-full items-center gap-x-1 rounded-full border px-3 py-1.25 text-sm"
                   style={{
                     background: `${deltaColor}26`,
                     color: deltaColor,
                     borderColor: `${deltaColor}59`,
                   }}
                 >
-                  {delta.text}
+                  <span className="truncate">{delta.text}</span>
                   {Arrow && (
-                    <Arrow size={15} strokeWidth={2} className="-mt-0.5" />
+                    <Arrow
+                      size={15}
+                      strokeWidth={2}
+                      className="-mt-0.5 shrink-0"
+                    />
                   )}
                 </span>
                 {delta.label && (
-                  <p className="text-sm text-neutral-400 truncate">
+                  <p className="truncate text-sm text-neutral-400">
                     {delta.label}
                   </p>
                 )}
               </div>
             )}
-          </>
+          </div>
         )}
       </div>
     </div>

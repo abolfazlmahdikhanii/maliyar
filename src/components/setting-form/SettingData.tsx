@@ -1,5 +1,5 @@
-import { Button, toast } from "@heroui/react";
 import { useAuthActions } from "@convex-dev/auth/react";
+import { Button, toast } from "@heroui/react";
 import { useConvex, useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { useState, type ReactNode } from "react";
@@ -22,14 +22,18 @@ type RowProps = {
 };
 
 const Row = ({ title, desc, danger, children }: RowProps) => (
-  <div className="flex items-center justify-between gap-4 py-4 border-t border-dashed border-secondary first:border-t-0 first:pt-0 last:pb-0">
-    <div>
-      <p className={`text-sm ${danger ? "text-[#ff8a8a]" : "text-neutral-100"}`}>
+  <div className="flex flex-col gap-3 border-t border-dashed border-secondary py-4 first:border-t-0 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+    <div className="min-w-0">
+      <p
+        className={`text-sm ${danger ? "text-[#ff8a8a]" : "text-neutral-100"}`}
+      >
         {title}
       </p>
-      <p className="text-xs text-neutral-400 mt-1">{desc}</p>
+      <p className="mt-1 text-xs leading-6 text-neutral-400">{desc}</p>
     </div>
-    {children}
+    <div className="w-full shrink-0 sm:w-auto [&>button]:w-full sm:[&>button]:w-auto">
+      {children}
+    </div>
   </div>
 );
 
@@ -51,11 +55,21 @@ const SettingData = () => {
     setLoading("export");
     try {
       const rows = await convex.query(api.settings.exportTransactions);
-      if (rows.length === 0) return toast.danger("تراکنشی برای خروجی گرفتن نیست.");
+      if (rows.length === 0)
+        return toast.danger("تراکنشی برای خروجی گرفتن نیست.");
 
       downloadCsv(
         "maliyar-transactions.csv",
-        ["تاریخ", "ساعت", "نوع", "مبلغ (تومان)", "عنوان", "دسته", "حساب", "یادداشت"],
+        [
+          "تاریخ",
+          "ساعت",
+          "نوع",
+          "مبلغ (تومان)",
+          "عنوان",
+          "دسته",
+          "حساب",
+          "یادداشت",
+        ],
         rows.map((r) => [
           formatDate(r.date) ?? r.date,
           r.time,

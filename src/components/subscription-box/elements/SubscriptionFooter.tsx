@@ -112,7 +112,9 @@ const SubscriptionFooter = ({ subscription }: SubscriptionFooterProps) => {
             >
               <MenuDotsBoldIcon size={20} />
             </Button>
-            <Dropdown.Popover className={"box-modal-2"}>
+            <Dropdown.Popover
+              className={"box-modal-2 w-60 md:w-auto ml-3 md:ml-0"}
+            >
               <Dropdown.Menu
                 onAction={(key) => {
                   if (key === "edit") setModal("edit");
@@ -147,6 +149,7 @@ const SubscriptionFooter = ({ subscription }: SubscriptionFooterProps) => {
           </Dropdown>
         </div>
       </section>
+  
       <FormModal
         title="ویرایش اشتراک"
         isOpen={modal === "edit"}

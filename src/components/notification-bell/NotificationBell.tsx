@@ -1,15 +1,16 @@
 import { Button, Dropdown, Label } from "@heroui/react";
 import { BellIcon } from "@solar-icons/react/outline";
 import { useQuery } from "convex/react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../../convex/_generated/api";
 import { describeNotice, type Notice } from "../../utils/notifications";
 
 const ROUTES: Record<Notice["kind"], string> = {
   check: "/checks",
   subscription: "/subscriptions",
-  loan: "/loans",
+  loan: "/credits",
   due: "/dues",
-  budget: "/budgets",
+  budget: "/budget",
 };
 
 type NotificationBellProps = {
@@ -18,11 +19,14 @@ type NotificationBellProps = {
 
 const NotificationBell = ({ onNavigate }: NotificationBellProps) => {
   const notices = useQuery(api.notification.list) ?? [];
+  const navigate = useNavigate();
+
+  const go = (path: string) => (onNavigate ? onNavigate(path) : navigate(path));
 
   return (
     <Dropdown>
       <div className="relative">
-        <Button isIconOnly className={"btn"}>
+        <Button isIconOnly className="btn">
           <BellIcon size={21} />
         </Button>
         {notices.length > 0 && (
@@ -32,15 +36,20 @@ const NotificationBell = ({ onNavigate }: NotificationBellProps) => {
         )}
       </div>
 
-      <Dropdown.Popover className="box-profile min-w-80 max-h-96 overflow-y-auto ml-30">
+      <Dropdown.Popover className="box-profile max-h-96 w-[calc(100vw-1.5rem)] max-w-78 overflow-y-auto lg:ml-30 lg:w-84 lg:max-w-84">
         <Dropdown.Menu
           onAction={(key) => {
             const notice = notices.find((n) => `${n.kind}-${n.id}` === key);
-            if (notice) onNavigate?.(ROUTES[notice.kind]);
+            if (notice) go(ROUTES[notice.kind]);
           }}
         >
           {notices.length === 0 ? (
-            <Dropdown.Item id="empty" textValue="empty" isDisabled className="flex ite justify-center">
+            <Dropdown.Item
+              id="empty"
+              textValue="empty"
+              isDisabled
+              className="flex justify-center"
+            >
               <Label className="text-sm text-white text-center">
                 اعلان جدیدی نیست
               </Label>

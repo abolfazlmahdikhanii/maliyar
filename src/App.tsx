@@ -4,6 +4,7 @@ import Auth from "./page/auth/Auth";
 
 import { ScrollShadow, Toast } from "@heroui/react";
 import { Authenticated, AuthLoading, Unauthenticated } from "convex/react";
+import BottomNav from "./components/ui/bottom-nav/BottomNav";
 import Header from "./components/ui/header/Header";
 import { LoaderOverlay } from "./components/ui/loading-box/LoadingBox";
 import Sidebar from "./components/ui/sidebar/Sidebar";
@@ -28,15 +29,20 @@ const App = () => {
         <Auth />
       </Unauthenticated>
       <Authenticated>
-        <div className="grid grid-cols-[330px_1fr]">
-          <Sidebar />
+        <div className="lg:grid lg:grid-cols-[330px_1fr]">
+          <div className="hidden lg:block">
+            <Sidebar />
+          </div>
 
-          <section className="bg-[#0B0B0E] mt-7 rounded-tr-4xl">
+          <section className="flex h-dvh flex-col bg-[#0B0B0E] lg:mt-7 lg:h-[calc(100dvh-1.75rem)] lg:rounded-tr-4xl">
             <Header />
 
-            <main className="h-[82vh]">
-              <ScrollShadow className="h-full pb-6" id="main-scroll-container">
-                <div className="w-[93%] mx-auto">
+            <main className="min-h-0 flex-1">
+              <ScrollShadow
+                className="h-full overflow-x-hidden pb-28 lg:pb-6"
+                id="main-scroll-container"
+              >
+                <div className="mx-auto w-[92%] lg:w-[93%]">
                   <Routes>
                     <Route path="/" element={<Dashboard />} />
                     <Route path="/transactions" element={<Transactions />} />
@@ -53,6 +59,8 @@ const App = () => {
               </ScrollShadow>
             </main>
           </section>
+
+          <BottomNav />
         </div>
       </Authenticated>
 

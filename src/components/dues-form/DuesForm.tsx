@@ -83,17 +83,18 @@ const DuesForm = ({
     }
   };
   return (
-    <Form className="px-2" id={formId} onSubmit={submitDuesHandler}>
+    <Form className="px-1 sm:px-2" id={formId} onSubmit={submitDuesHandler}>
       <FormTab
         tabs={tabs}
         selectedTab={duesType}
         setSelectedTab={(val: string) => setDuesType(val as duesTypeState)}
       />
+
       {/* price */}
       <InputPrice price={duesPrice} setPrice={setDuesPrice} />
 
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-7.5">
-        <div className="flex flex-col gap-2 max-w-2xl ">
+      <section className="mt-6 grid max-w-2xl grid-cols-1 gap-4 sm:mt-7.5 sm:grid-cols-2 sm:gap-5">
+        <div className="flex max-w-2xl flex-col gap-2">
           <Label htmlFor="party" className="text-muted text-sm">
             طرف حساب
           </Label>
@@ -101,19 +102,21 @@ const DuesForm = ({
             id="party"
             placeholder="نام شخص یا شرکت"
             type="text"
-            className={"box input h-13"}
+            className="box input h-13"
             onChange={(e) => setDuesParty(e.target.value)}
             value={duesParty}
           />
         </div>
         <DatePickerInput date={date} onDate={setDate} />
       </section>
-      <section className="max-w-2xl mt-5.5">
+
+      <section className="mt-4 max-w-2xl sm:mt-5.5">
         <div className="flex flex-col gap-2">
           <Label htmlFor="reason" className="text-muted text-sm">
-            علت یا شرح{" "}
+            علت یا شرح
           </Label>
           <TextArea
+            id="reason"
             aria-label="reason"
             className="box input h-24 w-full resize-none"
             placeholder="توضیحات ..."

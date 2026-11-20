@@ -40,6 +40,12 @@ const tabs: TabForm<subscriptionTypeState>[] = [
     selectedColor: "bg-[#f060601a] text-[#f06060]",
   },
 ];
+const CYCLES: { value: subscriptionTimeCycleState; label: string }[] = [
+  { value: "weekly", label: "هفتگی" },
+  { value: "monthly", label: "ماهانه" },
+  { value: "three-month", label: "سه ماهه" },
+  { value: "yearly", label: "سالانه" },
+];
 
 type SubscriptionFormProps = {
   detail?: Doc<"subscriptions">;
@@ -125,112 +131,81 @@ const SubscriptionForm = ({
     }
   };
   return (
-    <Form id={formId} className="px-2" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-2 max-w-2xl ">
-        <Label htmlFor="title" className="text-muted text-sm">
+    <Form id={formId} className="px-1 sm:px-2" onSubmit={handleSubmit}>
+      <div className="flex max-w-2xl flex-col gap-2">
+        <Label htmlFor="sub-title" className="text-muted text-sm">
           نام اشتراک
         </Label>
         <Input
-          id="title"
+          id="sub-title"
           placeholder="اگر خالی بگذارید نام دسته بندی ثبت میشود"
           type="text"
-          className={"box input h-13"}
+          className="box input h-13"
           value={titleSubscription}
           onChange={(e) => setTitleSubscription(e.target.value)}
         />
       </div>
 
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-5.5">
-        <div>
-          <FormSelect
-            label="دسته بندی"
-            value={categoryID}
-            onChange={setCategoryID}
-            options={categoryOptions}
-          />
-        </div>
-        <div className="flex flex-col gap-2 max-w-2xl">
-          <Label htmlFor="title" className="text-muted text-sm">
+      <section className="mt-4 grid max-w-2xl grid-cols-1 gap-4 sm:mt-5.5 sm:grid-cols-2 sm:gap-5">
+        <FormSelect
+          label="دسته بندی"
+          value={categoryID}
+          onChange={setCategoryID}
+          options={categoryOptions}
+        />
+        <div className="flex max-w-2xl flex-col gap-2">
+          <Label htmlFor="sub-amount" className="text-muted text-sm">
             مبلغ (تومان) *
           </Label>
           <Input
-            id="title"
+            id="sub-amount"
             placeholder="0"
             type="text"
-            className={"box input h-13"}
+            inputMode="numeric"
+            dir="ltr"
+            className="box input h-13 text-right"
             value={formatNumber(priceSubscription)}
             onChange={(e) => setPriceSubscription(e.target.value)}
           />
         </div>
       </section>
-      <section className="flex flex-col gap-2 max-w-2xl mt-5.5">
-        <Label htmlFor="title" className="text-muted text-sm">
-          دوره پرداخت
-        </Label>
 
-        <section className="grid grid-cols-4 w-full p-1.5 gap-x-1 bg-secondary rounded-xl max-w-2xl border border-secondary">
-          <div
-            className={`transaction-type ${
-              subscriptionTimeCycle === "weekly"
-                ? "bg-primary/15 text-primary"
-                : "text-muted hover:bg-secondary/80"
-            } `}
-            onClick={() => setSubscriptionTimeCycle("weekly")}
-          >
-            هفتگی
-          </div>
-          <div
-            className={`transaction-type ${
-              subscriptionTimeCycle === "monthly"
-                ? "bg-primary/15 text-primary"
-                : "text-muted hover:bg-secondary/80"
-            } `}
-            onClick={() => setSubscriptionTimeCycle("monthly")}
-          >
-            ماهانه
-          </div>
-          <div
-            className={`transaction-type ${
-              subscriptionTimeCycle === "three-month"
-                ? "bg-primary/15 text-primary"
-                : "text-muted hover:bg-secondary/80"
-            } `}
-            onClick={() => setSubscriptionTimeCycle("three-month")}
-          >
-            سه ماهه
-          </div>
-          <div
-            className={`transaction-type ${
-              subscriptionTimeCycle === "yearly"
-                ? "bg-primary/15 text-primary"
-                : "text-muted hover:bg-secondary/80"
-            } `}
-            onClick={() => setSubscriptionTimeCycle("yearly")}
-          >
-            سالانه
-          </div>
-        </section>
+      <section className="mt-4 flex max-w-2xl flex-col gap-2 sm:mt-5.5">
+        <Label className="text-muted text-sm">دوره پرداخت</Label>
+        <div className="grid w-full max-w-2xl grid-cols-4 gap-x-1 rounded-xl border border-secondary bg-secondary p-1.5">
+          {CYCLES.map((cycle) => (
+            <button
+              key={cycle.value}
+              type="button"
+              className={`transaction-type   whitespace-nowrap ${
+                subscriptionTimeCycle === cycle.value
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted hover:bg-secondary/80"
+              }`}
+              onClick={() => setSubscriptionTimeCycle(cycle.value)}
+            >
+              {cycle.label}
+            </button>
+          ))}
+        </div>
       </section>
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-5.5">
+
+      <section className="mt-4 grid max-w-2xl grid-cols-1 gap-4 sm:mt-5.5 sm:grid-cols-2 sm:gap-5">
         <DatePickerInput
           date={nextPaymentDate}
           onDate={setNextPaymentDate}
           title="تاریخ پرداخت"
         />
-        <div>
-          <FormSelect
-            label="حساب متصل"
-            value={accountID}
-            onChange={setAccountID}
-            options={accountOptions}
-          />
-        </div>
+        <FormSelect
+          label="حساب متصل"
+          value={accountID}
+          onChange={setAccountID}
+          options={accountOptions}
+        />
       </section>
 
-      <div className="flex flex-col gap-2 max-w-2xl mt-5.5">
-        <Label htmlFor="title" className="text-muted text-sm">
-          وضعیت
-        </Label>
+      <div className="mt-4 flex max-w-2xl flex-col gap-2 sm:mt-5.5">
+        <Label className="text-muted text-sm">وضعیت</Label>
         <FormTab
           tabs={tabs}
           selectedTab={subscriptionType}

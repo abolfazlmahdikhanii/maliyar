@@ -1,7 +1,7 @@
 import type { Id } from "../_generated/dataModel";
 import type { MutationCtx } from "../_generated/server";
 
-// اعمال (یا برگشت) اثر یک تراکنش روی موجودی حساب
+
 export async function applyToBalance(
   ctx: MutationCtx,
   accountId: Id<"accounts">,
@@ -15,13 +15,13 @@ export async function applyToBalance(
   await ctx.db.patch(accountId, { balance: account.balance + sign * amount });
 }
 
-// حذف تراکنش و برگرداندن اثرش روی موجودی حساب
+
 export async function reverseTransaction(
   ctx: MutationCtx,
   transactionId: Id<"transactions">,
 ) {
   const transaction = await ctx.db.get(transactionId);
-  // اگر تراکنش قبلا از بین رفته باشد، چیزی برای برگرداندن نیست
+  
   if (!transaction) return;
 
   await applyToBalance(

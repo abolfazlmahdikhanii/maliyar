@@ -26,10 +26,10 @@ const Expense = ({ total, change, groups = [], loading }: ExpenseProps) => {
             <div className="w-11.5 h-11.5 grid place-content-center bg-secondary rounded-full text-white">
               <CardSendIcon size={24} />
             </div>
-            <p className="text-white text-[21px]">مجموع هزینه</p>
+            <p className="text-white text-lg sm:text-[21px]">مجموع هزینه</p>
           </div>
-          <div className="flex items-center gap-x-3.5 mt-6 mr-2">
-            <p className="text-white font-semibold text-[40px] flex items-center gap-x-1">
+          <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 mt-5 sm:mt-6 mr-2">
+            <p className="text-white font-semibold text-3xl sm:text-[40px] flex items-center gap-x-1">
               {loading || total === undefined
                 ? "—"
                 : total.toLocaleString("en-US")}
@@ -57,7 +57,7 @@ const Expense = ({ total, change, groups = [], loading }: ExpenseProps) => {
           </div>
         </div>
 
-        <div className="flex flex-col gap-y-6.5 pb-1 pr-2">
+        <div className="flex flex-col gap-y-5 sm:gap-y-6.5 pb-1 pr-2">
           {sum === 0 ? (
             <>
               <div className="bg-secondary h-3 w-full rounded-full mt-5" />
@@ -92,7 +92,7 @@ const Expense = ({ total, change, groups = [], loading }: ExpenseProps) => {
                   </div>
                 ))}
               </div>
-              <div className="flex items-center justify-evenly">
+              <div className="flex flex-wrap items-center justify-evenly gap-x-4 gap-y-2">
                 {groups.map((g) => (
                   <div key={g.label} className="flex items-center gap-x-2">
                     <p

@@ -11,6 +11,7 @@ import TransactionForm, {
 import EmptyState from "../../components/ui/empty-state/EmptyState";
 import FormModal from "../../components/ui/form-modal/FormModal";
 import { Loader } from "../../components/ui/loading-box/LoadingBox";
+import MonthSummary from "../../components/ui/month-summary/MonthSummary";
 import MonthYearPicker from "../../components/ui/month-year-picker/MonthYearPicker";
 import Title from "../../components/ui/title/Title";
 import TotalCard from "../../components/ui/total-card/TotalCard";
@@ -37,6 +38,7 @@ const tabs: {
   { id: "income", label: "درآمد ها", filter: (t) => t.type === "income" },
   { id: "outcome", label: "هزینه ها", filter: (t) => t.type === "outcome" },
 ];
+
 const Transactions = () => {
   const [yearMonth, setYearMonth] = useState<YearMonth>(getCurrentYearMonth);
   const range = useMemo(() => getMonthRange(yearMonth), [yearMonth]);
@@ -46,6 +48,24 @@ const Transactions = () => {
   const [isOpenModal, setIsOpenModal] = useState<boolean>(false);
   const [loadingForm, setLoadingForm] = useState<boolean>(false);
 
+  const current = getCurrentYearMonth();
+  const isCurrentMonth =
+    yearMonth.year === current.year && yearMonth.month === current.month;
+
+  const changeMonth = (delta: number) => {
+    let year = yearMonth.year;
+    let month = yearMonth.month + delta;
+    if (month > 12) {
+      month = 1;
+      year += 1;
+    }
+    if (month < 1) {
+      month = 12;
+      year -= 1;
+    }
+    setYearMonth({ year, month });
+  };
+
   return (
     <div>
       <Title
@@ -53,7 +73,20 @@ const Transactions = () => {
         btnText="تراکنش جدید"
         onOpen={() => setIsOpenModal(true)}
       />
-      <div className="grid grid-cols-3 gap-6 mt-14 mb-8">
+
+      <div className="mt-5 lg:hidden">
+        <MonthSummary
+          year={yearMonth.year}
+          month={yearMonth.month}
+          income={stats.income}
+          outcome={stats.outcome}
+          loading={stats.loading}
+          isCurrentMonth={isCurrentMonth}
+          onChangeMonth={changeMonth}
+        />
+      </div>
+
+      <div className="mt-14 mb-8 hidden grid-cols-2 gap-6 lg:grid xl:grid-cols-3 *:min-w-0">
         <TotalCard
           count={stats.count}
           change={stats.countChange}
@@ -73,9 +106,9 @@ const Transactions = () => {
         />
       </div>
 
-      <Tabs className="w-full mt-12 ">
+      <Tabs className="mt-6 w-full lg:mt-12">
         <div className="flex items-center justify-between">
-          <Tabs.ListContainer className="py-2 px-2 bg-secondary border border-secondary w-132.5">
+          <Tabs.ListContainer className="w-full border border-secondary bg-secondary px-2 py-2 lg:w-132.5">
             <Tabs.List aria-label="Options">
               {tabs.map((tab) => (
                 <Tabs.Tab
@@ -84,23 +117,27 @@ const Transactions = () => {
                   className="h-10.5 data-[selected=true]:text-black"
                 >
                   {tab.label}
-                  <Tabs.Indicator className="bg-primary " />
+                  <Tabs.Indicator className="bg-primary" />
                 </Tabs.Tab>
               ))}
             </Tabs.List>
           </Tabs.ListContainer>
-          <MonthYearPicker
-            initialYear={yearMonth.year}
-            initialMonth={yearMonth.month}
-            onChange={({ year, month }) => setYearMonth({ year, month })}
-          />
+
+          <div className="hidden lg:block">
+            <MonthYearPicker
+              initialYear={yearMonth.year}
+              initialMonth={yearMonth.month}
+              onChange={({ year, month }) => setYearMonth({ year, month })}
+            />
+          </div>
         </div>
+
         {tabs.map((tab) => {
           const items = transaction?.filter(tab.filter) ?? [];
           return (
-            <Tabs.Panel className="pt-6 px-2" key={tab.id} id={tab.id}>
+            <Tabs.Panel className="px-0 pt-6 lg:px-2" key={tab.id} id={tab.id}>
               {transaction === undefined ? (
-                <div className="mt-18">
+                <div className="mt-12 lg:mt-18">
                   <Loader />
                 </div>
               ) : transaction.length === 0 ? (
@@ -114,7 +151,7 @@ const Transactions = () => {
                   }}
                 />
               ) : (
-                <div className=" space-y-2.75 ">
+                <div className="space-y-2.75">
                   {items.map((tr) => (
                     <TransactionItem
                       isBorder

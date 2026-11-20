@@ -34,7 +34,6 @@ const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
   const [isLoadingConfirm, setIsLoadingConfirm] = useState<boolean>(false);
   const [isLoadingDelete, setIsLoadingDelete] = useState<boolean>(false);
   const [isLoadingEdit, setIsLoadingEdit] = useState<boolean>(false);
-
   const [isOpenFactorModal, setIsOpenFactorModal] = useState<boolean>(false);
 
   const payInstallmentHandler = async (accountID: Key | Id<"accounts">) => {
@@ -73,82 +72,88 @@ const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
       setIsLoadingDelete(false);
     }
   };
-  
+
   return (
-    <div className="box rounded-2xl">
-      <section className="pb-7 border-b border-b-secondary">
-        {/* right */}
-        <div>
-          <div className="flex flex-col gap-y-2.25">
-            <p className="font-extrabold text-neutral-100">
-              {creditInfo.title}
-            </p>
-            <p className="text-xs text-muted">
-              نرخ بهره {creditInfo.interestRate}% · بازپرداخت{" "}
-              {creditInfo.installmentCount} ماهه
-            </p>
-          </div>
-          <div className="text-xs text-muted mt-6 flex items-center gap-x-9">
-            <span className="">
-               کل وام:{" "}
-              <span className="font-extrabold text-[#ff6b6b] inline-flex items-center gap-x-1">
-                {creditInfo.totalAmount?.toLocaleString()}{" "}
-                <TomanIcon width="13" height="13" />
-              </span>
+    <div className="box min-w-0 rounded-2xl">
+      <section className="border-b border-b-secondary pb-5 sm:pb-7">
+        <div className="flex flex-col gap-y-2.25">
+          <p className="truncate font-extrabold text-neutral-100">
+            {creditInfo.title}
+          </p>
+          <p className="text-xs text-muted">
+            نرخ بهره {creditInfo.interestRate}% · بازپرداخت{" "}
+            {creditInfo.installmentCount} ماهه
+          </p>
+        </div>
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-muted sm:mt-6 sm:gap-x-9">
+          <span>
+            کل وام:{" "}
+            <span className="inline-flex items-center gap-x-1 font-extrabold text-[#ff6b6b]">
+              {creditInfo.totalAmount?.toLocaleString()}
+              <TomanIcon width="13" height="13" />
             </span>
-            <span className="">
-              اقساط مانده:
-              <span className="font-extrabold text-neutral-100 inline-flex items-center gap-x-1 mr-1">
-                {creditInfo.remainingCount}
-              </span>
+          </span>
+          <span>
+            اقساط مانده:
+            <span className="mr-1 inline-flex items-center gap-x-1 font-extrabold text-neutral-100">
+              {creditInfo.remainingCount}
             </span>
-          </div>
+          </span>
         </div>
       </section>
-      <section className="pt-6 pb-7 flex items-center justify-around">
-        <div className="flex flex-col items-center justify-center gap-y-1.5">
-          <p className="text-xs text-muted">مانده بدهی </p>
-          <p className="font-extrabold text-neutral-100 inline-flex items-center gap-x-1.25">
-            {creditInfo.remainingDebt?.toLocaleString() ?? 0}{" "}
-            <TomanIcon width="15" height="15" />
+
+      <section className="grid grid-cols-3 gap-2 pb-5 pt-5 sm:pb-7 sm:pt-6">
+        <div className="flex min-w-0 flex-col items-center justify-center gap-y-1.5">
+          <p className="text-xs text-muted">مانده بدهی</p>
+          <p className="inline-flex max-w-full items-center gap-x-1 text-[13px] font-extrabold text-neutral-100 sm:gap-x-1.25 sm:text-base">
+            <span className="truncate">
+              {creditInfo.remainingDebt?.toLocaleString() ?? 0}
+            </span>
+            <TomanIcon width="14" height="14" />
           </p>
         </div>
 
-        <div className="flex flex-col items-center justify-center gap-y-1.5">
-          <p className="text-xs text-muted"> پرداخت شده </p>
-          <p className="font-extrabold text-primary inline-flex items-center gap-x-1.25">
-            {creditInfo.paidAmount ? creditInfo.paidAmount.toLocaleString() : 0}{" "}
-            <TomanIcon width="15" height="15" />
+        <div className="flex min-w-0 flex-col items-center justify-center gap-y-1.5">
+          <p className="text-xs text-muted">پرداخت شده</p>
+          <p className="inline-flex max-w-full items-center gap-x-1 text-[13px] font-extrabold text-primary sm:gap-x-1.25 sm:text-base">
+            <span className="truncate">
+              {creditInfo.paidAmount
+                ? creditInfo.paidAmount.toLocaleString()
+                : 0}
+            </span>
+            <TomanIcon width="14" height="14" />
           </p>
         </div>
-        <div className="flex flex-col items-center justify-center gap-y-2">
+
+        <div className="flex min-w-0 flex-col items-center justify-center gap-y-2">
           <p className="text-xs text-muted">سررسید بعدی</p>
-          <p className="font-extrabold text-neutral-100 text-[14px] ">
+          <p className="text-[13px] font-extrabold text-neutral-100 sm:text-[14px]">
             {creditInfo.nextDueDate
               ? formatDay(creditInfo.nextDueDate)
               : "تمام شد"}
           </p>
         </div>
       </section>
-      <section className="flex items-center gap-x-4">
+
+      <section className="flex items-center gap-x-3 sm:gap-x-4">
         <Button
-          className="h-13 rounded-xl w-full text-base bg-primary text-black"
+          className="h-12 w-full rounded-xl bg-primary text-sm text-black sm:h-13 sm:text-base"
           onPress={() => setIsShowConfirm(true)}
           isDisabled={!creditInfo.nextDueDate}
         >
           <CardIcon size={20} className="rotate-35" />
           ثبت پرداخت این قسط
         </Button>
-        <div className="relative">
+        <div className="relative shrink-0">
           <Dropdown>
             <Button
               variant="outline"
               isIconOnly
-              className={" h-13 rounded-xl w-13.5 border-secondary"}
+              className="h-12 w-12 rounded-xl border-secondary sm:h-13 sm:w-13.5"
             >
               <MenuDotsBoldIcon size={20} />
             </Button>
-            <Dropdown.Popover className={"box-modal-2"}>
+            <Dropdown.Popover className="box-modal-2 w-60 md:w-auto ml-3 md:ml-0">
               <Dropdown.Menu
                 onAction={(key) => {
                   if (key === "edit") setIsOpenEditModal(true);
@@ -179,6 +184,7 @@ const CreditsBox = ({ creditInfo }: CreditsBoxProps) => {
           </Dropdown>
         </div>
       </section>
+
       <FormModal
         title="ویرایش وام"
         isOpen={isOpenEditModal}

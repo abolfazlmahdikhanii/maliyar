@@ -10,6 +10,7 @@ import { type subscriptionTimeCycleState } from "../subscription-form/Subscripti
 import SubscriptionFooter from "./elements/SubscriptionFooter";
 
 type Subscription = FunctionReturnType<typeof api.subscriptions.list>[number];
+
 const CYCLE_LABEL: Record<subscriptionTimeCycleState, string> = {
   weekly: "هفتگی",
   monthly: "ماهانه",
@@ -34,49 +35,55 @@ const SubscriptionBox = ({ subscription }: SubscriptionBoxProps) => {
   const overdue = days < 0;
 
   return (
-    <div className="w-full box rounded-2xl">
-      <div className="flex items-center justify-between">
-        {/* right */}
-        <div className="flex gap-x-3">
+    <div className="box w-full min-w-0 rounded-2xl">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-x-3">
           <div
-            className="w-12 h-12 rounded-xl grid place-items-center border"
+            className="grid size-11 shrink-0 place-items-center rounded-xl border sm:size-12"
             style={{
               background: category.bg,
               color: category.color,
               borderColor: category.color,
             }}
           >
-            <span className="text-xl font-semibold ">
+            <span className="text-lg font-semibold sm:text-xl">
               {subscription?.name?.charAt(0)}
             </span>
           </div>
-          <div className="space-y-0.75">
-            <p className="font-semibold text-lg ">{subscription?.name}</p>
-            <p className="text-xs text-muted">
+          <div className="min-w-0 space-y-0.75">
+            <p className="truncate text-base font-semibold sm:text-lg">
+              {subscription?.name}
+            </p>
+            <p className="truncate text-xs text-muted">
               {category?.label} . {cycleLabel} . {bankName && bankName}
             </p>
           </div>
         </div>
-        {/* left */}
-        <div className="space-y-0.75">
-          <p className="text-xl font-semibold">
+
+        <div className="shrink-0 space-y-0.75">
+          <p className="text-lg font-semibold sm:text-xl">
             {subscription?.amount.toLocaleString() ?? 0}
           </p>
-          <p className="text-muted text-xs text-left">تومان / {cycleLabel}</p>
+          <p className="text-left text-xs text-muted">تومان / {cycleLabel}</p>
         </div>
       </div>
-      <div className="box-date rounded-2xl mt-4">
-        <div className="flex items-center justify-between">
-          <p className="text-muted text-sm">
+
+      <div className="box-date mt-4 rounded-2xl">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2">
+          <p className="text-sm text-muted">
             پرداخت بعدی:{" "}
-            <span className="mr-0.5 text-white font-semibold">
+            <span className="mr-0.5 font-semibold text-white">
               {subscription.nextPaymentDate
                 ? formatDate(subscription.nextPaymentDate)
                 : "نامشخص"}
             </span>
           </p>
           <div
-            className={` px-2.5 border text-xs rounded-xl ${isActive ? "py-1.5 bg-[rgba(255,184,108,0.12)] text-[#ffb86c] border-[#ffb86c]" : "bg-surface border-secondary text-neutral-300 py-1.5"} `}
+            className={`rounded-xl border px-2.5 py-1.5 text-xs ${
+              isActive
+                ? "border-[#ffb86c] bg-[rgba(255,184,108,0.12)] text-[#ffb86c]"
+                : "border-secondary bg-surface text-neutral-300"
+            }`}
           >
             {isActive ? (
               daysLabel(days)
@@ -88,7 +95,8 @@ const SubscriptionBox = ({ subscription }: SubscriptionBoxProps) => {
             )}
           </div>
         </div>
-        <div className="mt-4 ">
+
+        <div className="mt-4">
           <ProgressBar
             aria-label="پیشرفت تا پرداخت بعدی"
             className="w-full"
@@ -103,6 +111,7 @@ const SubscriptionBox = ({ subscription }: SubscriptionBoxProps) => {
           </ProgressBar>
         </div>
       </div>
+
       <SubscriptionFooter subscription={subscription} />
     </div>
   );

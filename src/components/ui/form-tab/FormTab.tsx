@@ -12,10 +12,16 @@ type FormTabProps = {
 
 const FormTab = ({ tabs, selectedTab, setSelectedTab }: FormTabProps) => {
   return (
-    <section className="grid grid-cols-2 w-full gap-x-1 p-1.5 bg-secondary rounded-xl max-w-2xl border border-secondary">
+    <section
+      role="tablist"
+      className="grid w-full max-w-2xl auto-cols-fr grid-flow-col gap-x-1 rounded-xl border border-secondary bg-secondary p-1.5"
+    >
       {tabs.map((tab) => (
-        <div
+        <button
           key={tab.id}
+          type="button"
+          role="tab"
+          aria-selected={selectedTab === tab.value}
           className={`transaction-type ${
             selectedTab === tab.value
               ? tab.selectedColor
@@ -24,7 +30,7 @@ const FormTab = ({ tabs, selectedTab, setSelectedTab }: FormTabProps) => {
           onClick={() => setSelectedTab(tab.value)}
         >
           {tab.title}
-        </div>
+        </button>
       ))}
     </section>
   );

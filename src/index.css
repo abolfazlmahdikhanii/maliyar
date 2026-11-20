@@ -140,10 +140,10 @@ body {
 }
 /* components */
 .btn {
-  @apply bg-secondary border border-secondary w-13.5 h-13.5 rounded-full;
+  @apply bg-secondary border border-secondary w-12.5 h-12.5 lg:w-13.5 lg:h-13.5 rounded-full;
 }
 .box {
-  @apply bg-secondary p-5 border border-secondary;
+  @apply bg-secondary p-4 sm:p-5 border border-secondary;
 }
 .box-input {
   @apply bg-secondary px-3 py-1 border border-secondary;
@@ -182,8 +182,28 @@ body {
 .input-group[data-focus-within="true"] {
   @apply focus:ring-0 focus:shadow-none focus:border-primary;
 }
+
+.input,
+.input-group input,
+.input-group textarea {
+  @apply text-white caret-primary text-sm sm:text-base;
+}
+
+.input::placeholder,
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+  @apply text-neutral-500 font-normal;
+  opacity: 1;
+}
+
+.input:-webkit-autofill,
+.input-group input:-webkit-autofill {
+  -webkit-text-fill-color: #fff;
+  box-shadow: 0 0 0 1000px #242429 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
 .transaction-type {
-  @apply rounded-lg flex items-center justify-center  transition-all duration-300 cursor-pointer px-4 py-3 text-sm font-semibold;
+  @apply rounded-lg flex items-center justify-center  transition-all duration-300 cursor-pointer px-4 py-3 text-xs sm:text-sm font-semibold;
 }
 .profile-item {
   @apply size-8 rounded-lg bg-white/4 border border-white/5 flex items-center justify-center transition-colors group-hover:bg-primary/10;
@@ -198,8 +218,8 @@ body {
   .toast--danger {
     @apply border-red-400/40;
   }
-  .select__value{
-    @apply leading-none
+  .select__value {
+    @apply leading-none;
   }
 }
 

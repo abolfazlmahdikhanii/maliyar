@@ -32,6 +32,7 @@ export type Card = {
   iban?: string;
   initialBalance?: number;
 };
+
 type CardBoxProps = {
   cardNumber?: string;
 } & Card;
@@ -69,6 +70,7 @@ const CardBox = ({
       setLoadingRemove(false);
     }
   };
+
   const copyNumberHandler = (
     txt: string | undefined,
     type: "card" | "sheba",
@@ -83,61 +85,67 @@ const CardBox = ({
       })
       .catch(() => {
         toast.danger(
-          `کپی ${type === "card" ? "شماره کارت" : "شماره شبا"} با خطاا مواجه شد`,
+          `کپی ${type === "card" ? "شماره کارت" : "شماره شبا"} با خطا مواجه شد`,
         );
       });
   };
+
   return (
-    <div>
+    <div className="min-w-0">
       <CardHolder
         cardNumber={cardNumber ? cardFormatter(cardNumber) : [""]}
         type={type}
       />
-      <div className="box rounded-b-2xl ">
-        <p className="text-muted text-xs flex items-center gap-x-1">
+
+      <div className="box rounded-b-2xl relative ">
+        <p className="flex items-center gap-x-1 text-xs text-muted">
           <WalletMoneyIcon size={14} />
           موجودی فعلی
         </p>
-        <div className="mt-2.5 mr-1">
-          <p className="text-white font-semibold text-2xl flex items-center gap-x-1 tracking-wide">
-            {balance?.toLocaleString()}{" "}
+
+        <div className="mr-1 mt-2.5">
+          <p className="flex items-center gap-x-1 text-xl font-semibold tracking-wide text-white sm:text-2xl">
+            {balance?.toLocaleString()}
             <span className="text-neutral-400">
               <TomanIcon width="16" height="16" />
             </span>
           </p>
         </div>
-        <div className="flex items-center  mt-2.75 gap-x-2.5 border-b border-secondary pb-4.5">
-          <div className="flex items-center font-semibold border justify-center gap-x-1.25 text-xs bg-secondary border-secondary py-1.75 px-3 text-primary rounded-xl">
+
+        <div className="mt-2.75 flex flex-wrap items-center gap-2 border-b border-secondary pb-4 sm:gap-x-2.5 sm:pb-4.5">
+          <div className="flex items-center justify-center gap-x-1.25 rounded-xl border border-secondary bg-secondary px-2.5 py-1.5 text-xs font-semibold text-primary sm:px-3 sm:py-1.75">
             <ArrowRightDownIcon size={13} />
             <p>{totalIncome?.toLocaleString()}</p>
           </div>
-          <div className="flex items-center font-semibold border justify-center gap-x-1.25 text-xs bg-secondary border-secondary py-1.75 px-3 text-danger rounded-xl">
+          <div className="flex items-center justify-center gap-x-1.25 rounded-xl border border-secondary bg-secondary px-2.5 py-1.5 text-xs font-semibold text-danger sm:px-3 sm:py-1.75">
             <ArrowLeftUpIcon size={13} />
             <p>{totalOutcome?.toLocaleString()}</p>
           </div>
-          <div className="flex items-center  border justify-center gap-x-1.25 text-xs bg-secondary border-secondary py-1.75 px-3 text-muted rounded-xl">
+          <div className="flex items-center justify-center gap-x-1.25 rounded-xl border border-secondary bg-secondary px-2.5 py-1.5 text-xs text-muted sm:px-3 sm:py-1.75">
             <BillIcon size={13} />
             <p>{transactionCount} تراکنش</p>
           </div>
         </div>
-        <div className="flex items-center mt-4 gap-x-2.5 justify-between">
+
+        <div className="mt-4 flex items-center justify-between gap-x-2.5">
           <Button
             onPress={() => setIsShowDetailModal(true)}
-            className="h-10 rounded-xl font-semibold px-4 text-xs bg-transparent border border-secondary text-muted hover:bg-secondary hover:text-primary"
+            className="h-10 rounded-xl border border-secondary bg-transparent px-4 text-xs font-semibold text-muted hover:bg-secondary hover:text-primary"
           >
             <BillIcon size={20} />
             تراکنش‌ها
           </Button>
-          <div className="relative">
+
+          <div className="relative shrink-0">
             <Dropdown>
               <Button
                 variant="outline"
                 isIconOnly
-                className={" h-10 rounded-xl w-10.5 border-secondary"}
+                className="h-10 w-10.5 rounded-xl border-secondary"
               >
                 <MenuDotsBoldIcon size={18} />
               </Button>
-              <Dropdown.Popover className={"box-modal-2"}>
+              <Dropdown.Popover className="box-modal-2 w-60 md:w-auto ml-3 md:ml-0">
                 <Dropdown.Menu
                   onAction={(key) => {
                     if (key === "edit") setIsOpenEditModal(true);

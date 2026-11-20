@@ -1,47 +1,64 @@
 import { Avatar, Dropdown, Separator } from "@heroui/react";
 import {
   AltArrowDownIcon,
+  AltArrowLeftIcon,
   Logout2Icon,
   SettingsIcon,
-  UserIcon,
+  TargetIcon,
+  Wallet2Icon,
 } from "@solar-icons/react/outline";
 import { useQuery } from "convex/react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../../../../convex/_generated/api";
 import Logout from "../logout/Logout";
 
 const ITEMS = [
   {
-    id: "profile",
-    title: "پروفایل",
-    description: "اطلاعات حساب کاربری",
-    icon: UserIcon,
+    id: "accounts",
+    title: "حساب‌ها",
+    description: "مدیریت حساب‌ها و کارت‌ها",
+    icon: Wallet2Icon,
+    path: "/accounts",
+  },
+  {
+    id: "goals",
+    title: "اهداف مالی",
+    description: "پیگیری اهداف پس‌انداز",
+    icon: TargetIcon,
+    path: "/finance-goal",
   },
   {
     id: "settings",
     title: "تنظیمات",
-    description: "شخصی‌سازی برنامه",
+    description: " شخصی‌سازی برنامه",
     icon: SettingsIcon,
+    path: "/setting",
   },
 ];
 
 const ProfileMenu = () => {
   const user = useQuery(api.users.me);
+  const navigate = useNavigate();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [isSignout, setIsSignout] = useState(false);
+
   const fullName =
     `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim() ||
     user?.username ||
     "کاربر";
+  const avatarSrc =
+    user?.image ??
+    "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/blue.jpg";
+
   return (
     <>
       <Dropdown isOpen={isOpen} onOpenChange={setIsOpen}>
-        {/* Trigger */}
         <Dropdown.Trigger>
           <div
             className={
-              "bg-secondary cursor-pointer border border-secondary flex items-center w-23.75 h-13.75 rounded-full p-1.5 pl-2.5 justify-between gap-x-2.75 text-white"
+              "bg-secondary cursor-pointer border border-secondary flex items-center w-21 md:w-23.75 h-12.5 lg:h-13.75 rounded-full p-1.5 pl-2.5 justify-between gap-x-2.75 text-white"
             }
           >
             <div>
@@ -68,74 +85,29 @@ const ProfileMenu = () => {
         </Dropdown.Trigger>
 
         {/* Popover */}
-        <Dropdown.Popover className="box-profile w-70 ml-7">
-          {/* User Card */}
+        <Dropdown.Popover className="box-profile w-[calc(100vw-1rem)] max-w-70 lg:ml-7 lg:w-80 lg:max-w-80">
+          {/* User card */}
           <div className="px-2 pb-1.5">
-            <div
-              className="
-              relative
-              overflow-hidden
-              rounded-xl
-              bg-[#242429]
-              border border-white/6
-              p-3
-            "
-            >
-              {/* Decorative glow */}
-              <div
-                className="
-                absolute
-                -left-8
-                -top-8
-                size-24
-                rounded-full
-                bg-primary/10
-                blur-2xl
-              "
-              />
+            <div className="relative overflow-hidden rounded-2xl border border-white/6 bg-linear-to-br from-primary/15 via-[#242429] to-[#242429] p-3.5">
+              <div className="absolute -left-10 -top-10 size-28 rounded-full bg-primary/15 blur-2xl" />
 
               <div className="relative flex items-center gap-3">
-                {/* Avatar */}
-                <div className="relative">
+                <div className="relative shrink-0">
                   <Avatar size="lg">
-                    <Avatar.Image
-                      alt={fullName}
-                      src={
-                        user?.image ??
-                        "https://heroui-assets.nyc3.cdn.digitaloceanspaces.com/avatars/orange.jpg"
-                      }
-                    />
-
+                    <Avatar.Image alt={fullName} src={avatarSrc} />
                     <Avatar.Fallback>
                       {user?.firstName?.charAt(0)}
                       {user?.lastName?.charAt(0)}
                     </Avatar.Fallback>
                   </Avatar>
-
-                  {/* Online */}
-                  <span
-                    className="
-                    absolute
-                    bottom-0
-                    left-0
-                    size-3
-                    rounded-full
-                    bg-primary
-                    border-2
-                    border-[#242429]
-                  "
-                  />
+                  <span className="absolute bottom-0 left-0 size-3 rounded-full border-2 border-[#242429] bg-primary" />
                 </div>
 
-                {/* Information */}
-                <div className="min-w-0 flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5">
-                    <p className="truncate text-sm font-semibold text-white">
-                      {fullName}
-                    </p>
-                  </div>
-
-                  <p className="truncate text-xs text-white/40" dir="ltr">
+                <div className="flex min-w-0 flex-col gap-1">
+                  <p className="truncate text-sm font-semibold text-white">
+                    {fullName}
+                  </p>
+                  <p className="truncate text-xs text-white/45" dir="ltr">
                     {user?.email ?? "ایمیل ثبت نشده"}
                   </p>
                 </div>
@@ -144,7 +116,17 @@ const ProfileMenu = () => {
           </div>
 
           {/* Menu */}
-          <Dropdown.Menu className="space-y-1.25">
+          <Dropdown.Menu
+            className="space-y-1"
+            onAction={(key) => {
+              if (key === "logout") {
+                setIsSignout(true);
+                return;
+              }
+              const item = ITEMS.find((i) => i.id === key);
+              if (item) navigate(item.path);
+            }}
+          >
             {ITEMS.map(({ id, title, description, icon: Icon }) => (
               <Dropdown.Item
                 key={id}
@@ -152,43 +134,41 @@ const ProfileMenu = () => {
                 textValue={title}
                 className="group"
               >
-                <div className="flex items-center gap-3 w-full">
-                  <div className="profile-item">
+                <div className="flex w-full items-center gap-3">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-white/5 transition-colors group-hover:bg-primary/15">
                     <Icon
-                      size={17}
-                      className="text-white/50 group-hover:text-primary group-data-[focus-visible=true]:text-primary"
+                      size={18}
+                      className="text-white/60 transition-colors group-hover:text-primary"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-0.5">
-                    <span className="text-sm">{title}</span>
-                    <span className="text-xs text-white/55">{description}</span>
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <span className="text-sm text-white">{title}</span>
+                    <span className="text-xs text-white/50">{description}</span>
                   </div>
+
+                  <AltArrowLeftIcon
+                    size={14}
+                    className="mr-auto text-white/25 transition-colors group-hover:text-white/60"
+                  />
                 </div>
               </Dropdown.Item>
             ))}
 
             <Separator className="my-1" />
-            {/* Logout */}
-            <Dropdown.Item id="logout" textValue="خروج" className="group" onClick={()=>setIsSignout(true)}>
-              <div className="flex items-center gap-3 w-full">
-                <div
-                  className="
-                  size-8
-                  rounded-lg
-                  bg-red-400/6
-                  flex items-center justify-center
-                "
-                >
-                  <Logout2Icon size={17} className="text-red-400" />
-                </div>
 
+            <Dropdown.Item id="logout" textValue="خروج" className="group">
+              <div className="flex w-full items-center gap-3">
+                <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-red-400/10 transition-colors group-hover:bg-red-400/20">
+                  <Logout2Icon size={18} className="text-red-400" />
+                </div>
                 <span className="text-sm text-red-400">خروج از حساب</span>
               </div>
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown.Popover>
       </Dropdown>
+
       <Logout
         isShowConfirm={isSignout}
         onChangeShowConfirm={() => setIsSignout(false)}

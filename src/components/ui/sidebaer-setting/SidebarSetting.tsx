@@ -1,5 +1,5 @@
 import type { FunctionReturnType } from "convex/server";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { api } from "../../../../convex/_generated/api";
 import SidebarItemSetting from "./elements/SidebarItemSetting";
 
@@ -61,44 +61,67 @@ const SidebarSetting = ({ info }: SidebarSettingProps) => {
     };
   }, []);
 
-  const handleSelect = (id: string) => {
+  const handleSelect = useCallback((id: string) => {
     lockUntil.current = Date.now() + LOCK_MS;
     setSelectedID(id);
 
     document
       .getElementById(id)
       ?.scrollIntoView({ behavior: "smooth", block: "start" });
-  };
+  }, []);
 
   const initial = (info?.firstName || info?.username || "").charAt(0);
 
   return (
-    <aside className="box rounded-2xl max-h-fit sticky top-0 self-start">
-      <div className="flex flex-col items-center justify-center border-b border-dashed pt-3 pb-5 border-b-secondary">
-        <div className="w-21 h-21 rounded-full uppercase bg-primary/15 text-primary text-3xl grid place-items-center border border-primary font-semibold">
+    <aside className="sticky top-0 z-20 -mx-3 self-start bg-[#0B0B0E]/95 px-3 py-2 backdrop-blur lg:mx-0 lg:box lg:max-h-fit lg:bg-secondary lg:rounded-2xl l  lg:p-5 lg:backdrop-blur-none">
+      <div className="hidden flex-col items-center justify-center border-b border-dashed border-b-secondary pb-5 pt-3 lg:flex">
+        <div className="grid size-21 place-items-center rounded-full border border-primary bg-primary/15 text-3xl font-semibold uppercase text-primary">
           {initial}
         </div>
 
-        <div className="flex flex-col items-center mt-4 min-h-12">
+        <div className="mt-4 flex min-h-12 flex-col items-center">
           {info ? (
             <>
-              <p className="font-semibold text-lg text-white">
+              <p className="text-lg font-semibold text-white">
                 {info.firstName} {info.lastName}
               </p>
-              <p dir="ltr" className="text-[13px] text-muted mt-1.5">
+              <p dir="ltr" className="mt-1.5 text-[13px] text-muted">
                 @{info.username}
               </p>
             </>
           ) : (
             <>
-              <div className="h-6 w-32 rounded-lg bg-secondary animate-pulse" />
-              <div className="h-4 w-20 rounded bg-secondary animate-pulse mt-2.5" />
+              <div className="h-6 w-32 animate-pulse rounded-lg bg-secondary" />
+              <div className="mt-2.5 h-4 w-20 animate-pulse rounded bg-secondary" />
             </>
           )}
         </div>
       </div>
 
-      <nav aria-label="بخش‌های تنظیمات" className="py-3 space-y-1">
+      <nav
+        aria-label="بخش‌های تنظیمات"
+        className="flex gap-2 overflow-x-auto [scrollbar-width:none] lg:hidden [&::-webkit-scrollbar]:hidden"
+      >
+        {settingMenu.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => handleSelect(item.id)}
+            className={`shrink-0 whitespace-nowrap rounded-full border px-4 py-2 text-sm transition-colors ${
+              selectedID === item.id
+                ? "border-primary bg-primary font-medium text-black"
+                : "border-secondary bg-secondary text-white/70"
+            }`}
+          >
+            {item.name}
+          </button>
+        ))}
+      </nav>
+
+      <nav
+        aria-label="بخش‌های تنظیمات"
+        className="hidden space-y-1 py-3 lg:block"
+      >
         {settingMenu.map((item) => (
           <SidebarItemSetting
             key={item.id}

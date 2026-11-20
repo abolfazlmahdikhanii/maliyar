@@ -16,7 +16,6 @@ function validate(input: { categoryId: string; limit: number }) {
   return { categoryId, limit: input.limit };
 }
 
-// برای هر دسته فقط یک بودجه (در ویرایش، خود بودجه حساب نمی‌شود)
 async function assertCategoryFree(
   ctx: MutationCtx,
   userId: Id<"users">,
@@ -34,8 +33,6 @@ async function assertCategoryFree(
   }
 }
 
-// بودجه‌ها + مقدار هزینه‌شده‌ی هر دسته در بازه‌ی from تا to (YYYY-MM-DD میلادی، شامل هر دو سر).
-// بازه را کلاینت می‌فرستد (مثلا ماه شمسی جاری)، پس سرور به تقویم وابسته نیست.
 export const list = query({
   args: { from: v.string(), to: v.string() },
   handler: async (ctx, { from, to }) => {
@@ -57,7 +54,6 @@ export const list = query({
       )
       .collect();
 
-    // فقط هزینه‌ها، از همه‌ی حساب‌ها
     const usedByCategory = new Map<string, number>();
     for (const t of transactions) {
       if (t.type !== "outcome") continue;

@@ -217,7 +217,7 @@ const Auth = () => {
         </div>
       </section>
 
-      {/* Illustration panel: fills the whole side */}
+    
       <aside className="relative hidden overflow-hidden bg-primary lg:block">
         <img
           src={"/images/auth.svg"}

@@ -184,13 +184,7 @@ const TransactionForm = ({
         setCategoryId={setCategoryTransactionId}
   
       />
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-5.5">
-        <FormSelect
-          label="حساب"
-          value={accountID}
-          onChange={setAccountID}
-          options={accountOptions}
-        />
+      <section className="mt-5 grid max-w-2xl grid-cols-1 gap-4 sm:mt-5.5 sm:grid-cols-2 sm:gap-5">
         <FormSelect
           label="نوع پرداخت"
           value={paymentMethod}
@@ -200,8 +194,14 @@ const TransactionForm = ({
           }}
           options={PAYMENT_METHODS}
         />
+        <FormSelect
+          label="حساب"
+          value={accountID}
+          onChange={setAccountID}
+          options={accountOptions}
+        />
       </section>
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-5.5">
+      <section className="mt-4 grid max-w-2xl grid-cols-1 gap-4 sm:mt-5.5 sm:grid-cols-2 sm:gap-5">
         <DatePickerInput date={date} onDate={setDate} />
 
         <TimeInput time={time} onTime={setTime} />

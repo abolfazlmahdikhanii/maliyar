@@ -25,10 +25,10 @@ const Income = ({ total, change, groups = [], loading }: IncomeProps) => {
             <div className="w-11.5 h-11.5 grid place-content-center bg-secondary rounded-full text-white">
               <CardReceiveIcon size={24} />
             </div>
-            <p className="text-white text-[21px]">مجموع درآمد</p>
+            <p className="text-white text-lg sm:text-[21px]">مجموع درآمد</p>
           </div>
-          <div className="flex items-center gap-x-3.5 mt-6 mr-2">
-            <p className="text-white font-semibold text-[40px] flex items-center gap-x-1">
+          <div className="flex flex-wrap items-center gap-x-3.5 gap-y-2 mt-5 sm:mt-6 mr-2">
+            <p className="text-white font-semibold text-3xl sm:text-[40px] flex items-center gap-x-1">
               {loading || total === undefined
                 ? "—"
                 : total.toLocaleString("en-US")}
@@ -40,7 +40,7 @@ const Income = ({ total, change, groups = [], loading }: IncomeProps) => {
               <div
                 dir="ltr"
                 title={`${Math.abs(change)}٪ ${up ? "بیشتر" : "کمتر"} از ماه قبل`}
-                aria-label={`هزینه ${Math.abs(change)} درصد ${up ? "بیشتر" : "کمتر"} از ماه قبل`}
+                aria-label={`درآمد ${Math.abs(change)} درصد ${up ? "بیشتر" : "کمتر"} از ماه قبل`}
                 className={`flex items-center gap-x-1 px-2.5 py-1.25 text-xs rounded-full ${
                   down
                     ? "bg-[#f06060] text-white"
@@ -55,7 +55,7 @@ const Income = ({ total, change, groups = [], loading }: IncomeProps) => {
           </div>
         </div>
 
-        <div className="flex items-center gap-x-16 pb-1 pr-2 min-h-14">
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-3 sm:gap-x-16 pb-1 pr-2 min-h-14">
           {!loading && groups.length === 0 && (
             <p className="text-sm text-neutral-400">
               درآمدی در این ماه ثبت نشده
@@ -69,7 +69,7 @@ const Income = ({ total, change, groups = [], loading }: IncomeProps) => {
               />
               <div>
                 <p className="text-neutral-400">{g.label}</p>
-                <p className="text-[21px] text-neutral-100 mt-1">
+                <p className="text-[19px] sm:text-[21px] text-neutral-100 mt-1">
                   {g.value.toLocaleString("en-US")}
                 </p>
               </div>

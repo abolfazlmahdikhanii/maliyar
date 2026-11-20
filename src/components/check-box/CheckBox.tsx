@@ -29,11 +29,13 @@ const STATUS_BOX = {
   cleared: "border-primary bg-[rgba(87,217,119,.09)] text-primary",
   bounced: "border-[#f06060] bg-[#f060601a] text-[#f06060]",
 } as const;
+
 const MID_TEXT = {
   pending: "text-primary",
   cleared: "text-primary",
   bounced: "text-[#f06060]",
 } as const;
+
 type CheckBoxProps = {
   check: Doc<"checks">;
 };
@@ -61,14 +63,14 @@ const CheckBox = ({ check }: CheckBoxProps) => {
   const due = formatDueDate(check.dueDate);
   const stampColor =
     check.status === "bounced" ? "text-[#f06060]" : "text-primary";
+
   return (
-    <div className="box rounded-2xl relative">
-      <section className="pb-5 border-b border-b-secondary">
-        <div className="flex justify-between border-b border-secondary border-dashed pb-6">
-          {/* right */}
-          <div className="flex items-center gap-x-3">
+    <div className="box relative min-w-0 rounded-2xl">
+      <section className="border-b border-b-secondary pb-4 sm:pb-5">
+        <div className="flex items-center justify-between gap-3 border-b border-dashed border-secondary pb-4 sm:pb-6">
+          <div className="flex min-w-0 items-center gap-x-3">
             <div
-              className={`w-10.5 h-10.5 border ${theme.box} ${theme.text} grid place-items-center rounded-[13px]`}
+              className={`grid size-10.5 shrink-0 place-items-center rounded-[13px] border ${theme.box} ${theme.text}`}
             >
               {isReceived ? (
                 <ArrowLeftDownIcon size={18} />
@@ -76,7 +78,7 @@ const CheckBox = ({ check }: CheckBoxProps) => {
                 <ArrowRightUpIcon size={18} />
               )}
             </div>
-            <div className="flex flex-col gap-y-2">
+            <div className="flex min-w-0 flex-col gap-y-2">
               <p className="font-extrabold text-neutral-100">
                 چک{" "}
                 <span className={theme.text}>
@@ -84,28 +86,30 @@ const CheckBox = ({ check }: CheckBoxProps) => {
                 </span>
               </p>
               <span
-                className={`h-[1.5px] w-15.5 inline-block bg-linear-to-l ${theme.line} to-transparent`}
-              ></span>
-              <p className="text-xs text-muted">
+                className={`inline-block h-[1.5px] w-15.5 bg-linear-to-l ${theme.line} to-transparent`}
+              />
+              <p className="truncate text-xs text-muted">
                 بانک{" "}
-                <span className="text-base text-neutral-300 font-extrabold mr-0.5">
-                  {check.bank ? getBankName(check.bank)?.replace("بانک","") : "نامشخص"}
+                <span className="mr-0.5 text-base font-extrabold text-neutral-300">
+                  {check.bank
+                    ? getBankName(check.bank)?.replace("بانک", "")
+                    : "نامشخص"}
                 </span>
               </p>
             </div>
           </div>
-          {/* left */}
-          <div className="flex items-center gap-x-4">
-            <div className="flex flex-col gap-y-1.5 items-center justify-center">
+
+          <div className="hidden items-center gap-x-4 sm:flex">
+            <div className="flex flex-col items-center justify-center gap-y-1.5">
               <p className="text-[10px] text-muted">سریال</p>
-              <div className="bg-[#0E1411] px-2.75 py-1.25  text-sm rounded-xl border border-dashed">
+              <div className="rounded-xl border border-dashed bg-[#0E1411] px-2.75 py-1.25 text-sm">
                 {check.serial ?? ""}
               </div>
             </div>
-            <div className="flex flex-col gap-y-1.5 items-center justify-center">
+            <div className="flex flex-col items-center justify-center gap-y-1.5">
               <p className="text-[10px] text-muted">سررسید</p>
-              <div className="bg-[#0E1411] px-2.75 py-1.25  rounded-xl border border-dashed flex items-center">
-                <p className=" pl-2.75 pr-px text-sm">{due?.day}</p>
+              <div className="flex items-center rounded-xl border border-dashed bg-[#0E1411] px-2.75 py-1.25">
+                <p className="pl-2.75 pr-px text-sm">{due?.day}</p>
                 <p className="border-r border-r-secondary px-2.75 text-sm">
                   {due?.months}
                 </p>
@@ -115,59 +119,72 @@ const CheckBox = ({ check }: CheckBoxProps) => {
               </div>
             </div>
           </div>
+
+          <div
+            className={`shrink-0 rounded-full border px-2.75 py-1.5 text-xs sm:hidden ${STATUS_BOX[check.status]}`}
+          >
+            {statusLabel}
+          </div>
         </div>
-        <div className="pt-4.75 pb-3.5 border-b-2 border-dashed border-b-secondary space-y-1.25 ml-8">
-          <p className="text-muted text-xs">
-            {" "}
-            {isReceived ? "صادرکننده" : "در وجه"}
-          </p>
-          <p className="font-extrabold text-lg text-neutral-200">
-            {check.party ?? ""}
-          </p>
+
+        <div className="flex items-end justify-between gap-3 border-b-2 border-dashed border-b-secondary pb-3.5 pt-4 sm:ml-8 sm:pt-4.75">
+          <div className="min-w-0 space-y-1.25">
+            <p className="text-xs text-muted">
+              {isReceived ? "صادرکننده" : "در وجه"}
+            </p>
+            <p className="truncate text-lg font-extrabold text-neutral-200">
+              {check.party ?? ""}
+            </p>
+          </div>
+          {check.serial && (
+            <p className="shrink-0 text-[11px] text-muted sm:hidden">
+              سریال: {check.serial}
+            </p>
+          )}
         </div>
-        <div className="pt-5  flex items-baseline justify-between">
-          <div className="flex flex-col gap-y-3.25">
+
+        <div className="flex items-start justify-between gap-x-3 gap-y-3 pt-4 sm:pt-5">
+          <div className="flex min-w-0 flex-col gap-y-3.25">
             <div
-              className={`py-1.5 pr-5 pl-6 rounded-xl w-fit border  text-2xl flex items-center gap-x-1 font-extrabold text-neutral-100 ${theme.box}`}
+              className={`flex w-fit items-center gap-x-1 rounded-xl border py-1.5 pl-5 pr-4 text-xl font-extrabold text-neutral-100 sm:pl-6 sm:pr-5 sm:text-2xl ${theme.box}`}
             >
               {check.amount.toLocaleString() ?? 0}
               <span className="text-neutral-400">
                 <TomanIcon width="18" height="18" />
               </span>
             </div>
-            <div className="flex items-center gap-x-1 pr-2">
-              <p className="text-[12px] text-muted font-bold">مبلغ به حروف:</p>
+            <div className="hidden flex-wrap items-center gap-x-1 pr-2 sm:flex">
+              <p className="text-[12px] font-bold text-muted">مبلغ به حروف:</p>
               <p className="text-[12px] text-muted">
                 {check.amount ? numberToWords(check.amount) : "صفر"} تومان
               </p>
             </div>
           </div>
+
           <div
-            className={`border py-1.5 px-2.75 rounded-full w-fit text-xs ${STATUS_BOX[check.status]}`}
+            className={`hidden w-fit shrink-0 rounded-full border px-2.75 py-1.5 text-xs sm:block ${STATUS_BOX[check.status]}`}
           >
             {statusLabel}
           </div>
         </div>
       </section>
-      <section className="pt-5 pb-7  px-2 flex flex-col gap-y-3.5 ">
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col gap-y-1 items-center justify-center">
+
+      <section className="flex flex-col gap-y-3.5 px-1 pb-5 pt-4 sm:px-2 sm:pb-7 sm:pt-5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-col items-center justify-center gap-y-1">
             <p className="text-[10px] text-muted">صدور</p>
-            <p className="text-xs to-neutral-100 font-semibold">
+            <p className="to-neutral-100 text-xs font-semibold">
               {formatDate(check.issueDate)}
             </p>
           </div>
-          <div className="">
-            <p
-              className={`text-xs font-semibold ${overdue ? "text-[#f06060]" : MID_TEXT[check.status]}`}
-            >
-              {midLabel}
-            </p>
-          </div>
-          <div className="flex flex-col gap-y-1 items-center justify-center">
+          <p
+            className={`text-center text-xs font-semibold ${overdue ? "text-[#f06060]" : MID_TEXT[check.status]}`}
+          >
+            {midLabel}
+          </p>
+          <div className="flex flex-col items-center justify-center gap-y-1">
             <p className="text-[10px] text-muted">سررسید</p>
-            <p className="text-xs to-neutral-100 font-semibold">
-              {" "}
+            <p className="to-neutral-100 text-xs font-semibold">
               {formatDate(check.dueDate)}
             </p>
           </div>
@@ -175,7 +192,7 @@ const CheckBox = ({ check }: CheckBoxProps) => {
         <div className="w-full">
           <Meter
             aria-label="Storage"
-            className="w-full "
+            className="w-full"
             dir="rtl"
             value={progressPercent}
           >
@@ -187,14 +204,18 @@ const CheckBox = ({ check }: CheckBoxProps) => {
           </Meter>
         </div>
       </section>
+
       <CheckFooter check={check} />
+
       {!isPending && (
-        <div className="pointer-events-none select-none absolute top-[33%] left-1/2 -translate-x-1/2 rotate-[-13deg] w-fit">
+        <div className="pointer-events-none absolute left-1/2 top-[33%] w-fit -translate-x-1/2 rotate-[-13deg] select-none">
           <div
             className={`rounded-2xl border-[3px] border-current p-1 ${stampColor}`}
           >
-            <div className="rounded-xl border border-current px-7 py-2.5">
-              <span className="text-2xl font-extrabold">{statusLabel}</span>
+            <div className="rounded-xl border border-current px-5 py-2 sm:px-7 sm:py-2.5">
+              <span className="text-xl font-extrabold sm:text-2xl">
+                {statusLabel}
+              </span>
             </div>
           </div>
         </div>

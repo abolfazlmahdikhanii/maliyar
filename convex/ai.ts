@@ -15,7 +15,7 @@ import { loadSettings } from "./settings";
 
 const GEMINI_URL =
   "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions";
-// ⚠️ اسم دقیق مدل رو با لیست مدل‌های API چک کن؛ اگه اشتباه باشه همه‌ی درخواست‌ها به Z.ai می‌رن
+
 const GEMINI_MODEL = "gemini-3.8-flash";
 
 const ZAI_URL = "https://api.z.ai/api/paas/v4/chat/completions";
@@ -23,7 +23,7 @@ const ZAI_MODEL = "glm-4.7-flash";
 
 const LIMIT_PER_HOUR = 20;
 
-// ⚠️ با کلیدهای data/banks هماهنگ کن؛ مدل فقط از همین‌ها انتخاب می‌کنه
+
 const BANK_KEYS = [
   "mellat",
   "melli",
@@ -41,7 +41,6 @@ const BANK_KEYS = [
   "sina",
 ];
 
-// فقط برای توضیحِ ابزار به مدل؛ اعتبارسنجی سخت‌گیرانه روی خود کلیدهاست
 const BANK_TITLES: Record<string, string> = {
   mellat: "ملت",
   melli: "ملی",
@@ -81,24 +80,21 @@ const pad = (n: number | string) => String(n).padStart(2, "0");
 const toIso = (g: { gy: number; gm: number; gd: number }) =>
   `${g.gy}-${pad(g.gm)}-${pad(g.gd)}`;
 
-// تاریخ شمسی برای مدل: 1405/08/20
+
 const fa = (iso: string) => {
   const [gy, gm, gd] = iso.split("-").map(Number);
   const j = toJalaali(gy, gm, gd);
   return `${j.jy}/${pad(j.jm)}/${pad(j.jd)}`;
 };
 
-// ارقام فارسی و عربی به انگلیسی
 const toEn = (s: string) =>
   s
     .replace(/[۰-۹]/g, (d) => String("۰۱۲۳۴۵۶۷۸۹".indexOf(d)))
     .replace(/[٠-٩]/g, (d) => String("٠١٢٣٤٥٦٧٨٩".indexOf(d)));
 
-// درصد با محافظ تقسیم بر صفر
 const percentOf = (part: number, whole: number) =>
   whole > 0 ? Math.round((part / whole) * 100) : 0;
 
-// ---------- ۱. سقف درخواست ----------
 
 export const checkLimit = internalMutation({
   args: { userId: v.id("users") },
@@ -117,8 +113,6 @@ export const checkLimit = internalMutation({
   },
 });
 
-// ---------- ۲. داده‌ی کاربر + تحلیل آماده ----------
-// همه‌ی عددها اینجا حساب می‌شن، چون مدل کوچیک توی محاسبه اشتباه می‌کنه
 
 export const summary = internalQuery({
   args: { userId: v.id("users") },
@@ -127,7 +121,6 @@ export const summary = internalQuery({
     const [gy, gm, gd] = today.split("-").map(Number);
     const { jy, jm, jd } = toJalaali(gy, gm, gd);
 
-    // بازه‌ی ماه جاری و ماه قبل (میلادی)
     const monthRange = (y: number, m: number) => ({
       from: toIso(toGregorian(y, m, 1)),
       to: toIso(toGregorian(y, m, jalaaliMonthLength(y, m))),
@@ -151,7 +144,6 @@ export const summary = internalQuery({
     const sum = (items: typeof txs, type: "income" | "outcome") =>
       items.filter((t) => t.type === type).reduce((s, t) => s + t.amount, 0);
 
-    // جمع هزینه‌ی هر دسته
     const byCategory = (items: typeof txs) => {
       const result = new Map<string, number>();
       for (const t of items) {
@@ -162,7 +154,6 @@ export const summary = internalQuery({
       return result;
     };
 
-    // درصد تغییر؛ اگه قبلا چیزی نبوده null
     const change = (now: number, before: number) =>
       before > 0 ? Math.round(((now - before) / before) * 100) : null;
 
@@ -208,7 +199,6 @@ export const summary = internalQuery({
         loadSettings(ctx, userId),
       ]);
 
-    // پرداخت‌ها و دریافتی‌های ۱۴ روز آینده (سررسید گذشته هم هست)
     const limit = daysAheadTehran(14);
     const upcoming: {
       title: string;
@@ -273,7 +263,6 @@ export const summary = internalQuery({
       .filter((u) => !u.out)
       .reduce((s, u) => s + u.amount, 0);
 
-    // پایه‌ی محاسبه‌ی صندوق اضطراری و نسبت بدهی: ماه قبل (کامل‌تره)، اگه نبود ماه جاری
     const monthlyBase = previousOutcome > 0 ? previousOutcome : outcome;
     const incomeBase = previousIncome > 0 ? previousIncome : income;
     const monthlyInstallments = loans
@@ -299,14 +288,11 @@ export const summary = internalQuery({
           income > 0 ? Math.round(((income - outcome) / income) * 100) : null,
         incomeChangePercent: change(income, previousIncome),
         outcomeChangePercent: change(outcome, previousOutcome),
-        // پیش‌بینی هزینه‌ی کل ماه، با همین روند
         projectedMonthOutcome: Math.round(
           (outcome / jd) * jalaaliMonthLength(jy, jm),
         ),
-        // موجودی کل به چند ماه هزینه می‌رسه
         emergencyFundMonths:
           monthlyBase > 0 ? Math.round((balance / monthlyBase) * 10) / 10 : null,
-        // مجموع اقساط ماهانه نسبت به درآمد
         debtToIncomePercent:
           incomeBase > 0
             ? Math.round((monthlyInstallments / incomeBase) * 100)
@@ -343,32 +329,26 @@ export const summary = internalQuery({
   },
 });
 
-// ---------- ۳. قیمت زنده‌ی بازار از TGJU ----------
-// منبع معتبر قیمت طلا، سکه و ارز ایران (tgju.org). قیمت‌های TGJU ریاله و به تومان تبدیل می‌شن.
-// کش ۱۰ دقیقه‌ای داره که هم منبع رو با هر پیام درگیر نمی‌کنه هم اگه موقتا قطع شد،
-// آخرین قیمت‌های کش‌شده استفاده می‌شن. کلید API هم نمی‌خواد و جدول جدید هم لازم نداره.
 
 const TGJU_URL = "https://call.tgju.org/ajax.json";
 const MARKET_TTL_MS = 10 * 60_000;
 
-// ⚠️ نرخ سود سالانه‌ی سپرده برای مقایسه؛ تقریبیه — با نرخ بانک خودت تنظیمش کن
 const DEPOSIT_RATE_PERCENT = 20;
 
 type MarketItem = {
   symbol: string;
   title: string;
   unit: string;
-  price: number; // تومان
+  price: number; 
   changePercent: number | null;
 };
 
 type MarketData = {
   source: string;
-  updatedAt: string; // شمسی
+  updatedAt: string; 
   items: MarketItem[];
 };
 
-// نمادهای TGJU که به مدل داده می‌شن (id ها از پاسخ واقعی سرویس چک شدن)
 const MARKET_SYMBOLS: { symbol: string; title: string; unit: string }[] = [
   { symbol: "price_dollar_rl", title: "دلار آمریکا", unit: "واحد" },
   { symbol: "price_eur", title: "یورو", unit: "واحد" },
@@ -382,13 +362,11 @@ const MARKET_SYMBOLS: { symbol: string; title: string; unit: string }[] = [
 
 let marketCache: { at: number; data: MarketData } | null = null;
 
-// "2,729,000" ریال → 272900 تومان
 const parseRial = (raw: unknown): number | null => {
   const n = Number(toEn(String(raw ?? "")).replace(/[,٬\s]/g, ""));
   return Number.isFinite(n) && n > 0 ? Math.round(n / 10) : null;
 };
 
-// "2026-11-14 11:57:21" تهران → "1405/08/23 11:57"
 const tsToFa = (raw: unknown): string | null => {
   const m = String(raw ?? "").match(
     /^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2})/,
@@ -433,7 +411,6 @@ const fetchMarket = async (): Promise<MarketData | null> => {
         updatedAt = tsToFa(row.ts) ?? updatedAt;
       }
 
-      // اگه فرمت منبع عوض شده باشه و تقریبا چیزی نیومد، به‌عنوان شکست در نظر بگیر
       if (items.length >= 3) {
         data = {
           source: "tgju.org",
@@ -453,7 +430,6 @@ const fetchMarket = async (): Promise<MarketData | null> => {
   return data;
 };
 
-// ---------- ۴. ابزارهای ثبت (پیش‌نویس) + مقایسه ----------
 
 type Kind = "transaction" | "check" | "loan" | "goal" | "subscription";
 export type Draft = {
@@ -489,7 +465,6 @@ const defineTool = (
   },
 });
 
-// توضیح فارسی هر کلید فقط برای انتخاب درست مدل؛ مقداری که مدل باید برگردونه خود کلیده
 const BANK_DESC = `کلید بانک از فهرست مجاز: ${BANK_KEYS.map((k) => `${k} (${BANK_TITLES[k] ?? k})`).join("، ")}`;
 
 const TOOLS = [
@@ -625,7 +600,6 @@ const KINDS: Record<string, Kind> = {
   add_subscription: "subscription",
 };
 
-// "1405/09/15" شمسی، یا "-1" و "7" یعنی روز نسبت به امروز
 function parseDate(input: unknown): string {
   const s = toEn(String(input).trim());
 
@@ -641,8 +615,6 @@ function parseDate(input: unknown): string {
   throw new Error("تاریخ معتبر نیست");
 }
 
-// آرگومان‌های مدل رو به همون شکلی تبدیل می‌کنه که mutation می‌خواد.
-// اعتبارسنجی نهایی (مبلغ، سریال و ...) موقع تأیید با خود mutation انجامه
 function makeDraft(
   name: string,
   rawArgs: string,
@@ -663,7 +635,6 @@ function makeDraft(
     throw new Error("ساختار اطلاعات ارسالی معتبر نیست");
   }
 
-  // فیلدهای اجباری قبل از ساخت پیش‌نویس بررسی می‌شوند.
   for (const key of parameters.required ?? []) {
     const value = args[key];
     if (value === undefined || value === null || value === "") {
@@ -673,7 +644,6 @@ function makeDraft(
 
   const payload: Record<string, unknown> = {};
 
-  // فقط فیلدهایی که توی ابزار تعریف شدن
   for (const [key, field] of Object.entries(fields)) {
     let value = args[key];
     if (value === undefined || value === null || value === "") continue;
@@ -710,8 +680,6 @@ function makeDraft(
       value = serial;
     }
 
-    // سخت‌گیری: مقدار فیلدهای enum باید دقیقا یکی از کلیدهای مجاز باشه؛
-    // بانک هیچ تبدیل خودکاری نداره و کلید غلط همون‌جا خطا می‌ده
     if (field.enum && !field.enum.includes(String(value))) {
       throw new Error(
         key === "bank"
@@ -723,21 +691,18 @@ function makeDraft(
     payload[key] = value;
   }
 
-  // بانک چک باید دقیقاً یکی از کلیدهای مجاز باشد؛ تبدیل حدسی نام بانک نداریم.
   if (kind === "check" && !BANK_KEYS.includes(String(payload.bank))) {
     throw new Error(
       "بانک انتخاب‌شده پشتیبانی نمی‌شود؛ بانک را از فهرست مجاز انتخاب کن",
     );
   }
 
-  // حساب باید یکی از حساب‌های خود کاربر باشه
   if (kind === "transaction" || payload.accountId !== undefined) {
     const account = accounts.find((a) => a.id === payload.accountId);
     if (!account) throw new Error("حساب مشخص نیست");
     if (kind === "transaction") payload.paymentMethod = account.type;
   }
 
-  // مقدارهای پیش‌فرض
   if (kind === "transaction") payload.date ??= daysAheadTehran(0);
   if (kind === "check") payload.issueDate ??= daysAheadTehran(0);
   if (kind === "goal") payload.savedAmount ??= 0;
@@ -746,23 +711,19 @@ function makeDraft(
   return { id: `${Date.now()}-${index}`, kind, payload };
 }
 
-// ---------- ۵. محاسبه‌ی مقایسه‌ی سرمایه‌گذاری ----------
-// همه‌ی اعداد اینجا حساب می‌شن؛ مدل دور دوم فقط تفسیر می‌کنه.
-// هیچ پیش‌بینی قیمتی وجود نداره؛ سناریوها فرضن و توی نتیجه هم گفته می‌شه.
 
 const computeComparison = (
   amount: number,
   months: number,
   market: MarketData,
 ): Record<string, unknown> => {
-  // سود ساده‌ی سپرده (سپرده‌های ایرانی معمولا سود ماهانه می‌دن): مبلغ × نرخ × ماه/۱۲
   const depositProfit = Math.round(
     (amount * DEPOSIT_RATE_PERCENT * months) / (100 * 12),
   );
   const scenarios = [-10, 0, 10];
 
   const assets = market.items.map((item) => {
-    const quantity = amount / item.price; // کسری هم مجازه (مثلا نیم گرم طلا)
+    const quantity = amount / item.price; 
     return {
       title: item.title,
       unit: item.unit,
@@ -786,14 +747,12 @@ const computeComparison = (
       total: amount + depositProfit,
       note: "نرخ تقریبیه؛ سود سپرده‌ها بین بانک‌ها فرق داره.",
     },
-    // چند درصد رشد لازمه تا دارایی با سود سپرده برابر بشه
     breakEvenGrowthPercent: Math.round((depositProfit / amount) * 1000) / 10,
     assets,
     note: "سناریوهای +۱۰٪، بدون تغییر و -۱۰٪ فقط فرض هستن، نه پیش‌بینی.",
   };
 };
 
-// ---------- ۶. خود چت ----------
 
 const SYSTEM = `تو «دستیار مالی مالیار» هستی. کارهات: تحلیل و گزارش مالی، پیشنهاد مالی، توضیح قیمت بازار و راهنمایی آموزشی برای سرمایه‌گذاری، و آماده کردن پیش‌نویس ثبت (تراکنش، چک، وام، هدف، اشتراک).
 
@@ -830,7 +789,6 @@ const SYSTEM = `تو «دستیار مالی مالیار» هستی. کارها
 - تاریخ تراکنش اگه گفته نشد امروزه. برای سررسید چک، وام و اشتراک تاریخ لازمه.
 - توی یک پاسخ بیشتر از ۵ ابزار صدا نزن.`;
 
-// ---------- ۷. فراخوانی مدل، retry و fallback ----------
 
 type ApiRequestMessage = {
   role: string;
@@ -872,7 +830,6 @@ type Provider = {
   model: string;
 };
 
-// خطای سرویس‌دهنده؛ retryable مشخص می‌کنه دوباره تلاش بشه یا نه
 class ProviderError extends Error {
   retryable: boolean;
   constructor(message: string, retryable: boolean) {
@@ -891,7 +848,6 @@ const getProviders = (): Provider[] => {
   const geminiKey = process.env.GEMINI_API_KEY;
   const zaiKey = process.env.ZAI_API_KEY;
 
-  // اولویت اول: Gemini
   if (geminiKey) {
     providers.push({
       name: "Gemini",
@@ -901,7 +857,6 @@ const getProviders = (): Provider[] => {
     });
   }
 
-  // اولویت دوم: Z.ai
   if (zaiKey) {
     providers.push({
       name: "Z.ai",
@@ -943,7 +898,6 @@ const callProvider = async (
       }
 
       const text = (await res.text().catch(() => "")).slice(0, 500);
-      // فقط 429 و خطاهای سرور موقتی‌ان؛ بقیه (مثل 400/401/404) تکرار فایده ندارن
       const retryable = res.status === 429 || res.status >= 500;
       throw new ProviderError(`${res.status}: ${text}`, retryable);
     } catch (error) {
@@ -953,7 +907,6 @@ const callProvider = async (
         lastError,
       );
 
-      // خطای صریحاً غیرقابل‌تکرار: برو سراغ سرویس بعدی. خطای شبکه و timeout دوباره امتحان می‌شن
       if (error instanceof ProviderError && !error.retryable) break;
     }
   }
@@ -994,7 +947,6 @@ const callAI = async (body: Record<string, unknown>): Promise<AIResponse> => {
   );
 };
 
-// ---------- ۸. اکشن چت ----------
 
 export const chat = action({
   args: {
@@ -1012,7 +964,6 @@ export const chat = action({
     const userId = await getAuthUserId(ctx);
     if (!userId) throw new ConvexError("لطفا وارد حساب شو.");
 
-    // فقط ۱۲ پیام آخر، هر کدوم حداکثر ۲۰۰۰ کاراکتر
     const recent = messages
       .slice(-12)
       .map((m) => ({ role: m.role, content: m.content.slice(0, 2000) }));
@@ -1023,14 +974,12 @@ export const chat = action({
     await ctx.runMutation(internal.ai.checkLimit, { userId });
     const summaryData = await ctx.runQuery(internal.ai.summary, { userId });
 
-    // قیمت زنده‌ی بازار (کش ۱۰ دقیقه‌ای) کنار تحلیل‌ها به مدل داده می‌شه
     const market = await fetchMarket();
     const totalBalance = summaryData.analysis.totalBalance;
     const data = {
       ...summaryData,
       market: market && {
         ...market,
-        // موجودی کاربر به واحد هر دارایی؛ مدل خودش تقسیم نمی‌کنه
         yourBalanceEquals: market.items.map((i) => ({
           title: i.title,
           unit: i.unit,
@@ -1063,12 +1012,11 @@ export const chat = action({
     }));
     const calls: ApiToolCall[] = message?.tool_calls ?? [];
 
-    // پیش‌نویس‌ها از پاسخ اول ساخته می‌شن
     const drafts: Draft[] = [];
     const errors: string[] = [];
     calls.slice(0, 5).forEach((call, i) => {
       const name = call?.function?.name ?? "";
-      if (name === "compare_investment") return; // ابزار داده‌ست؛ پیش‌نویس نیست
+      if (name === "compare_investment") return; 
       try {
         drafts.push(
           makeDraft(name, call?.function?.arguments ?? "", accounts, i),
@@ -1082,7 +1030,6 @@ export const chat = action({
 
     let text: string = message?.content?.trim() ?? "";
 
-    // مقایسه‌ی سرمایه‌گذاری: اعداد سمت سرور حساب می‌شن و مدل دور دوم فقط تفسیر می‌کنه
     const compareCall = calls.find(
       (c) => c?.function?.name === "compare_investment",
     );
@@ -1116,7 +1063,6 @@ export const chat = action({
           computed = computeComparison(amount, months, market);
         }
 
-        // به همه‌ی tool_call های دور اول جواب داده می‌شه تا فرمت گفتگوی مدل کامل بمونه
         const toolResults: ApiRequestMessage[] = calls.map((call, i) => ({
           role: "tool",
           tool_call_id: call.id ?? `call_${i}`,

@@ -11,7 +11,6 @@ import {
   Pen2Icon,
   TrashBin2Icon,
 } from "@solar-icons/react/outline";
-
 import { useMutation } from "convex/react";
 import { ConvexError } from "convex/values";
 import { useState } from "react";
@@ -68,39 +67,45 @@ const TransactionDetailModal = ({
       setLoadingRemove(false);
     }
   };
+
   return (
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <Modal.Backdrop>
           <Modal.Container>
             <Modal.Dialog className="sm:max-w-135 box-modal">
-              <Modal.Header className="flex items-center justify-between  flex-row ">
+              <Modal.Header className="flex flex-row items-center justify-between">
                 <Modal.Heading>جزییات تراکنش</Modal.Heading>
-                <Button isIconOnly variant="ghost" slot={"close"}>
-                  <CloseCircleIcon size={"25px"} />
+                <Button isIconOnly variant="ghost" slot="close">
+                  <CloseCircleIcon size="25px" />
                 </Button>
               </Modal.Header>
 
               <Modal.Body>
-                <div className="flex items-center flex-col mt-3">
-                  <div className="w-19 h-19 grid rounded-full place-content-center bg-secondary">
+                <div className="mt-2 flex flex-col items-center sm:mt-3">
+                  <div className="grid size-16 place-content-center rounded-full bg-secondary sm:size-19">
                     {category ? (
-                      <category.icon size={33} />
+                      <category.icon size={30} />
                     ) : (
-                      <BagSmileIcon size={33} />
+                      <BagSmileIcon size={30} />
                     )}
                   </div>
-                  <p className="text-xl text-white font-semibold mt-4">
+                  <p className="mt-3 max-w-full truncate text-lg font-semibold text-white sm:mt-4 sm:text-xl">
                     {transaction.title || category?.label}
                   </p>
                   <p
-                    className={`${transaction.type === "income" ? "text-primary" : "text-[#f06060]"} font-semibold text-[30px] flex items-center gap-x-1 mt-3`}
+                    className={`${
+                      transaction.type === "income"
+                        ? "text-primary"
+                        : "text-[#f06060]"
+                    } mt-2 flex items-center gap-x-1 text-2xl font-semibold sm:mt-3 sm:text-[30px]`}
                   >
-                    {transaction.amount?.toLocaleString()}{" "}
+                    {transaction.amount?.toLocaleString()}
                     <TomanIcon width="22" height="22" />
                   </p>
                 </div>
-                <div className="mt-7 mx-2">
+
+                <div className="mx-0 mt-5 sm:mx-2 sm:mt-7">
                   <TransactionDetailItem
                     title="حساب"
                     value={bank}
@@ -140,27 +145,28 @@ const TransactionDetailModal = ({
                     icon={ClockCircleIcon}
                   />
                 </div>
+
                 {transaction.note && (
-                  <div className=" mx-2 rounded-xl border-2 border-secondary bg-secondary/30 mt-2 px-4 py-4 mb-2">
-                    <p className="text-xs text-muted mb-1.5">توضیحات</p>
-                    <p className="text-sm text-neutral-200 leading-[1.9] whitespace-pre-wrap wrap-break-word max-h-28 overflow-y-auto">
+                  <div className="mx-0 mb-2 mt-2 rounded-xl border-2 border-secondary bg-secondary/30 px-3.5 py-3.5 sm:mx-2 sm:px-4 sm:py-4">
+                    <p className="mb-1.5 text-xs text-muted">توضیحات</p>
+                    <p className="max-h-28 overflow-y-auto whitespace-pre-wrap wrap-break-word text-sm leading-[1.9] text-neutral-200">
                       {transaction.note}
                     </p>
                   </div>
                 )}
               </Modal.Body>
-              <Modal.Footer className="pb-1 space-x-2">
+
+              <Modal.Footer className="gap-2 pb-1">
                 <Button
                   variant="outline"
-                  className="h-13 rounded-xl w-1/2 text-base"
+                  className="h-12 flex-1 rounded-xl text-base sm:h-13"
                   onPress={() => setIsOpenModalTransaction(true)}
                 >
                   ویرایش <Pen2Icon />
                 </Button>
                 <Button
                   variant="danger-soft"
-                  className="h-13 rounded-xl w-1/2 text-base"
-
+                  className="h-12 flex-1 rounded-xl text-base sm:h-13"
                   onPress={() => {
                     setIsShowDelete(true);
                   }}

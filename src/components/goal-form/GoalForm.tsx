@@ -99,8 +99,8 @@ const GoalForm = ({
   };
 
   return (
-    <Form id={formId} className="px-2" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-2 max-w-2xl">
+    <Form id={formId} className="px-1 sm:px-2" onSubmit={handleSubmit}>
+      <div className="flex max-w-2xl flex-col gap-2">
         <Label htmlFor="goal-title" className="text-muted text-sm">
           نام هدف
         </Label>
@@ -114,14 +114,14 @@ const GoalForm = ({
         />
       </div>
 
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-5.5">
+      <section className="mt-4 grid max-w-2xl grid-cols-1 gap-4 sm:mt-5.5 sm:grid-cols-2 sm:gap-5">
         <FormSelect
           label="دسته"
           value={categoryID}
           onChange={setCategoryID}
           options={categoryOptions}
         />
-        <div className="flex flex-col gap-2 max-w-2xl">
+        <div className="flex max-w-2xl flex-col gap-2">
           <Label htmlFor="goal-target" className="text-muted text-sm">
             مبلغ هدف (تومان) *
           </Label>
@@ -130,15 +130,16 @@ const GoalForm = ({
             placeholder="0"
             type="text"
             inputMode="numeric"
-            className="box input h-13"
+            dir="ltr"
+            className="box input h-13 text-right"
             value={formatNumber(targetAmount)}
             onChange={(e) => setTargetAmount(e.target.value)}
           />
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-5.5">
-        <div className="flex flex-col gap-2 max-w-2xl">
+      <section className="mt-4 grid max-w-2xl grid-cols-1 gap-4 sm:mt-5.5 sm:grid-cols-2 sm:gap-5">
+        <div className="flex max-w-2xl flex-col gap-2">
           <Label htmlFor="goal-saved" className="text-muted text-sm">
             پس انداز فعلی (تومان) *
           </Label>
@@ -147,7 +148,8 @@ const GoalForm = ({
             placeholder="0"
             type="text"
             inputMode="numeric"
-            className="box input h-13"
+            dir="ltr"
+            className="box input h-13 text-right"
             value={formatNumber(savedAmount)}
             onChange={(e) => setSavedAmount(e.target.value)}
           />
@@ -159,13 +161,16 @@ const GoalForm = ({
         />
       </section>
 
-      <section className="flex flex-col gap-2 max-w-2xl mt-5.5">
+      <section className="mt-4 flex max-w-2xl flex-col gap-2 sm:mt-5.5">
         <FormSelect
-          label="حساب پس‌انداز (اختیاری — هنگام پس‌انداز از این حساب کسر می‌شود)"
+          label="حساب پس‌انداز (اختیاری)"
           value={accountID}
           onChange={setAccountID}
           options={accountOptions}
         />
+        <p className="text-xs text-neutral-500">
+          هنگام پس‌انداز، مبلغ از این حساب کسر می‌شود.
+        </p>
       </section>
     </Form>
   );

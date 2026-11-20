@@ -52,8 +52,8 @@ const SettingInfoForm = ({ info }: { info: User }) => {
       description="نام و راه‌های ورود به حسابت"
       onSubmit={updateUserHandler}
     >
-      <div className="grid grid-cols-2 gap-5 mt-0.5">
-        <div className="flex flex-col gap-2 max-w-2xl mt-5.5">
+      <div className="mt-0.5 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
+        <div className="mt-4 flex max-w-2xl flex-col gap-2 sm:mt-5.5">
           <Label htmlFor="name" className="text-muted text-sm">
             نام
           </Label>
@@ -67,7 +67,7 @@ const SettingInfoForm = ({ info }: { info: User }) => {
             onChange={(e) => setFirstName(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-2 max-w-2xl mt-5.5">
+        <div className="flex max-w-2xl flex-col gap-2 sm:mt-5.5">
           <Label htmlFor="lastName" className="text-muted text-sm">
             نام خانوادگی
           </Label>
@@ -82,8 +82,9 @@ const SettingInfoForm = ({ info }: { info: User }) => {
           />
         </div>
       </div>
-      <div className="grid grid-cols-2 gap-5 mt-2">
-        <div className="flex flex-col gap-2 max-w-2xl mt-5.5">
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:mt-2 sm:grid-cols-2 sm:gap-5">
+        <div className="flex max-w-2xl flex-col gap-2 sm:mt-5.5">
           <Label htmlFor="username" className="text-muted text-sm">
             نام کاربری
           </Label>
@@ -97,7 +98,7 @@ const SettingInfoForm = ({ info }: { info: User }) => {
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-2 max-w-2xl mt-5.5">
+        <div className="flex max-w-2xl flex-col gap-2 sm:mt-5.5">
           <Label htmlFor="email" className="text-muted text-sm">
             ایمیل
           </Label>
@@ -112,8 +113,9 @@ const SettingInfoForm = ({ info }: { info: User }) => {
           />
         </div>
       </div>
+
       <Button
-        className="h-12 rounded-xl w-32.5 text-sm bg-primary text-black mt-8 mb-1"
+        className="mb-1 mt-6 h-12 w-full rounded-xl bg-primary text-sm text-black sm:mt-8 sm:w-32.5"
         type="submit"
         isDisabled={loading}
       >

@@ -40,12 +40,11 @@ export type FormProps = {
   formId: string;
   onLoadingChange: (a: boolean) => void;
   loading: boolean;
-  
 };
 
-type AccountFormProps={
+type AccountFormProps = {
   detail?: Detail;
-}&FormProps
+} & FormProps;
 const AccountsForm = ({
   onSuccess,
   formId,
@@ -64,7 +63,7 @@ const AccountsForm = ({
   );
   const [iban, setIban] = useState<string>(detail?.iban || "");
   const [initialBalance, setInitialBalance] = useState<string>(
-    String(detail?.initialBalance) || "",
+    detail?.initialBalance !== undefined ? String(detail.initialBalance) : "",
   );
 
   const formatCardNumber = (event: ChangeEvent<HTMLInputElement>) => {
@@ -120,7 +119,7 @@ const AccountsForm = ({
     }
   };
   return (
-    <Form id={formId} className="px-2" onSubmit={handleSubmit}>
+    <Form id={formId} className="sm:px-2 px-1" onSubmit={handleSubmit}>
       <CardHolder
         cardNumber={cardNumber}
         iban={iban}

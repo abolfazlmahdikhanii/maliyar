@@ -18,19 +18,22 @@ const AccountDetailItem = ({
   dir = "rtl",
 }: AccountDetailItemProps) => {
   const Icon = icon;
+
   return (
     <div
-      className={`flex items-center justify-between py-4.5 px-4 ${!noBorder ? "border-b border-secondary" : ""}`}
+      className={`flex items-center justify-between gap-3 px-2 py-3.5 sm:px-4 sm:py-4.5 ${
+        !noBorder ? "border-b border-secondary" : ""
+      }`}
     >
-      <div className="flex items-center gap-x-2.5 text-neutral-400 ">
-        <div className="w-8.5 h-8.5 rounded-xl bg-surface border border-secondary grid place-items-center">
+      <div className="flex shrink-0 items-center gap-x-2.5 text-neutral-400">
+        <div className="grid size-8.5 place-items-center rounded-xl border border-secondary bg-surface">
           <Icon size={20} />
         </div>
         <p className="text-xs">{title}</p>
       </div>
       <p
-        className={` ${
-          style ? style : "text-[15px] text-neutral-100 font-semibold"
+        className={`min-w-0 break-all text-left ${
+          style ? style : "text-sm font-semibold text-neutral-100 sm:text-[15px]"
         }`}
         dir={dir}
       >

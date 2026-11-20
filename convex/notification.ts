@@ -5,7 +5,6 @@ import { daysAheadTehran, todayTehran } from "./lib/date";
 import { installmentDueDate } from "./lib/loanSchedule";
 import { loadSettings } from "./settings";
 
-// چند روز مانده به سررسید هشدار بدهیم
 const SOON_DAYS = 3;
 
 export type Notice =
@@ -43,7 +42,6 @@ export type Notice =
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-// بازه‌ی میلادی ماه شمسی جاری
 function currentMonthRange(today: string) {
   const [gy, gm, gd] = today.split("-").map(Number);
   const { jy, jm } = toJalaali(gy, gm, gd);
@@ -55,8 +53,6 @@ function currentMonthRange(today: string) {
   };
 }
 
-// سررسید گذشته یا نزدیک، به ترتیب تاریخ؛ بودجه‌های پر آخر.
-// نتیجه با تغییر داده یا باز شدن دوباره‌ی برنامه به‌روز می‌شه، نه با گذر خودِ زمان.
 export const list = query({
   handler: async (ctx): Promise<Notice[]> => {
     const userId = await getAuthUserId(ctx);

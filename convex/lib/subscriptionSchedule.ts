@@ -10,16 +10,11 @@ const MONTHS: Record<Exclude<Cycle, "weekly">, number> = {
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-// روز ماه شمسی یک تاریخ میلادی (YYYY-MM-DD)
 export function jalaliDay(iso: string): number {
   const [gy, gm, gd] = iso.split("-").map(Number);
   return toJalaali(gy, gm, gd).jd;
 }
 
-// یک دوره جلو (dir = 1) یا عقب (dir = -1). هفتگی: ۷ روز. بقیه: به ماه شمسی، در همان
-// روز ماه (anchorDay). اگر ماه مقصد آن روز را نداشته باشد، آخرین روز ماه گرفته می‌شود،
-// ولی چون anchorDay عوض نمی‌شود، ماه بعد دوباره به همان روز اصلی برمی‌گردد
-// (روز ۳۱ برای همیشه ۳۰ نمی‌شود).
 function shift(
   iso: string,
   cycle: Cycle,
@@ -44,10 +39,8 @@ function shift(
   return `${g.gy}-${pad(g.gm)}-${pad(g.gd)}`;
 }
 
-// یک دوره بعد: پرداخت بعدی
 export const advanceDate = (iso: string, cycle: Cycle, anchorDay: number) =>
   shift(iso, cycle, anchorDay, 1);
 
-// یک دوره قبل: شروع دوره‌ی فعلی (برای نوار پیشرفت)
 export const previousDate = (iso: string, cycle: Cycle, anchorDay: number) =>
   shift(iso, cycle, anchorDay, -1);

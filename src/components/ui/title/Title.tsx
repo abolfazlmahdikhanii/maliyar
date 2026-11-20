@@ -6,12 +6,17 @@ type TitleProps = {
   onOpen?: () => void;
 };
 
-const Title = ({ text, btnText, onOpen }:TitleProps) => {
+const Title = ({ text, btnText, onOpen }: TitleProps) => {
   return (
-    <div className="mt-4 flex items-center justify-between">
-      <h3 className="text-[26px] font-semibold">{text}</h3>
-      <div className="flex items-center gap-x-3.5">
-        <Button className={"bg-primary text-black h-12 px-5"} onPress={onOpen}>
+    <div className="mt-2 flex items-center justify-between gap-3 lg:mt-4">
+      <h3 className="truncate text-xl font-semibold sm:text-2xl lg:text-[26px]">
+        {text}
+      </h3>
+      <div className="flex shrink-0 items-center gap-x-3.5">
+        <Button
+          className="h-11 bg-primary px-4 text-sm text-black lg:h-12 lg:px-5 lg:text-base"
+          onPress={onOpen}
+        >
           {btnText}
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -28,7 +33,10 @@ const Title = ({ text, btnText, onOpen }:TitleProps) => {
             />
           </svg>
         </Button>
-        <Button isIconOnly className="w-12 h-12 rounded-full bg-secondary">
+        <Button
+          isIconOnly
+          className="hidden h-12 w-12 rounded-full bg-secondary lg:flex"
+        >
           <IconChevronLeft />
         </Button>
       </div>

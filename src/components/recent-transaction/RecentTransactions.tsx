@@ -11,23 +11,23 @@ const RecentTransactions = () => {
   const { items, loading } = useRecentTransactions(4);
 
   return (
-    <div className="box col-span-2 rounded-[25px] max-h-130">
+    <div className="box min-w-0 rounded-[25px] col-span-2 lg:max-h-130">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-11.5 h-11.5 grid place-content-center bg-secondary rounded-full text-white">
+          <div className="w-11.5 h-11.5 shrink-0 grid place-content-center bg-secondary rounded-full text-white">
             <HistoryIcon size={23} />
           </div>
-          <p className="text-white text-[21px]">تراکنش های اخیر</p>
+          <p className="text-white text-lg sm:text-[21px]">تراکنش های اخیر</p>
         </div>
       </div>
 
-      <div className="mt-6 space-y-2.75 h-full">
+      <div className="mt-6 space-y-2.75 h-72 lg:h-full">
         {loading ? (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex h-40 items-center justify-center lg:h-full">
             <Loader />
           </div>
         ) : items.length === 0 ? (
-          <div className="flex items-center justify-center h-[80%]">
+          <div className="flex min-h-48 items-center justify-center lg:h-[80%]">
             <EmptyState
               compact
               kind="transactions"

@@ -12,8 +12,6 @@ type GoalInput = Infer<typeof goalObject>;
 
 const MAX_AMOUNT = 1_000_000_000_000;
 
-// اعتبارسنجی سمت سرور + چک مالکیت حساب متصل.
-// prevDeadline: در ویرایش، مهلتِ گذشته‌ی بدون تغییر خطا نمی‌دهد (هدف عقب‌افتاده را می‌شود ویرایش کرد)
 async function normalize(
   ctx: MutationCtx,
   userId: Id<"users">,
@@ -70,10 +68,6 @@ async function getOwnedGoal(
   return goal;
 }
 
-// فهرست اهداف: نیمه‌کاره‌ها اول (نزدیک‌ترین مهلت، بدون مهلت‌ها آخر)، تکمیل‌شده‌ها آخر.
-// percent: ۰ تا ۱۰۰ (گرد به پایین، تا ۹۹.۹ «۱۰۰» نشان داده نشود).
-// bank: کلید بانک حساب متصل؛ اگر حسابی متصل نیست null.
-// «روز مانده» را کلاینت از deadline حساب می‌کند، چون query با گذر زمان دوباره اجرا نمی‌شود.
 export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
@@ -84,7 +78,6 @@ export const list = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // هر حساب فقط یک بار خوانده می‌شود
     const accountIds = [
       ...new Set(
         goals
@@ -134,7 +127,6 @@ export const update = mutation({
     const goal = await getOwnedGoal(ctx, userId, id);
     const data = await normalize(ctx, userId, fields, goal.deadline);
 
-    // patch: deadline و accountId برابر undefined یعنی فیلد از دیتابیس حذف شود
     await ctx.db.patch(id, {
       ...data,
       deadline: data.deadline,
@@ -143,17 +135,12 @@ export const update = mutation({
   },
 });
 
-// افزودن پس‌انداز:
-// ۱. با حساب (آرگومان یا حساب متصل به هدف): تراکنش هزینه ساخته و موجودی حساب کم می‌شود.
-// ۲. بدون حساب: فقط مبلغ پس‌انداز بالا می‌رود (مثلا پول نقد کنار گذاشته‌شده).
-// accountId: undefined یعنی حساب متصل به هدف، null یعنی بدون کسر از هیچ حسابی.
-// تراکنش مستقل است و قفل نمی‌شود (مثل اشتراک)؛ حذف هدف آن را حذف نمی‌کند.
 export const addSavings = mutation({
   args: {
     id: v.id("goals"),
     amount: v.number(),
     accountId: v.optional(v.union(v.id("accounts"), v.null())),
-    date: v.string(), // تاریخ پس‌انداز، میلادی YYYY-MM-DD
+    date: v.string(),
   },
   handler: async (ctx, { id, amount, accountId, date }) => {
     const userId = await requireUserId(ctx);
@@ -210,7 +197,6 @@ export const addSavings = mutation({
   },
 });
 
-// حذف هدف. تراکنش‌های پس‌انداز قبلی سر جایشان می‌مانند، چون پول واقعا از حساب رفته
 export const remove = mutation({
   args: { id: v.id("goals") },
   handler: async (ctx, { id }) => {

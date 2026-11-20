@@ -5,7 +5,7 @@ type TransactionDetailItemProps = {
   title: string;
   value: string;
   style?: string;
-  isNote?:boolean
+  isNote?: boolean;
 };
 
 const TransactionDetailItem = ({
@@ -13,16 +13,25 @@ const TransactionDetailItem = ({
   title,
   value,
   style,
-  isNote=false
+  isNote = false,
 }: TransactionDetailItemProps) => {
   const Icon = icon;
+
   return (
-    <div className={`flex ${isNote?"flex-col gap-y-2":"items-center justify-between"} py-4 px-4 border-y last:border-b-0 border-secondary`}>
-      <div className="flex items-center gap-x-2.5 text-neutral-400">
+    <div
+      className={`flex border-y border-secondary px-2 py-3.5 last:border-b-0 sm:px-4 sm:py-4 ${
+        isNote ? "flex-col gap-y-2" : "items-center justify-between gap-3"
+      }`}
+    >
+      <div className="flex shrink-0 items-center gap-x-2.5 text-neutral-400">
         <Icon size={23} />
         <p className="text-sm">{title}</p>
       </div>
-      <p className={`text-base ${style ? style : "text-neutral-100"} ${isNote?"px-7":""}`}>
+      <p
+        className={`min-w-0 wrap-break-words text-sm sm:text-base ${
+          style ? style : "text-neutral-100"
+        } ${isNote ? "px-7" : "text-left"}`}
+      >
         {value}
       </p>
     </div>

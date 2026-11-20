@@ -15,7 +15,6 @@ import { subscriptionFields } from "./schema";
 const subscriptionObject = v.object(subscriptionFields);
 type SubscriptionInput = Infer<typeof subscriptionObject>;
 
-// اعتبارسنجی سمت سرور + چک مالکیت حساب متصل
 async function normalize(
   ctx: MutationCtx,
   userId: Id<"users">,
@@ -26,7 +25,6 @@ async function normalize(
   if (name.length > 100) {
     throw new ConvexError("نام اشتراک نباید بیشتر از ۱۰۰ کاراکتر باشد.");
   }
-  // categoryId اینجا «دسته‌ی اشتراک» است (موسیقی، فیلم، ...)، نه دسته‌ی تراکنش
   if (!input.categoryId.trim()) throw new ConvexError("دسته را انتخاب کن.");
   if (
     !Number.isSafeInteger(input.amount) ||
@@ -61,11 +59,6 @@ async function getOwned(
   return sub;
 }
 
-// فهرست اشتراک‌ها: فعال‌ها اول، به ترتیب نزدیک‌ترین پرداخت.
-// bank: کلید بانک حساب متصل؛ اگر حسابی متصل نیست null.
-// previousPaymentDate: شروع دوره‌ی فعلی (میلادی)، برای نوار پیشرفت.
-// «روز مانده» و درصد پیشرفت را کلاینت از nextPaymentDate و previousPaymentDate حساب
-// می‌کند، چون query با گذشت زمان دوباره اجرا نمی‌شود و مقدار سمت سرور کهنه می‌ماند.
 export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
@@ -76,7 +69,6 @@ export const list = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .collect();
 
-    // هر حساب فقط یک بار خوانده می‌شود
     const accountIds = [
       ...new Set(
         subs
@@ -128,9 +120,6 @@ export const update = mutation({
     const sub = await getOwned(ctx, userId, id);
     const data = await normalize(ctx, userId, fields);
 
-    // patch: accountId: undefined یعنی اتصال به حساب حذف شود.
-    // anchorDay فقط وقتی تاریخ عوض شده از نو ساخته می‌شود؛ وگرنه ویرایش اسم،
-    // روز اصلی (مثلا ۳۱) را به روز کوتاه‌شده‌ی ماه فعلی (۳۰) تبدیل می‌کرد
     await ctx.db.patch(id, {
       ...data,
       accountId: data.accountId,
@@ -142,7 +131,6 @@ export const update = mutation({
   },
 });
 
-// توقف و ازسرگیری (آیتم «توقف» در منو)
 export const setStatus = mutation({
   args: {
     id: v.id("subscriptions"),
@@ -155,14 +143,11 @@ export const setStatus = mutation({
   },
 });
 
-// ثبت پرداخت این دوره: تراکنش هزینه ساخته می‌شود، موجودی حساب کم می‌شود و تاریخ
-// پرداخت بعدی یک دوره جلو می‌رود. همه در یک mutation اتمی.
-// حساب: accountId آرگومان، وگرنه حساب متصل به اشتراک؛ اگر هیچ‌کدام نبود خطا.
 export const markPaid = mutation({
   args: {
     id: v.id("subscriptions"),
     accountId: v.optional(v.id("accounts")),
-    date: v.string(), // تاریخ پرداخت، میلادی YYYY-MM-DD
+    date: v.string(), 
   },
   handler: async (ctx, { id, accountId, date }) => {
     const userId = await requireUserId(ctx);
@@ -176,7 +161,6 @@ export const markPaid = mutation({
       throw new ConvexError("این اشتراک متوقف است. اول آن را فعال کن.");
     }
 
-    // جلوگیری از پرداخت پشت‌سرهم که تاریخ را چند دوره جلو می‌برد
     const window = sub.cycle === "weekly" ? 3 : 10;
     if (sub.nextPaymentDate > daysAheadTehran(window)) {
       throw new ConvexError("پرداخت این دوره قبلا ثبت شده؛ هنوز زود است.");
@@ -193,8 +177,6 @@ export const markPaid = mutation({
       throw new ConvexError("موجودی حساب کافی نیست.");
     }
 
-    // تراکنش مستقل است و قفل نمی‌شود: وضعیت «پرداخت‌شده» جدا نگه داشته نمی‌شود،
-    // فقط تاریخ بعدی جلو می‌رود. همه‌ی پرداخت‌ها با دسته‌ی ثابت "subscription" ثبت می‌شوند
     const transactionId = await ctx.db.insert("transactions", {
       userId,
       type: "outcome",
@@ -219,7 +201,6 @@ export const markPaid = mutation({
   },
 });
 
-// تراکنش‌های پرداخت‌شده‌ی قبلی سر جایشان می‌مانند، چون پول واقعا جابه‌جا شده
 export const remove = mutation({
   args: { id: v.id("subscriptions") },
   handler: async (ctx, { id }) => {

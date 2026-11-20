@@ -19,66 +19,77 @@ export type Dues = {
 type DuesBoxProps = {
   dues: Dues;
 };
+
 const DuesBox = ({ dues }: DuesBoxProps) => {
   const [isOpenDetailModal, setIsOpenDetailModal] = useState<boolean>(false);
 
   return (
-    <div className="box rounded-2xl flex ">
-      <div
-        className={`rounded-2xl font-semibold grid place-items-center ${dues?.type === "claim" ? "bg-primary/15 border border-primary text-primary" : "bg-[#f060601a] text-[#f06060] border border-[#f06060]"} w-16 h-14`}
-      >
-        <p className="text-xl">{dues?.party?.charAt(0)}</p>
-      </div>
-      <div className=" mr-5 w-full pl-2">
-        <div className="flex items-center justify-between w-full ">
-          <div className="flex items-center gap-3">
-            <p className="font-semibold text-[17px]">{dues?.party}</p>
+    <div className="box min-w-0 rounded-2xl">
+     
+      <div className="flex items-center gap-3 sm:gap-4">
+        <div
+          className={`grid size-12 shrink-0 place-items-center rounded-2xl border font-semibold sm:size-14 ${
+            dues?.type === "claim"
+              ? "border-primary bg-primary/15 text-primary"
+              : "border-[#f06060] bg-[#f060601a] text-[#f06060]"
+          }`}
+        >
+          <p className="text-lg sm:text-xl">{dues?.party?.charAt(0)}</p>
+        </div>
 
-            <DuesStatus
-              status={getDuesStatus({
-                status: dues.status,
-                dueDate: dues.dueDate,
-              })}
+        <div className="flex min-w-0 flex-1 flex-col items-start gap-1.5">
+          <p className="w-full truncate text-base font-semibold sm:text-[17px]">
+            {dues?.party}
+          </p>
+          <DuesStatus
+            status={getDuesStatus({
+              status: dues.status,
+              dueDate: dues.dueDate,
+            })}
+          />
+        </div>
+
+        <p
+          className={`${
+            dues?.type === "debt" ? "text-[#ff6b6b]" : "text-primary"
+          } flex shrink-0 items-center gap-x-1 text-lg font-semibold sm:text-[26px]`}
+        >
+          {dues?.amount?.toLocaleString()}
+          <span className="text-neutral-400">
+            <TomanIcon width="18" height="18" />
+          </span>
+        </p>
+      </div>
+
+    
+      <div className="mt-4 flex items-center justify-between gap-3 border-t border-t-secondary pt-4">
+        <div className="flex items-center gap-x-1.5 text-muted">
+          <CalendarIcon size={15} />
+          <p className="text-xs">
+            سررسید : <span>{dues?.dueDate && formatDate(dues?.dueDate)}</span>
+          </p>
+        </div>
+
+        <div className="flex items-center gap-x-2 sm:gap-x-2.75">
+          {dues?.status === "open" && (
+            <PayDue
+              key={dues._id}
+              dueId={dues._id}
+              style="h-9 rounded-full bg-primary px-4 text-sm font-semibold text-black sm:h-10.5 sm:px-5"
+              minBalance={dues.type === "debt" ? dues.amount : 0}
             />
-          </div>
-          <div>
-            <p
-              className={`${dues?.type === "debt" ? "text-[#ff6b6b]" : "text-primary"} font-semibold text-[26px] flex items-center gap-x-1`}
-            >
-              {dues?.amount?.toLocaleString()}{" "}
-              <span className="text-neutral-400">
-                <TomanIcon width="18" height="18" />
-              </span>
-            </p>
-          </div>
-        </div>
-        <div className="border-t border-t-secondary mt-6 pt-6 flex items-center justify-between">
-          <div className="flex items-center gap-x-1.5 text-muted px-2.75 py-1.25 bg-[#202025] border border-secondary rounded-lg">
-            <CalendarIcon size={14} />
-            <p className="text-xs ">
-              سررسید : <span>{dues?.dueDate && formatDate(dues?.dueDate)}</span>
-            </p>
-          </div>
-          <div className="flex items-center gap-x-2.75">
-            {dues?.status === "open" && (
-              <PayDue
-                key={dues._id}
-                dueId={dues._id}
-                style="bg-primary text-black h-10.5 px-5"
-                minBalance={dues.type === "debt" ? dues.amount : 0}
-              />
-            )}
+          )}
 
-            <Button
-              isIconOnly
-              className="w-10.5 h-10.5 rounded-full bg-secondary "
-              onPress={() => setIsOpenDetailModal(true)}
-            >
-              <IconChevronLeft width={18} height={18} />
-            </Button>
-          </div>
+          <Button
+            isIconOnly
+            className="size-9 rounded-full bg-secondary sm:size-10.5"
+            onPress={() => setIsOpenDetailModal(true)}
+          >
+            <IconChevronLeft width={18} height={18} />
+          </Button>
         </div>
       </div>
+
       <DuesDetailModal
         key={dues._id}
         isOpen={isOpenDetailModal}

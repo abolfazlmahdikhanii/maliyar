@@ -20,7 +20,6 @@ async function getOwnedCheck(
   return check;
 }
 
-// اعتبارسنجی سمت سرور
 function normalize<
   T extends {
     amount: number;
@@ -45,7 +44,6 @@ function normalize<
     throw new ConvexError("تاریخ صدور معتبر نیست.");
   if (!isValidDate(input.dueDate))
     throw new ConvexError("تاریخ سررسید معتبر نیست.");
-  // فرمت YYYY-MM-DD را می‌شود مستقیم با < مقایسه کرد
   if (input.dueDate < input.issueDate)
     throw new ConvexError("سررسید نمی‌تواند قبل از تاریخ صدور باشد.");
 
@@ -69,11 +67,9 @@ async function assertSerialUnique(
     throw new ConvexError("این شماره سریال قبلاً برای این بانک ثبت شده.");
 }
 
-// اثر وصول را برمی‌گرداند: تراکنش حذف و موجودی حساب به حالت قبل برمی‌گردد
 async function undoClearing(ctx: MutationCtx, check: Doc<"checks">) {
   if (!check.paymentTransactionId) return;
   const transaction = await ctx.db.get(check.paymentTransactionId);
-  // اگر تراکنش قبلا از بین رفته باشد، چیزی برای برگرداندن نیست
   if (!transaction) return;
 
   await applyToBalance(
@@ -135,13 +131,11 @@ export const update = mutation({
   },
 });
 
-// ثبت وصول: تراکنش ساخته و موجودی حساب تغییر می‌کنه.
-// دریافتی → درآمد، پرداختی → هزینه. تراکنش از صفحه‌ی تراکنش‌ها قفله (source: "check")
 export const markCleared = mutation({
   args: {
     id: v.id("checks"),
     accountId: v.id("accounts"),
-    date: v.string(), // تاریخ وصول، میلادی YYYY-MM-DD
+    date: v.string(), 
   },
   handler: async (ctx, { id, accountId, date }) => {
     const userId = await requireUserId(ctx);
@@ -176,7 +170,7 @@ export const markCleared = mutation({
       amount: check.amount,
       title: `چک ${check.serial} - ${check.party}`,
       categoryId: type === "income" ? "check-income" : "check-outcome",
-      paymentMethod: account.type, // مثل وام و بدهی؛ نه "check"
+      paymentMethod: account.type,
       date,
       source: "check",
     });
@@ -202,7 +196,6 @@ export const markBounced = mutation({
   },
 });
 
-// برگشت به «در انتظار»
 export const revert = mutation({
   args: { id: v.id("checks") },
   handler: async (ctx, { id }) => {
@@ -220,7 +213,6 @@ export const revert = mutation({
   },
 });
 
-// حذف چک: اگه وصول شده بود، تراکنش و اثر موجودی هم برمی‌گرده
 export const remove = mutation({
   args: { id: v.id("checks") },
   handler: async (ctx, { id }) => {

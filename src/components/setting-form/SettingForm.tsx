@@ -17,9 +17,9 @@ const SettingForm = ({
 }: SettingFormProps) => {
   return (
     <section id={id} className="box rounded-2xl p-7! scroll-mt-6">
-      <div className="flex flex-col gap-y-1.75">
-        <h3 className="text-xl font-bold ">{title}</h3>
-        <p className="text-[13px] text-muted">{description}</p>
+      <div className="flex flex-col gap-y-1.25 lg:gap-y-1.5">
+        <h3 className="lg:text-xl text-lg font-bold ">{title}</h3>
+        <p className="lg:text-[13px] text-xs text-muted">{description}</p>
       </div>
       <Form onSubmit={onSubmit}>{children}</Form>
     </section>

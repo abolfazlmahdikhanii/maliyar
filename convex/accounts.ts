@@ -9,7 +9,6 @@ import { accountFields } from "./schema";
 const accountObject = v.object(accountFields);
 type AccountInput = Infer<typeof accountObject>;
 
-// پنجره‌ی آمار درآمد/هزینه (روز)
 const STATS_DAYS = 30;
 
 const normalize = (input: AccountInput): AccountInput => {
@@ -19,7 +18,6 @@ const normalize = (input: AccountInput): AccountInput => {
     throw new ConvexError("موجودی اولیه باید عدد صحیح و غیرمنفی باشد.");
   }
 
-  // کیف پول: بدون کارت و شبا، شناسه ثابت
   if (rest.type === "wallet") return { ...rest, bank: "cash" };
 
   if (cardNumber && !/^\d{16}$/.test(cardNumber)) {
@@ -35,10 +33,6 @@ const normalize = (input: AccountInput): AccountInput => {
   return { ...rest, bank: cleanBank, cardNumber, iban };
 };
 
-// جلوگیری از حساب تکراری:
-//  - کیف پول برای هر کاربر فقط یکی
-//  - شماره کارت و شبا بین حساب‌های کاربر یکتا (خودِ بانک آزاد است)
-// excludeId برای update است تا خودِ حسابِ در حال ویرایش، تکراری حساب نشود
 async function assertNoDuplicate(
   ctx: MutationCtx,
   userId: Id<"users">,
@@ -55,7 +49,7 @@ async function assertNoDuplicate(
     if (others.some((a) => a.type === "wallet")) {
       throw new ConvexError("کیف پول قبلاً ساخته شده و فقط یکی مجاز است.");
     }
-    return; // کیف پول کارت ندارد
+    return;
   }
 
   if (data.cardNumber && others.some((a) => a.cardNumber === data.cardNumber)) {
@@ -66,7 +60,6 @@ async function assertNoDuplicate(
   }
 }
 
-// مجموع درآمد، هزینه و تعداد تراکنش‌ها؛ اگر since داده شود فقط از آن تاریخ به بعد
 function summarize(transactions: Doc<"transactions">[], since?: string) {
   let totalIncome = 0;
   let totalOutcome = 0;
@@ -80,7 +73,6 @@ function summarize(transactions: Doc<"transactions">[], since?: string) {
   return { totalIncome, totalOutcome, transactionCount };
 }
 
-// فهرست حساب‌ها با آمار ۳۰ روز اخیر هر حساب
 export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
@@ -94,7 +86,6 @@ export const list = query({
 
     const since = daysAgoTehran(STATS_DAYS);
 
-    // فقط تراکنش‌های ۳۰ روز اخیر خوانده می‌شود، نه همه‌ی تراکنش‌ها
     const recent = await ctx.db
       .query("transactions")
       .withIndex("by_user_date", (q) =>
@@ -116,7 +107,6 @@ export const list = query({
   },
 });
 
-// یک حساب با آمار ۳۰ روز اخیر و همه‌ی تراکنش‌هایش (برای صفحه‌ی جزئیات)
 export const get = query({
   args: { id: v.id("accounts") },
   handler: async (ctx, { id }) => {
@@ -131,14 +121,12 @@ export const get = query({
       .withIndex("by_account", (q) => q.eq("accountId", id))
       .collect();
 
-    // ایندکس by_account بر اساس تاریخ مرتب نیست؛ جدیدترین اول
     transactions.sort(
       (a, b) =>
         b.date.localeCompare(a.date) ||
         (b.time ?? "").localeCompare(a.time ?? ""),
     );
 
-    // آمار فقط ۳۰ روز اخیر؛ اگر جمعِ کل می‌خواهی: summarize(transactions)
     return {
       ...account,
       ...summarize(transactions, daysAgoTehran(STATS_DAYS)),
@@ -154,7 +142,6 @@ export const add = mutation({
     const data = normalize(args);
     await assertNoDuplicate(ctx, userId, data);
 
-    // موجودی فعلی در شروع برابر موجودی اولیه است
     return ctx.db.insert("accounts", {
       ...data,
       userId,
@@ -202,8 +189,6 @@ export const update = mutation({
     const data = normalize(fields);
     await assertNoDuplicate(ctx, userId, data, id);
 
-    // replace کل سند را عوض می‌کند، پس balance باید دستی نگه داشته شود.
-    // اگر موجودی اولیه عوض شد، موجودی فعلی هم به همان اندازه جابه‌جا می‌شود
     const delta = data.initialBalance - account.initialBalance;
     const balance = account.balance + delta;
     if (delta < 0 && balance < 0) {
@@ -252,8 +237,7 @@ export const remove = mutation({
         }
       }
     }
-    // حسابی که تراکنش دارد حذف نشود، وگرنه تراکنش‌ها بی‌صاحب می‌مانند
-    // (پرداخت‌های وام، بدهی و چک هم تراکنش دارند، پس همین چک کافی است)
+
     const used = await ctx.db
       .query("transactions")
       .withIndex("by_account", (q) => q.eq("accountId", id))

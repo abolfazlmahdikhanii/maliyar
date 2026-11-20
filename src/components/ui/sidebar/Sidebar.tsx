@@ -3,6 +3,7 @@ import {
   BillIcon,
   Card2Icon,
   CardTransferIcon,
+  Home2Icon,
   Logout3Icon,
   MentionCircleIcon,
   PieChart3Icon,
@@ -10,88 +11,87 @@ import {
   SquareSortHorizontalIcon,
   UmbrellaIcon,
   WalletMoneyIcon,
-  WidgetIcon
 } from "@solar-icons/react/outline";
 
 import type { Icon } from "@solar-icons/react/lib/types";
-import SidebarItem from "./SidebarItem";
 import { useState } from "react";
 import Logout from "../logout/Logout";
+import SidebarItem from "./SidebarItem";
 
-  export type SidebarLink = {
-    iconEl?: Icon;
-    name: string;
-    href: string;
-  };
-  type Sidebar={
-  id:number
-  }&SidebarLink
+export type SidebarLink = {
+  iconEl?: Icon;
+  name: string;
+  href: string;
+};
+type Sidebar = {
+  id: number;
+} & SidebarLink;
 
-  const links:Sidebar[]=[
-    {
-  id:1,
-  iconEl:WidgetIcon ,
-  name:"داشبورد",
-  href:"/"
+const links: Sidebar[] = [
+  {
+    id: 1,
+    iconEl: Home2Icon,
+    name: "داشبورد",
+    href: "/",
   },
   {
-  id:2,
-  iconEl:CardTransferIcon ,
-  name:"تراکنش ها",
-  href:"/transactions"
+    id: 2,
+    iconEl: CardTransferIcon,
+    name: "تراکنش ها",
+    href: "/transactions",
   },
   {
-  id:3,
-  iconEl:PieChart3Icon ,
-  name:"بودجه بندی",
-  href:"/budget"
+    id: 3,
+    iconEl: PieChart3Icon,
+    name: "بودجه بندی",
+    href: "/budget",
   },
   {
-  id:4,
-  iconEl:WalletMoneyIcon ,
-  name:"بدهی و طلب",
-  href:"/dues"
+    id: 4,
+    iconEl: WalletMoneyIcon,
+    name: "بدهی و طلب",
+    href: "/dues",
   },
   {
-  id:5,
-  iconEl:MentionCircleIcon ,
-  name:"اهداف مالی",
-  href:"/finance-goal"
+    id: 5,
+    iconEl: MentionCircleIcon,
+    name: "اهداف مالی",
+    href: "/finance-goal",
   },
   {
-  id:6,
-  iconEl:SquareSortHorizontalIcon ,
-  name:"اشتراک ها",
-  href:"/subscriptions"
+    id: 6,
+    iconEl: SquareSortHorizontalIcon,
+    name: "اشتراک ها",
+    href: "/subscriptions",
   },
   {
-  id:7,
-  iconEl:Card2Icon ,
-  name:"حساب ها",
-  href:"/accounts"
+    id: 7,
+    iconEl: Card2Icon,
+    name: "حساب ها",
+    href: "/accounts",
   },
   {
-  id:8,
-  iconEl:BillIcon ,
-  name:"چک ها",
-  href:"/checks"
+    id: 8,
+    iconEl: BillIcon,
+    name: "چک ها",
+    href: "/checks",
   },
   {
-  id:9,
-  iconEl:UmbrellaIcon ,
-  name:"وام ها",
-  href:"/credits"
+    id: 9,
+    iconEl: UmbrellaIcon,
+    name: "وام ها",
+    href: "/credits",
   },
   {
-  id:10,
-  iconEl:SettingsIcon ,
-  name:"تنطیمات",
-  href:"/setting"
-  }
-  ]
+    id: 10,
+    iconEl: SettingsIcon,
+    name: "تنطیمات",
+    href: "/setting",
+  },
+];
 
 const Sidebar = () => {
-  const [isSignout,setIsSignout]=useState(false)
+  const [isSignout, setIsSignout] = useState(false);
   return (
     <div className="bg h-svh">
       {/* logo */}
@@ -102,11 +102,9 @@ const Sidebar = () => {
       <div className="flex flex-col justify-between h-[85%]">
         {/* sidebar */}
         <nav className="py-3 px-5 flex flex-col gap-y-1.5">
-           {
-            links.map(link=>(
-              <SidebarItem key={link.id} {...link}/>
-            ))
-           }
+          {links.map((link) => (
+            <SidebarItem key={link.id} {...link} />
+          ))}
         </nav>
         <div className="flex items-center gap-2 pt-4 pb-2  mx-8 border-t border-t-secondary ">
           <Button
@@ -114,14 +112,17 @@ const Sidebar = () => {
             className={
               "min-h-13 text-right rounded-2xl justify-start text-neutral-400 bg-transparent px-3 hover:bg-danger-soft hover:text-danger-hover transition-all duration-200"
             }
-            onPress={()=>setIsSignout(true)}
+            onPress={() => setIsSignout(true)}
           >
             <Logout3Icon size={22} />
             <p className="text-[15px]">خروج از حساب</p>
           </Button>
         </div>
       </div>
-      <Logout isShowConfirm={isSignout} onChangeShowConfirm={()=>setIsSignout(false)}/>
+      <Logout
+        isShowConfirm={isSignout}
+        onChangeShowConfirm={() => setIsSignout(false)}
+      />
     </div>
   );
 };

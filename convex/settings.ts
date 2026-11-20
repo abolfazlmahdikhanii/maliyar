@@ -30,7 +30,6 @@ export async function loadSettings(
   userId: Id<"users">,
 ) {
   const row = await getRow(ctx, userId);
-  // حساب پیش‌فرضِ حذف‌شده null می‌شه
   const account = row?.defaultAccountId
     ? await ctx.db.get(row.defaultAccountId)
     : null;
@@ -65,15 +64,12 @@ export const update = mutation({
       }
     }
 
-    // replace: defaultAccountId برابر undefined یعنی حساب پیش‌فرض برداشته شود
     const row = await getRow(ctx, userId);
     if (row) await ctx.db.replace(row._id, { ...args, userId });
     else await ctx.db.insert("settings", { ...args, userId });
   },
 });
 
-// همه‌ی تراکنش‌ها برای خروجی CSV. با useConvex().query صدا بزن (نه useQuery)
-// تا فقط موقع کلیک خونده بشه. اسم فارسی دسته و بانک رو کلاینت از کلیدها می‌سازه.
 export const exportTransactions = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
@@ -103,8 +99,6 @@ export const exportTransactions = query({
   },
 });
 
-// حذف همه‌ی داده‌های مالی کاربر (نه خود حساب کاربری).
-// برای حجم داده‌ی یک کاربر عادی کافیه؛ چند ده هزار سند ممکنه به سقف یک mutation بخوره.
 async function deleteFinanceData(ctx: MutationCtx, userId: Id<"users">) {
   const loans = await ctx.db
     .query("loans")
@@ -169,8 +163,6 @@ export const clearData = mutation({
   },
 });
 
-// حذف کامل حساب کاربری: داده‌ها، تنظیمات، نشست‌ها و اطلاعات ورود، بعد خود کاربر.
-// بعد از موفقیت، کلاینت باید signOut بزنه.
 export const deleteAccount = mutation({
   handler: async (ctx) => {
     const userId = await requireUserId(ctx);
@@ -209,8 +201,6 @@ export const deleteAccount = mutation({
   },
 });
 
-// داده‌ی نمونه برای نمایش برنامه: ۳ حساب، ۶ ماه تراکنش، چک، هدف، بودجه،
-// بدهی و طلب، یک وام و چند اشتراک. فقط وقتی کاربر هیچ حسابی نداره.
 export const loadSampleData = mutation({
   handler: async (ctx) => {
     const userId = await requireUserId(ctx);
@@ -225,7 +215,6 @@ export const loadSampleData = mutation({
       );
     }
 
-    // ⚠️ کلید بانک‌ها باید با data/banks تو یکی باشه
     const accountDefs = [
       {
         type: "card",
@@ -254,7 +243,6 @@ export const loadSampleData = mutation({
     }
     const [mellat, saman] = ids;
 
-    // تراکنش‌ها: موجودی هر حساب یک‌جا و آخر کار آپدیت می‌شه
     const delta = new Map<Id<"accounts">, number>();
     let count = 0;
     const addTx = async (
@@ -283,7 +271,6 @@ export const loadSampleData = mutation({
       count++;
     };
 
-    // کمی تغییر ماه‌به‌ماه تا نمودارها یکنواخت نباشن
     const jitter = (n: number, m: number) =>
       Math.round((n * (1 + (((m * 3) % 5) - 2) * 0.07)) / 10_000) * 10_000;
 
@@ -321,7 +308,6 @@ export const loadSampleData = mutation({
         await ctx.db.patch(accountId, { balance: account.balance + d });
     }
 
-    // چک‌ها
     await ctx.db.insert("checks", {
       userId,
       direction: "received",
@@ -356,7 +342,6 @@ export const loadSampleData = mutation({
       status: "bounced",
     });
 
-    // اهداف
     await ctx.db.insert("goals", {
       userId,
       title: "سفر به ترکیه",
@@ -381,7 +366,6 @@ export const loadSampleData = mutation({
       savedAmount: 15_000_000,
     });
 
-    // بودجه‌ها
     for (const [categoryId, limit] of [
       ["food", 6_000_000],
       ["transport", 2_000_000],
@@ -390,7 +374,6 @@ export const loadSampleData = mutation({
       await ctx.db.insert("budgets", { userId, categoryId, limit });
     }
 
-    // بدهی و طلب
     await ctx.db.insert("dues", {
       userId,
       type: "debt",
@@ -409,7 +392,6 @@ export const loadSampleData = mutation({
       status: "open",
     });
 
-    // وام با سه قسط پرداخت‌شده (توسط شخص دیگری، بدون تراکنش)
     const loanId = await ctx.db.insert("loans", {
       userId,
       title: "وام خودرو",
@@ -430,7 +412,6 @@ export const loadSampleData = mutation({
       });
     }
 
-    // اشتراک‌ها
     for (const s of [
       {
         name: "اسپاتیفای",

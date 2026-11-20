@@ -7,9 +7,9 @@ import type { Id } from "../../../../convex/_generated/dataModel";
 import { getBankName } from "../../../utils/bankDetector";
 import { cardFormatter } from "../../../utils/cardFormatter";
 import { Loader } from "../loading-box/LoadingBox";
+import TomanIcon from "../toman-icon/TomanIcon";
 import AccountDetailItem from "./elements/AccountDetailItem";
 import AccountTransaction from "./elements/AccountTransaction";
-import TomanIcon from "../toman-icon/TomanIcon";
 
 type Filter = "all" | "income" | "outcome";
 
@@ -27,7 +27,7 @@ const AccountsDetail = ({
 }: AccountsDetailProps) => {
   const accountDetail = useQuery(
     api.accounts.get,
-    isOpen&&accountId ? { id: accountId } : "skip",
+    isOpen && accountId ? { id: accountId } : "skip",
   );
   const [filter, setFilter] = useState<Filter>("all");
 
@@ -36,32 +36,33 @@ const AccountsDetail = ({
     filter === "all"
       ? transactions
       : transactions.filter((item) => item.type === filter);
+
   return (
     <>
       <Modal isOpen={isOpen} onOpenChange={onOpenChange}>
         <Modal.Backdrop>
           <Modal.Container>
             <Modal.Dialog className="sm:max-w-135 box-modal">
-              <Modal.Header className="flex items-center justify-between  flex-row pt-2 pb-4 px-1 border-b border-b-secondary">
-                <div className="flex items-center justify-between w-full">
-                  <div className="flex flex-col gap-y-1.5">
-                    <p className="text-lg text-white font-semibold">
+              <Modal.Header className="flex flex-row items-center justify-between border-b border-b-secondary px-1 pb-4 pt-2">
+                <div className="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-2">
+                  <div className="flex min-w-0 flex-col gap-y-1.5">
+                    <p className="truncate text-lg font-semibold text-white">
                       {accountDetail ? getBankName(accountDetail.bank) : "..."}
                     </p>
                     <p className="text-sm text-muted">
                       {accountDetail?.transactionCount ?? "0"} تراکنش
                     </p>
                   </div>
-                  <p className="text-primary font-semibold text-2xl flex items-center gap-x-1 tracking-wide">
-                    {accountDetail?.balance?.toLocaleString() ?? "0"}{" "}
+                  <p className="flex items-center gap-x-1 text-xl font-semibold tracking-wide text-primary sm:text-2xl">
+                    {accountDetail?.balance?.toLocaleString() ?? "0"}
                     <span className="text-neutral-400">
-                     <TomanIcon width="15" height="15"/>
+                      <TomanIcon width="15" height="15" />
                     </span>
                   </p>
                 </div>
               </Modal.Header>
 
-              <Modal.Body className="px-1.5 min-h-80">
+              <Modal.Body className="min-h-80 px-0.5 sm:px-1.5">
                 {accountDetail === undefined ? (
                   <Loader small />
                 ) : accountDetail === null ? (
@@ -70,7 +71,7 @@ const AccountsDetail = ({
                   </p>
                 ) : (
                   <>
-                    <div className=" ">
+                    <div>
                       <AccountDetailItem
                         icon={Card2Icon}
                         title="شماره کارت"
@@ -112,8 +113,9 @@ const AccountsDetail = ({
                         noBorder
                       />
                     </div>
-                    <div className="mt-6 mx-0.5 ">
-                      <div className="flex items-center justify-between w-full">
+
+                    <div className="mx-0.5 mt-5 sm:mt-6">
+                      <div className="flex w-full flex-wrap items-center justify-between gap-x-3 gap-y-3">
                         <p className="text-[14px] font-semibold text-white">
                           تراکنش های حساب{" "}
                           <span className="text-xs text-muted">
@@ -121,39 +123,38 @@ const AccountsDetail = ({
                           </span>
                         </p>
                         <Tabs
-                          className=" "
                           selectedKey={filter}
                           onSelectionChange={(key) => setFilter(key as Filter)}
                         >
-                          <Tabs.ListContainer className="py-0.5 px-0.5 bg-secondary border border-secondary w-max rounded-2xl">
+                          <Tabs.ListContainer className="w-max rounded-2xl border border-secondary bg-secondary px-0.5 py-0.5">
                             <Tabs.List aria-label="Options">
                               <Tabs.Tab
                                 id="all"
-                                className="h-8.5 data-[selected=true]:text-black text-xs whitespace-nowrap"
+                                className="h-8.5 whitespace-nowrap text-xs data-[selected=true]:text-black"
                               >
                                 همه
-                                <Tabs.Indicator className="bg-primary " />
+                                <Tabs.Indicator className="bg-primary" />
                               </Tabs.Tab>
                               <Tabs.Tab
                                 id="income"
-                                className="h-8.5 data-[selected=true]:text-black text-xs whitespace-nowrap"
+                                className="h-8.5 whitespace-nowrap text-xs data-[selected=true]:text-black"
                               >
                                 درآمد
-                                <Tabs.Indicator className="bg-primary " />
+                                <Tabs.Indicator className="bg-primary" />
                               </Tabs.Tab>
                               <Tabs.Tab
                                 id="outcome"
-                                className="h-8.5 data-[selected=true]:text-black text-xs whitespace-nowrap"
+                                className="h-8.5 whitespace-nowrap text-xs data-[selected=true]:text-black"
                               >
                                 هزینه
-                                <Tabs.Indicator className="bg-primary " />
+                                <Tabs.Indicator className="bg-primary" />
                               </Tabs.Tab>
                             </Tabs.List>
                           </Tabs.ListContainer>
                         </Tabs>
                       </div>
-                      <div className="mt-6.5 mr-2 ml-5 space-y-6.5 max-h-70">
-                        {/* item */}
+
+                      <div className="mt-5 max-h-70 space-y-5 overflow-y-auto sm:mt-6.5 sm:space-y-6.5 sm:ml-5 sm:mr-2">
                         {visibleTransactions ? (
                           visibleTransactions.map((tr) => (
                             <AccountTransaction key={tr._id} {...tr} />
@@ -166,10 +167,11 @@ const AccountsDetail = ({
                   </>
                 )}
               </Modal.Body>
-              <Modal.Footer className="pb-1 space-x-2">
+
+              <Modal.Footer className="pb-1">
                 <Button
                   variant="outline"
-                  className="h-13 rounded-xl w-1/2 text-base"
+                  className="h-12 w-full rounded-xl text-base sm:h-13 sm:w-1/2"
                   slot="close"
                 >
                   بستن

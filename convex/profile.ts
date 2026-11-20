@@ -67,8 +67,6 @@ export const update = mutation({
       }
     }
 
-    // ورود با مقدار ذخیره‌شده توی authAccounts انجام می‌شه (ایمیل یا نام کاربری).
-    // اگه همون مقدار قدیمی بود، با مقدار جدید عوض می‌شه تا ورود خراب نشه
     const authAccounts = await ctx.db
       .query("authAccounts")
       .withIndex("userIdAndProvider", (q) => q.eq("userId", userId))

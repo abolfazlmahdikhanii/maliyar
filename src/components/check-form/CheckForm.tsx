@@ -97,7 +97,7 @@ const CheckForm = ({
     }
   };
   return (
-    <Form id={formId} className="px-2" onSubmit={handleSubmit}>
+    <Form id={formId} className="px-1 sm:px-2" onSubmit={handleSubmit}>
       <FormTab
         tabs={tabs}
         selectedTab={checkType}
@@ -107,8 +107,8 @@ const CheckForm = ({
         <InputPrice price={price} setPrice={setPrice} />
       </div>
 
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-8">
-        <div className="flex flex-col gap-2 max-w-2xl">
+      <section className="mt-6 grid max-w-2xl grid-cols-1 gap-4 sm:mt-8 sm:grid-cols-2 sm:gap-5">
+        <div className="flex max-w-2xl flex-col gap-2">
           <Label htmlFor="serial" className="text-muted text-sm">
             شماره سریال
           </Label>
@@ -116,7 +116,9 @@ const CheckForm = ({
             id="serial"
             placeholder="284591"
             type="text"
-            className="box input h-13"
+            inputMode="numeric"
+            dir="ltr"
+            className="box input h-13 text-right"
             value={serial}
             onChange={(e) => setSerial(e.target.value)}
           />
@@ -129,7 +131,7 @@ const CheckForm = ({
         />
       </section>
 
-      <div className="flex flex-col gap-2 max-w-2xl mt-5.5">
+      <div className="mt-4 flex max-w-2xl flex-col gap-2 sm:mt-5.5">
         <Label htmlFor="party" className="text-muted text-sm">
           {checkType === "incomeCheck" ? "در وجه (صادرکننده)" : "در وجهِ"}
         </Label>
@@ -143,7 +145,7 @@ const CheckForm = ({
         />
       </div>
 
-      <section className="grid grid-cols-2 gap-5 max-w-2xl mt-5.5 mb-3">
+      <section className="mb-3 mt-4 grid max-w-2xl grid-cols-1 gap-4 sm:mt-5.5 sm:grid-cols-2 sm:gap-5">
         <DatePickerInput
           title="تاریخ صدور چک"
           date={issueDate}

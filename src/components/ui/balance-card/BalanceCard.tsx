@@ -35,14 +35,14 @@ const BalanceCard = ({
       </div>
 
       <div className="relative filter-[drop-shadow(0_-4px_7px_rgba(0,0,0,0.3))]">
-        <div className="inverted-radius w-full h-70 bg-primary">
-          <div className="pr-6.75 pt-7 pb-6.5 flex flex-col justify-between h-full">
-            <p className="text-[24px] text-neutral-800">موجودی کل</p>
+        <div className="inverted-radius w-full h-60 sm:h-70 bg-primary">
+          <div className="pr-5 pt-5 pb-5 sm:pr-6.75 sm:pt-7 sm:pb-6.5 flex flex-col justify-between h-full">
+            <p className="text-xl sm:text-[24px] text-neutral-800">موجودی کل</p>
             <div>
               {loading ? (
-                <div className="h-12 w-56 rounded-lg bg-black/10 animate-pulse" />
+                <div className="h-10 w-48 sm:h-12 sm:w-56 rounded-lg bg-black/10 animate-pulse" />
               ) : (
-                <p className="text-black font-semibold text-[47px] flex items-center gap-x-1">
+                <p className="text-black font-semibold text-4xl sm:text-[47px] flex items-center gap-x-1">
                   {(balance ?? 0).toLocaleString("en-US")}
                   <TomanIcon width="24" height="24" />
                 </p>
@@ -64,7 +64,7 @@ const BalanceCard = ({
       <Button
         isIconOnly
         aria-label="مشاهده حساب‌ها"
-        className="absolute -top-1 left-3.25 bg-white w-13.75 h-13.75 rounded-full text-black"
+        className="absolute -top-1 left-3.25 bg-white w-12 h-12 sm:w-13.75 sm:h-13.75 rounded-full text-black"
         onPress={onOpen}
       >
         <ArrowLeftUpIcon size={24} />

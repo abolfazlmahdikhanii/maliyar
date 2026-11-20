@@ -11,7 +11,6 @@ import { loanFields } from "./schema";
 const loanObject = v.object(loanFields);
 type LoanInput = Infer<typeof loanObject>;
 
-// اعتبارسنجی سمت سرور
 const normalize = (input: LoanInput): LoanInput => {
   const title = input.title.trim();
   if (!title) throw new ConvexError("عنوان وام را وارد کن.");
@@ -44,7 +43,6 @@ const normalize = (input: LoanInput): LoanInput => {
   if (!isValidDate(input.firstDueDate)) {
     throw new ConvexError("سررسید اولین قسط معتبر نیست.");
   }
-  // فرمت YYYY-MM-DD را می‌شود مستقیم با < مقایسه کرد
   if (input.firstDueDate < input.receivedDate) {
     throw new ConvexError(
       "سررسید اولین قسط نمی‌تواند قبل از تاریخ دریافت وام باشد.",
@@ -53,18 +51,13 @@ const normalize = (input: LoanInput): LoanInput => {
   return { ...input, title };
 };
 
-// مقدارهای مشتق‌شده‌ی هر وام.
-// کل وام = تعداد اقساط × قسط ماهانه؛ مانده‌ی بدهی = اقساط مانده × قسط ماهانه
-// (قسط خودش شامل سود است، پس نیازی به محاسبه‌ی جدا نیست)
 function summarize(loan: Doc<"loans">, payments: Doc<"loanPayments">[]) {
   const remainingCount = loan.installmentCount - loan.paidCount;
   return {
     totalAmount: loan.installmentCount * loan.installmentAmount,
     remainingCount,
     remainingDebt: remainingCount * loan.installmentAmount,
-    // مجموع مبلغ قسط‌های پرداخت‌شده (از روی خود پرداخت‌ها، نه قسط فعلی وام)
     paidAmount: payments.reduce((sum, p) => sum + p.amount, 0),
-    // سررسید قسط بعدی؛ اگر همه پرداخت شده باشد null
     nextDueDate:
       remainingCount > 0
         ? installmentDueDate(loan.firstDueDate, loan.paidCount + 1)
@@ -82,12 +75,9 @@ async function getOwnedLoan(
   return loan;
 }
 
-// اثر یک پرداخت را برمی‌گرداند: تراکنشش (اگر از حساب پرداخت شده بود) حذف می‌شود،
-// موجودی حساب به حالت قبل برمی‌گردد و خود پرداخت پاک می‌شود
 async function reversePayment(ctx: MutationCtx, payment: Doc<"loanPayments">) {
   if (payment.transactionId) {
     const transaction = await ctx.db.get(payment.transactionId);
-    // اگر تراکنش قبلا از بین رفته باشد، چیزی برای برگرداندن نیست
     if (transaction) {
       await applyToBalance(
         ctx,
@@ -102,7 +92,6 @@ async function reversePayment(ctx: MutationCtx, payment: Doc<"loanPayments">) {
   await ctx.db.delete(payment._id);
 }
 
-// فهرست وام‌ها با همه‌ی اطلاعات کارت
 export const list = query({
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
@@ -126,8 +115,6 @@ export const list = query({
   },
 });
 
-// یک وام با اطلاعات کارت، اقساط پرداخت‌شده (جدیدترین اول) و صورت‌حساب کامل اقساط.
-// وضعیت «گذشته از سررسید» را کلاینت از روی dueDate حساب می‌کند.
 export const get = query({
   args: { id: v.id("loans") },
   handler: async (ctx, { id }) => {
@@ -154,14 +141,11 @@ export const get = query({
           amount: payment?.amount ?? loan.installmentAmount,
           status: payment ? ("paid" as const) : ("unpaid" as const),
           paidAt: payment?.paidAt ?? null,
-          // true: از حساب خود کاربر پرداخت شده؛ برای متن هشدار هنگام برگرداندن
           paidFromAccount: payment?.transactionId !== undefined,
         };
       },
     );
 
-    // bank: کلید بانکی که با آن پرداخت شده؛ null یعنی شخص دیگری ریخته.
-    // اگر حساب پیدا نشد "unknown"
     const accountIds = [
       ...new Set(
         payments
@@ -219,20 +203,15 @@ export const update = mutation({
       );
     }
 
-    // اقساط قبلا پرداخت‌شده مبلغ خودشان را در loanPayments نگه می‌دارند
     await ctx.db.patch(id, data);
   },
 });
 
-// ثبت پرداخت قسط بعدی:
-// ۱. با accountId: از حساب خود کاربر. تراکنش هزینه ساخته و موجودی کم می‌شود.
-//    تراکنش از صفحه‌ی تراکنش‌ها قفل است (source: "loan").
-// ۲. بدون accountId: شخص دیگری قسط را ریخته. فقط قسط علامت می‌خورد.
 export const payInstallment = mutation({
   args: {
     id: v.id("loans"),
     accountId: v.optional(v.id("accounts")),
-    date: v.string(), // تاریخ پرداخت، میلادی YYYY-MM-DD
+    date: v.string(),
   },
   handler: async (ctx, { id, accountId, date }) => {
     const userId = await requireUserId(ctx);
@@ -290,8 +269,6 @@ export const payInstallment = mutation({
   },
 });
 
-// برگرداندن آخرین پرداخت. اقساط به ترتیب پرداخت می‌شوند، پس فقط آخرین قسط
-// قابل برگشت است.
 export const undoLastPayment = mutation({
   args: { id: v.id("loans") },
   handler: async (ctx, { id }) => {
@@ -314,7 +291,6 @@ export const undoLastPayment = mutation({
   },
 });
 
-// حذف وام: همه‌ی پرداخت‌هایش با تراکنش‌ها حذف و موجودی حساب‌ها برگردانده می‌شود
 export const remove = mutation({
   args: { id: v.id("loans") },
   handler: async (ctx, { id }) => {

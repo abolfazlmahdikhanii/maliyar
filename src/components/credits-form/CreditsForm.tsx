@@ -8,14 +8,14 @@ import {
   today,
 } from "@internationalized/date";
 import { useMutation } from "convex/react";
+import { ConvexError } from "convex/values";
 import { useState, type SyntheticEvent } from "react";
 import { api } from "../../../convex/_generated/api";
 import type { Doc } from "../../../convex/_generated/dataModel";
+import { formatNumber } from "../../utils/formatNumber";
+import { loanSchema } from "../../validators/loans";
 import type { FormProps } from "../accounts-form/AccountsForm";
 import DatePickerInput from "../date-picker-input/DatePickerInput";
-import { loanSchema } from "../../validators/loans";
-import { ConvexError } from "convex/values";
-import { formatNumber } from "../../utils/formatNumber";
 
 type CreditsFormProps = {
   detail?: Doc<"loans">;
@@ -49,7 +49,6 @@ const CreditsForm = ({
       ? parseDate(detail.firstDueDate)
       : plusOneJalaliMonth(today(getLocalTimeZone())),
   );
-  // تا وقتی کاربر خودش سررسید اول را عوض نکرده، با تاریخ دریافت جابه‌جا می‌شود
   const [firstDueTouched, setFirstDueTouched] = useState(Boolean(detail));
   const [installmentAmount, setInstallmentAmount] = useState(
     detail ? String(detail.installmentAmount) : "",
@@ -111,7 +110,7 @@ const CreditsForm = ({
   };
 
   return (
-    <Form id={formId} className="px-2" onSubmit={handleSubmit}>
+    <Form id={formId} className="px-1 sm:px-2" onSubmit={handleSubmit}>
       <section>
         <div className="flex max-w-2xl flex-col gap-2">
           <Label htmlFor="loan-title" className="text-sm text-muted">
@@ -128,7 +127,7 @@ const CreditsForm = ({
         </div>
       </section>
 
-      <section className="mt-7.5 grid max-w-2xl grid-cols-2 gap-5">
+      <section className="mt-5 grid max-w-2xl grid-cols-1 gap-4 sm:mt-7.5 sm:grid-cols-2 sm:gap-5">
         <div className="flex max-w-2xl flex-col gap-2">
           <Label htmlFor="loan-rate" className="text-sm text-muted">
             نرخ بهره (٪ سالانه)
@@ -140,7 +139,8 @@ const CreditsForm = ({
             placeholder="18"
             type="text"
             inputMode="decimal"
-            className="box input max-h-12.5"
+            dir="ltr"
+            className="box input max-h-12.5 text-right"
           />
         </div>
         <DatePickerInput
@@ -150,7 +150,7 @@ const CreditsForm = ({
         />
       </section>
 
-      <section className="mt-7.5 grid max-w-2xl grid-cols-2 gap-5">
+      <section className="mt-4 grid max-w-2xl grid-cols-1 gap-4 sm:mt-7.5 sm:grid-cols-2 sm:gap-5">
         <div className="flex max-w-2xl flex-col gap-2">
           <Label htmlFor="loan-amount" className="text-sm text-muted">
             قسط ماهانه (تومان)
@@ -162,7 +162,8 @@ const CreditsForm = ({
             placeholder="5,000,000"
             type="text"
             inputMode="numeric"
-            className="box input max-h-12.5"
+            dir="ltr"
+            className="box input max-h-12.5 text-right"
           />
         </div>
         <div className="flex max-w-2xl flex-col gap-2">
@@ -176,12 +177,13 @@ const CreditsForm = ({
             placeholder="36"
             type="text"
             inputMode="numeric"
-            className="box input max-h-12.5"
+            dir="ltr"
+            className="box input max-h-12.5 text-right"
           />
         </div>
       </section>
 
-      <section className="mb-2 mt-7.5 max-w-2xl">
+      <section className="mb-2 mt-4 max-w-2xl sm:mt-7.5">
         <DatePickerInput
           date={firstDueDate}
           onDate={(date) => {
