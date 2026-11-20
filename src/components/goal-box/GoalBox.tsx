@@ -21,7 +21,7 @@ const GoalBox = ({ onOpenGoals }: GoalBoxProps) => {
 
   return (
     <div className="relative h-full w-full col-span-2 lg:col-span-1">
-      <div className="box inverted-radius w-full h-full">
+      <div className="box inverted-radius w-full h-full ">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-11.5 h-11.5 grid place-content-center bg-secondary rounded-full text-white">

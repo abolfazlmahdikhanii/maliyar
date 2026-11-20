@@ -6,8 +6,8 @@ import {
 } from "@solar-icons/react/outline";
 import { useQuery } from "convex/react";
 import type { FunctionReturnType } from "convex/server";
-import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
+import { useKeenSlider } from "keen-slider/react";
 import { useState } from "react";
 import { api } from "../../../convex/_generated/api";
 import DuesBox from "../../components/dues-box/DuesBox";
@@ -76,7 +76,6 @@ const Dues = () => {
       />
 
       <div className="mt-6 mb-6 grid grid-cols-1 gap-4 lg:mt-14 lg:mb-8 lg:grid-cols-2 lg:gap-6 xl:grid-cols-3">
-
         <div className="lg:contents">
           <div ref={sliderRef} className="keen-slider lg:contents">
             <div className={SLIDE}>
@@ -125,7 +124,6 @@ const Dues = () => {
             </div>
           </div>
 
-
           <div className="flex items-center justify-center gap-2 lg:hidden">
             {Array.from({ length: SLIDES_COUNT }).map((_, i) => (
               <button
@@ -143,9 +141,8 @@ const Dues = () => {
       </div>
 
       <Tabs className="mt-6 w-full lg:mt-12">
-    
         <div className="overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          <Tabs.ListContainer className="  border border-secondary bg-secondary px-2 py-2 w-137.5">
+          <Tabs.ListContainer className=" w-full border border-secondary bg-secondary px-2 py-2 lg:w-137.5 ">
             <Tabs.List aria-label="Options">
               {tabs.map((tab) => (
                 <Tabs.Tab
