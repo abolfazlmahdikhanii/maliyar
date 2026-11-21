@@ -11,8 +11,7 @@ Track accounts, transactions, budgets, loans, checks, subscriptions, dues and sa
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0f172a?style=flat&logo=tailwindcss&logoColor=38bdf8)
 ![Convex](https://img.shields.io/badge/Convex-backend-ee342f?style=flat)
 
-[فارسی](README.fa.md) · [Live Demo](#) · [Report a Bug](../../issues)
-
+[Live Demo](#) · [Report a Bug](../../issues)
 </div>
 
 ---
