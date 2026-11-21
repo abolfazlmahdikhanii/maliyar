@@ -23,11 +23,11 @@ const RecentTransactions = () => {
 
       <div className="mt-6 space-y-2.75 min-h-72 lg:h-full">
         {loading ? (
-          <div className="flex h-40 items-center justify-center lg:h-full">
+          <div className="flex min-h-48  items-center justify-center lg:h-[80%]">
             <Loader />
           </div>
         ) : items.length === 0 ? (
-          <div className="flex min-h-48 items-center justify-center lg:h-[80%]">
+          <div className="flex min-h-48  items-center justify-center lg:h-[80%]">
             <EmptyState
               compact
               kind="transactions"

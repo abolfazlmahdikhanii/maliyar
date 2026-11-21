@@ -20,7 +20,7 @@ const GoalBox = ({ onOpenGoals }: GoalBoxProps) => {
     .slice(0, LIMIT);
 
   return (
-    <div className="relative w-full min-w-0 lg:col-span-1 lg:h-full">
+    <div className="relative w-full min-w-0 col-span-2 lg:col-span-1 lg:h-full">
       <div className="box inverted-radius h-auto! min-h-0! w-full lg:h-full!">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

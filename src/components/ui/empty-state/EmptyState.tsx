@@ -28,29 +28,41 @@ const EmptyState = ({
   className = "",
 }: EmptyStateProps) => (
   <div
-    className={`flex flex-col items-center text-center ${compact ? "py-4" : "py-14"} ${className}`}
+    className={`flex flex-col items-center px-2 text-center ${
+      compact ? "py-4" : "py-8 sm:py-14"
+    } ${className}`}
   >
     <img
       src={`/illustrations/${kind}.svg`}
       alt=""
       draggable={false}
-      className={`select-none ${compact ? "w-36 h-27" : "w-60 h-45"}`}
+      className={`h-auto max-w-full select-none ${
+        compact ? "w-32 sm:w-36" : "w-44 sm:w-60"
+      }`}
     />
     <p
-      className={`text-white font-semibold ${compact ? "text-base mt-2" : "text-xl mt-4"}`}
+      className={`font-semibold text-white ${
+        compact ? "mt-2 text-base" : "mt-3 text-lg sm:mt-4 sm:text-xl"
+      }`}
     >
       {title}
     </p>
     {description && (
       <p
-        className={`text-neutral-400 leading-[1.9] max-w-sm ${compact ? "text-xs mt-1" : "text-sm mt-2"}`}
+        className={`max-w-sm leading-[1.9] text-neutral-400 ${
+          compact ? "mt-1 text-xs" : "mt-2 text-xs sm:text-sm"
+        }`}
       >
         {description}
       </p>
     )}
     {action && (
       <Button
-        className={`bg-primary text-black font-semibold rounded-xl ${compact ? "mt-3 h-10 px-5 text-sm" : "mt-6 h-12 px-6"}`}
+        className={`rounded-xl bg-primary font-semibold text-black ${
+          compact
+            ? "mt-3 h-10 px-5 text-sm"
+            : "mt-5 h-11 px-6 sm:mt-6 sm:h-12"
+        }`}
         onPress={action.onPress}
       >
         {action.label}
