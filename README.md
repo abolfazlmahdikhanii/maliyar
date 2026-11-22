@@ -11,7 +11,8 @@ Track accounts, transactions, budgets, loans, checks, subscriptions, dues and sa
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-0f172a?style=flat&logo=tailwindcss&logoColor=38bdf8)
 ![Convex](https://img.shields.io/badge/Convex-backend-ee342f?style=flat)
 
-[Live Demo](#) · [Report a Bug](../../issues)
+[Live Demo](https://maliyar.vercel.app) · [Report a Bug](../../issues)
+
 </div>
 
 ---
@@ -93,12 +94,11 @@ npm run dev
 
 ```
 maliyar/
-├── convex/          # Backend: schema, queries, mutations, AI action
-├── src/
-│   ├── components/  # Shared UI (cards, forms, modals)
-│   ├── pages/       # Dashboard, transactions, budgets, loans, ...
-│   └── data/        # Banks and categories display data
-└── README.md
+├── convex/   # Backend: schema, queries, mutations, AI action
+├── data/     # Static data files
+├── docs/     # Screenshots
+├── public/   # Static assets
+└── src/      # Frontend: components, pages
 ```
 
 ## Notes
